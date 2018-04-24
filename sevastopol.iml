@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="JAVA_MODULE" version="4">
+  <component name="NewModuleRootManager" inherit-compiler-output="true">
+    <exclude-output />
+    <content url="file://$MODULE_DIR$/../sevastopol">
+      <sourceFolder url="file://$MODULE_DIR$/../sevastopol/src" isTestSource="false" />
+    </content>
+    <orderEntry type="inheritedJdk" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" exported="" name="scala-sdk-2.12.4" level="application" />
+    <orderEntry type="module-library" exported="">
+      <library>
+        <CLASSES>
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/dom4j-2.1.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/eric.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/hadoop-common-2.6.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/hadoop-hdfs-2.6.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/hadoop-mapreduce-client-core-2.6.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/hamcrest-core-1.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/hamcrest-library-1.3.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jackson-annotations-2.8.0.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jackson-annotations-2.8.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jackson-core-2.8.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jackson-databind-2.8.2.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jaxen-1.1.6.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/joda-time-2.9.9.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/junit-4.12.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/scala-compiler-2.12.4.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/scala-library-2.12.4.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/scala-reflect-2.12.4.jar!/" />
+        </CLASSES>
+        <JAVADOC>
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jackson-annotations-2.8.0-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jackson-annotations-2.8.2-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jackson-core-2.8.2-javadoc.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jackson-databind-2.8.2-javadoc.jar!/" />
+        </JAVADOC>
+        <SOURCES>
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/dom4j-2.1.0-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jackson-annotations-2.8.0-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jackson-annotations-2.8.2-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jackson-core-2.8.2-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jackson-databind-2.8.2-sources.jar!/" />
+          <root url="jar://$MODULE_DIR$/../sevastopol/lib/jaxen-1.1.6-sources.jar!/" />
+        </SOURCES>
+      </library>
+    </orderEntry>
+  </component>
+</module>

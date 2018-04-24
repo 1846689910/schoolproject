@@ -1,0 +1,24 @@
+使用时，另建utils包
+或者使用jar cvf eric.jar utils路径，将该包打成jar包，然后用project structure导入，也可以正常使用
+
+引入intellij的jar包使用，File -> Project Structure -> modules -> Dependencies -> 绿色+号 -> 以maven方式搜索相关jar包
+如果搜索不到
+File -> Project Structure -> modules -> Dependencies -> 绿色+号 -> jar来导入本地的jar包，这些需要的jar包可以在Google搜索xxx maven，然后下载
+如果安装了Scala 插件还是无法使用Scala library的话，还是去搜scala maven: 将scala-lang, scala-compiler, scala-reflect三个jar下载下来
+创建一个xxx.scala, 然后打开后会提示你设置Scala的编译器，将三个jar都选中。或者在File -> settings -> language -> scala里设置
+
+dep:
+    dom4j
+    dom4j-source
+    hadoop-common
+    hadoop-hdfs
+    hadoop-mapreduce-client-core
+    hamcrest-core
+    hamcrest-library
+    jackson-core
+    jackson-databind
+    joda-time
+    junit 4.12
+    scala-compiler
+    scala-library
+    scala-reflect
