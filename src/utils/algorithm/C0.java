@@ -221,12 +221,6 @@ public class C0 {
         for (int j = 0; j < chars.length; j ++){}
     }
 
-    @Test
-    public void getNum(){
-        int rnd = getRandInRange(Integer.MAX_VALUE / 10, Integer.MAX_VALUE);
-        System.out.println(rnd);
-    }
-
 
 }
 class User{
