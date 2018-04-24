@@ -216,9 +216,125 @@ public class C0 {
         System.out.println(getNumOfSquareNumber(0, 10));
     }
 
-    public static void takeAllDigits(int i){
-        char[] chars = String.valueOf(i).toCharArray();
-        for (int j = 0; j < chars.length; j ++){}
+    /**拿出一个数的所有digit:
+     *  1 String.valueOf().toCharArray(), 再取char数组的每一位；
+     *  2 只要数>0: list放数%10, 数/=10
+     */
+    public static List<Integer> takeAllDigits(int num){
+        List<Integer> list = new ArrayList<>();
+        char[] chars = String.valueOf(num).toCharArray();
+        for (int i = 0; i < chars.length; i ++) {
+            list.add(chars[i] - '0');
+        }
+        return list;
+    }
+
+    public static List<Integer> takeAllDigits1(int num) {
+        List<Integer> list = new ArrayList<>();
+        while (num > 0) {
+            list.add(num % 10);
+            num /= 10;
+        }
+        Collections.reverse(list);
+        return list;
+    }
+    @Test
+    public void takeAllDigitsTest(){
+        int i = 773;
+        System.out.println(takeAllDigits(i));
+        System.out.println(takeAllDigits1(i));
+    }
+
+    /** 矩阵乘法
+     * 两矩阵行列r1, c1, r2, c2. 若c1不r2就null. 建ret[r1][c2]. 0->r1: 0->c2: num0, 0->c1: num+= (a[i][k] * b[k][j]). 外ret[i][j] = num, 就ret*/
+    public static int[][] matrixTimes(int[][] m1, int[][] m2){
+        int r1 = m1.length, c1 = m1[0].length, r2 = m2.length, c2 = m2[0].length;
+        if (c1 != r2) return null;
+        int[][] ret = new int[r1][c2];
+        for (int i = 0; i < r1; i ++) {
+            for (int j = 0; j < c2; j ++) {
+                int num = 0;
+                for (int k = 0; k < c1; k ++) {
+                    num += m1[i][k] * m2[k][j];
+                }
+                ret[i][j] = num;
+            }
+        }
+        return ret;
+    }
+    @Test
+    public void matrixTimesTest(){
+        int[][] m1 = {{1, 2}, {4, 5}, {7, 8}};
+        int[][] m2 = {{1, 1, 2, 2}, {3, 3, 4, 4}};
+        int[][] ret = matrixTimes(m1, m2);
+        if (ret != null)
+        for (int[] arr: ret) {
+            System.out.println(Arrays.toString(arr));
+        }
+    }
+
+    /**
+     *List of digits乘数 {1, 3, 6}*2={2, 7, 2}：
+     * 空list作result, 数组null 0就result. carry进位为0. arrLen-1->=0: num为n * arr[i] + carry  result放num%10.
+     * carry为num / 10. 外若carry>0, result放carry. 翻转result。就result
+     * */
+    public static List<Integer> listTimesNum(List<Integer> digits, int n){
+        List<Integer> list = new ArrayList<>();
+        if (digits == null || digits.size() == 0) return list;
+        int carry = 0;
+        for (int i = digits.size() - 1; i >= 0; i --) {
+            int num = digits.get(i) * n + carry;
+            list.add(num % 10);
+            carry = num / 10;
+        }
+        if (carry > 0) list.add(carry);
+        Collections.reverse(list);
+        return list;
+    }
+    @Test
+    public void listTimesNumTest(){
+        System.out.println(listTimesNum(Arrays.asList(1, 2, 5), 3));
+        System.out.println(listTimesNum(Arrays.asList(3, 7, 5), 7));
+    }
+
+    /**
+     * 两list相加/减
+     * 空list作result. 两个list或null就null, 都0就result, 谁0就对方.
+     * carry进位为0, 若lst1>lst2则temp法交换两lst. 得size1 2. size2-1->=0: num0,
+     * 若i>=size2-size1: num为lst2[i] + lst1[i - size2 + size1] + carry,
+     * 否则num为lst2[i] + carry.外result放num%10, carry为num/10. 外若carry>0: result放carry. 翻转result. 就result
+     * */
+    public static List<Integer> listPlusList(List<Integer> list1, List<Integer> list2) {
+        List<Integer> result = new ArrayList<>();
+        if (list1 == null || list2 == null) return null;
+        int size1 = list1.size(), size2 = list2.size();
+        if (size1 == 0 && size2 == 0) return result;
+        if (size1 == 0) return list2;
+        if (size2 == 0) return list1;
+        int carry = 0;
+        if (size1 > size2) {
+            List<Integer> tmp = list1; list1 = list2; list2 = tmp;
+            size1 = list1.size();
+            size2 = list2.size();
+        }
+        for (int i = size2 - 1; i >= 0; i --) {
+            int num = 0;
+            if (i >= size2 - size1) {
+                num = list2.get(i) + list1.get(i - size2 + size1) + carry;
+            } else {
+                num = list2.get(i) + carry;
+            }
+            result.add(num % 10);
+            carry = num / 10;
+        }
+        if (carry > 0) result.add(carry);
+        Collections.reverse(result);
+        return result;
+    }
+
+    @Test
+    public void listPlusListTest(){
+        System.out.println(listPlusList(Arrays.asList(7, 3, 5), Arrays.asList(8, 9, 9)));
     }
 
 
