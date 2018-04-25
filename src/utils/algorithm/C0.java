@@ -7,7 +7,6 @@ import java.util.*;
 public class C0 {
     /**
      * 两字符串从i开始相等
-     * equals(长短i): 遍短, 若长j+i不短i就错，最后就true
      * */
     public static boolean equals(String longS, String shortS, int i){
         for (int j = 0, len = shortS.length(); j < len ; j ++) {
@@ -24,7 +23,6 @@ public class C0 {
 
     /**
      * 长串里找短串末尾位置
-     * list, i0, 只要i<=长-短: 若equals(长短i),list放i+短-1, i+短 否则i++, 就list
      * */
     public static List<Integer> getAllEnds(String longS, String shortS) {
         int longLen = longS.length();
@@ -43,7 +41,6 @@ public class C0 {
     }
     /**
      * 长串里找短串开始位置,
-     * 同上list放i
      * */
     public static List<Integer> getAllStarts(String longS, String shortS) {
         int longLen = longS.length();
@@ -68,7 +65,7 @@ public class C0 {
         System.out.println(getAllStarts(longS, shortS));
     }
     /**
-     * 把串内容放入chars的i位置：遍短, 长i+j字为短j字
+     * 把串内容放入chars的i位置
      * */
     public static void copy(char[] charsLong, char[] charsShort, int i) {
         for (int j = 0; j < charsShort.length; j ++) {
@@ -88,7 +85,6 @@ public class C0 {
         System.out.println(Arrays.toString(charsLong));
     }
     /**验证list能否成环
-     * 0 -> listSize, idx为i+1,若i为list末尾则idx为0。若i串末字不idx串0字就错，最后就true
      * */
     public static boolean checkCycle(List<String> list){
         for (int i = 0, size = list.size(); i < size; i ++) {
@@ -105,7 +101,7 @@ public class C0 {
         List<String> list = Arrays.asList("aaa", "abb", "bcc", "caa");
         System.out.println(checkCycle(list));
     }
-    /**Arrays.sort(), Collections.sort(), PriorityQueue的比较器，从小到大:小问-1 1, 从大到小:大问-1 1*/
+    /**Arrays.sort(), Collections.sort(), PriorityQueue的比较器*/
     @Test
     public void compared(){
         // Arrays.sort
@@ -134,15 +130,13 @@ public class C0 {
 
     /**
      * 位操作
-     * byte: 8 bit; short/char: 16 bit, int/float: 32 bit, long/double: 64 bit
-     * 获取：右移；设置：左移
      * */
     @Test
     public void getBinaryBitTest(){
         byte big = 115;
-        System.out.println(1 & (big >>> 3));  /** 获取右边第n位: 1与data无符右移n*/
-        System.out.println(1 & (big >>> (8 - 3 - 1)));  /** 获取左边第n位：1与data无符右移(data位数-n-1)位*/
-        /** 获取data所有位:0 -> data位数,sb缀右边第i位,最后就sb.翻转.toString*/
+        System.out.println(1 & (big >>> 3));  /** 获取右边第n位*/
+        System.out.println(1 & (big >>> (8 - 3 - 1)));  /** 获取左边第n位*/
+        /** 获取data所有位*/
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < 8; i ++) {
             sb.append(1 & (big >>> i));
@@ -153,23 +147,22 @@ public class C0 {
     @Test
     public void setBinaryBitTest(){
         int data = 1500;
-        data |= (1 << 3);  /**data右边第n位置1: data或等1左移n*/
-        data |= (1 << (32 - 3 - 1));  /**data左边第n位置1：data或等1左移(data位数-n-1)*/
+        data |= (1 << 3);  /**data右边第n位置1*/
+        data |= (1 << (32 - 3 - 1));  /**data左边第n位置1*/
         /**data右边第n位置0:
-         * mask为0, data位数-1 ->=0:若i不n则mask或等(1左移i) 最外data与等mask
          * */
         int mask1 = 0;
         for (int i = 32 - 1; i >= 0; i --) {
             if (i != 3) mask1 |= (1 << i);
         }
         data &= mask1;
-        /**data左边第n位置0: 同上换为 若i不data位数-n-1*/
+        /**data左边第n位置0*/
         int mask2 = 0;
         for (int i = 32 - 1; i >= 0; i --) {
             if (i != (32 - 3 - 1)) mask2 |= (1 << i);
         }
         data &= mask2;
-        /**翻转data所有位，上述mask，不要若, data^=mask*/
+        /**翻转data所有位*/
         int mask3 = 0;
         for (int i = 32 - 1; i >= 0; i --) mask3 |= (1 << i);
         data ^= mask3;
@@ -246,7 +239,7 @@ public class C0 {
     }
 
     /** 矩阵乘法
-     * 两矩阵行列r1, c1, r2, c2. 若c1不r2就null. 建ret[r1][c2]. 0->r1: 0->c2: num0, 0->c1: num+= (a[i][k] * b[k][j]). 外ret[i][j] = num, 就ret*/
+     * */
     public static int[][] matrixTimes(int[][] m1, int[][] m2){
         int r1 = m1.length, c1 = m1[0].length, r2 = m2.length, c2 = m2[0].length;
         if (c1 != r2) return null;
@@ -275,8 +268,6 @@ public class C0 {
 
     /**
      *List of digits乘数 {1, 3, 6}*2={2, 7, 2}：
-     * 空list作result, 数组null 0就result. carry进位为0. arrLen-1->=0: num为n * arr[i] + carry  result放num%10.
-     * carry为num / 10. 外若carry>0, result放carry. 翻转result。就result
      * */
     public static List<Integer> listTimesNum(List<Integer> digits, int n){
         List<Integer> list = new ArrayList<>();
@@ -299,10 +290,6 @@ public class C0 {
 
     /**
      * 两list相加/减
-     * 空list作result. 两个list或null就null, 都0就result, 谁0就对方.
-     * carry进位为0, 若lst1>lst2则temp法交换两lst. 得size1 2. size2-1->=0: num0,
-     * 若i>=size2-size1: num为lst2[i] + lst1[i - size2 + size1] + carry,
-     * 否则num为lst2[i] + carry.外result放num%10, carry为num/10. 外若carry>0: result放carry. 翻转result. 就result
      * */
     public static List<Integer> listPlusList(List<Integer> list1, List<Integer> list2) {
         List<Integer> result = new ArrayList<>();
@@ -336,7 +323,6 @@ public class C0 {
     public void listPlusListTest(){
         System.out.println(listPlusList(Arrays.asList(7, 3, 5), Arrays.asList(8, 9, 9)));
     }
-
 
 }
 class User{
