@@ -115,7 +115,7 @@ public class Watcher<E> implements Runnable {
         System.out.println("The watcher update cycle start time was reset to (no earlier than) " + JDate.getStdTime(this.time[0] + checkCycle));
     }
 
-    public long[] getTime(){
+    private long[] getTime(){
         return time;
     }
 

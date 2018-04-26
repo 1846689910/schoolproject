@@ -7,6 +7,9 @@ File -> Project Structure -> modules -> Dependencies -> 绿色+号 -> jar来导�
 如果安装了Scala 插件还是无法使用Scala library的话，还是去搜scala maven: 将scala-lang, scala-compiler, scala-reflect三个jar下载下来
 创建一个xxx.scala, 然后打开后会提示你设置Scala的编译器，将三个jar都选中。或者在File -> settings -> language -> scala里设置
 
+# git user switch: delete related key in Credential Manager(Windows) or KeyChain Access(Mac OS)
+# File -> Project Structure -> modules -> source -> set src as source file. and set module -> dependencies with lib folder
+
 dep:
     dom4j
     dom4j-source
