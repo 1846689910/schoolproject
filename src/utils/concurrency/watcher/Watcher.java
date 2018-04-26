@@ -40,7 +40,7 @@ public class Watcher<E> implements Runnable {
      * */
     public Watcher(E resource, Function<E, E> task, long checkCycle){
         this.lock = new ReentrantLock();
-        this.ready = false;
+        this.ready = true;
         this.updating = this.lock.newCondition();
         this.checkCycle = checkCycle;
         this.resource = resource;
@@ -106,13 +106,13 @@ public class Watcher<E> implements Runnable {
     public void setTime(){
         long curTime = new DateTime().getMillis();
         this.time[0] = curTime;
-        System.out.println("The watcher update cycle start time was reset to (no earlier than) " + JDate.getStdTime(curTime + checkCycle));
+        System.out.println("The next watcher update cycle start time was reset to (no earlier than) " + JDate.getStdTime(curTime + checkCycle));
     }
 
     public void setTime(long time){
         long curTime = new DateTime().getMillis();
         this.time[0] = time < curTime ? curTime : time;  // you can only setup a future time or current time
-        System.out.println("The watcher update cycle start time was reset to (no earlier than) " + JDate.getStdTime(this.time[0] + checkCycle));
+        System.out.println("The next watcher update cycle start time was reset to (no earlier than) " + JDate.getStdTime(this.time[0] + checkCycle));
     }
 
     private long[] getTime(){
