@@ -189,5 +189,134 @@ public class C2 {
         System.out.println(rotatedSearch(arr, 9));
     }
 
+    /** find K closest number in a sorted array */
+    public static int[] kClosest(int[] arr, int target, int k) {
+        if (arr == null || arr.length == 0) return arr;
+        if (k == 0) return new int[0];
+        int left = findLargestSmaller(arr, target);
+        int right = left + 1;
+        int[] ret = new int[k];
+        for (int i = 0; i < k; i ++) {
+            if (right >= arr.length || (left >= 0 && (target - arr[left] <= arr[right] - target))) {
+                ret[i] = arr[left --];
+            } else {
+                ret[i] = arr[right ++];
+            }
+        }
+        return ret;
+    }
+    /** find the largest number that is smaller than the target in a sorted array */
+    public static int findLargestSmaller(int[] arr, int target) {
+        if (arr == null || arr.length == 0) return -1;
+        int left = 0, right = arr.length - 1;
+        while (left + 1 < right) {
+            int mid = left + (right - left) / 2;
+            if (arr[mid] == target) {
+                return mid;
+            } else if (arr[mid] < target) {
+                left = mid;
+            } else {
+                right = mid;
+            }
+        }
+        if (arr[left] < target) return left;
+        if (arr[right] < target) return right;
+        return -1;
+    }
+    @Test
+    public void kClosestTest(){
+        int[] arr = new int[]{-20, 12, 3, 7, 1, -6, 11, 5};
+        Arrays.sort(arr);
+        System.out.println(Arrays.toString(arr));
+        System.out.println(Arrays.toString(kClosest(arr, 10, 4)));
+    }
+
+    /** first occurrence
+     * in a sorted array, find the first occurrence of an element in an array may contain duplicate elements
+     * */
+    public static int firstOccur(int[] arr, int target){
+        if (arr == null || arr.length == 0) return -1;
+        int left = 0, right = arr.length - 1;
+        while (left + 1 < right) {
+            int mid = left + (right - left) / 2;
+            if (target <= arr[mid]) {
+                right = mid;
+            } else {
+                left = mid;
+            }
+        }
+        if (arr[left] == target) return left;
+        if (arr[right] == target) return right;
+        return -1;
+    }
+    @Test
+    public void firstOccurTest(){
+        int[] arr = new int[]{1, 2, 2, 2, 2, 5, 6, 7};
+        System.out.println(firstOccur(arr, 2));
+    }
+    /** last occurrence */
+    public static int lastOccur(int[] arr, int target) {
+        if (arr == null || arr.length == 0) return -1;
+        int left = 0, right = arr.length - 1;
+        while (left + 1 < right) {
+            int mid = left + (right - left) / 2;
+            if (target >= arr[mid]) {
+                left = mid;
+            } else {
+                right = mid;
+            }
+        }
+        if (arr[right] == target) return right;
+        if (arr[left] == target) return left;
+        return -1;
+    }
+    @Test
+    public void lastOccur(){
+        int[] arr = new int[]{1, 2, 2, 2, 2, 5, 6, 7};
+        System.out.println(lastOccur(arr, 2));
+    }
+    /** Young's matrix search
+     * 杨氏矩阵(每一行每一列是sorted的，行与行, 列与列间不一定是大小必然联系的)查找
+     * */
+    /** binary search each row */
+    public static int[] youngsMatrixSearch1(int[][] matrix, int target){
+        if (matrix == null || matrix.length == 0) return new int[2];
+        for (int r = 0; r < matrix.length; r ++) {
+            int start = matrix[r][0];
+            int end = matrix[r][matrix[0].length - 1];
+            if (target < start || target > end) continue;
+            int c = Arrays.binarySearch(matrix[r], target);
+            c = c < 0 ? -1 : c;
+            if (c != -1) return new int[]{r, c};
+        }
+        return new int[]{-1, -1};
+    }
+    /** starts from top right corner */
+    public static int[] youngsMatrixSearch2(int[][] matrix, int target) {
+        if (matrix == null || matrix.length == 0) return new int[2];
+        int r = 0, c = matrix.length;
+        while (r < matrix.length && c >= 0) {
+            int val = matrix[r][c];
+            if (val == target) {
+                return new int[]{r, c};
+            } else if (val < target) {
+                r ++;
+            } else {
+                c --;
+            }
+        }
+        return new int[]{-1, -1};
+    }
+    @Test
+    public void youngsMatrixSearchTest(){
+        int[][] m = {
+                {1, 2, 3, 4, 5},
+                {2, 4, 6, 7, 8},
+                {5, 6, 7, 8, 9},
+                {6, 7, 8, 10, 12}
+        };
+        System.out.println(Arrays.toString(youngsMatrixSearch1(m, 6)));
+        System.out.println(Arrays.toString(youngsMatrixSearch2(m, 6)));
+    }
 }
 
