@@ -1,6 +1,9 @@
 package utils.concurrency.tasker;
 
+import org.joda.time.DateTime;
+
 import java.util.Date;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class TimerTasker {
@@ -13,23 +16,22 @@ public class TimerTasker {
                 e.printStackTrace();
                 Thread.currentThread().interrupt();
             });
-        }, "TimeoutTimer_" + new Date().getTime());
+        }, "TimeoutTimer_" + new DateTime().getMillis());
         thread.start();
         return thread;
     }
 
     /** similar to setInterval(fn, time) in JavaScript */
     public static Thread setInterval(Runnable task, long timeInterval) {
-        Thread thread = new Thread (() -> {
-            try {
-                while(true) {
-                    Thread.sleep(timeInterval);
-                    task.run();
-                }
-            } catch (InterruptedException e) {
-                System.out.println(Thread.currentThread().getName() + " has been interrupted");
-                e.printStackTrace();
-                Thread.currentThread().interrupt();
+        AtomicBoolean keepGoing = new AtomicBoolean(true);
+        Thread thread = new Thread(() -> {
+            while(keepGoing.get()) {
+                sleep(timeInterval, task, e -> {
+                    System.out.println(Thread.currentThread().getName() + " has been interrupted");
+                    keepGoing.set(false);
+                    e.printStackTrace();
+                    Thread.currentThread().interrupt();
+                });
             }
         }, "IntervalTimer_" + new Date().getTime());
         thread.start();
@@ -48,7 +50,7 @@ public class TimerTasker {
                 e.printStackTrace();
                 Thread.currentThread().interrupt();
             }
-        }, "IntervalTimer_" + new Date().getTime());
+        }, "IntervalTimer_" + new DateTime().getMillis());
         thread.setDaemon(asDaemon);
         thread.start();
         return thread;
