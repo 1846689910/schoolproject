@@ -424,14 +424,14 @@ public class C1 {
     public void mergeKSortedList(){
         ListNode h1 = new ListNode(2);
         h1.setNext(4).setNext(6);
-        ListNode.print(h1);
+        h1.print();
 
         ListNode h2 = new ListNode(1);
         h2.setNext(3).setNext(5);
-        ListNode.print(h2);
+        h2.print();
 
         List<ListNode> list = Arrays.asList(h1, h2);
-        ListNode.print(mergeKSortedList(list));
+        mergeKSortedList(list).print();
     }
 }
 class ElementWithList{
@@ -455,19 +455,39 @@ class Entry{
 class ListNode {
     int value;
     ListNode next;
+    private int size = 0;
     public ListNode(int value){
         this.value = value;
     }
     public ListNode setNext(int value){
         this.next = new ListNode(value);
+        size ++;
         return this.next;
     }
-    public static void print(ListNode node){
+    /** print out all the nodes behinds itself (including itself) */
+    public void print(){
+        ListNode node = this;
         while (node != null) {
             System.out.print(node.value);
             if (node.next != null) System.out.print(" -> ");
             node = node.next;
         }
         System.out.println();
+    }
+    public int size(){
+        return size;
+    }
+    public boolean isEmpty(){
+        return size == 0;
+    }
+    public static ListNode getAscList(int beg, int size, int step){
+        ListNode head = new ListNode(beg);
+        ListNode dummy = head;
+        int count = 0;
+        while (count < size - 1) {
+            dummy = dummy.setNext(beg += step);
+            count ++;
+        }
+        return head;
     }
 }
