@@ -490,4 +490,14 @@ class ListNode {
         }
         return head;
     }
+    public static ListNode getList(List<Integer> list){
+        if (list == null || list.size() == 0) return null;
+        ListNode head = new ListNode(list.get(0));
+        ListNode dummy = head;
+        int size = list.size();
+        for (int i = 1; i < size; i ++) {
+            dummy = dummy.setNext(list.get(i));
+        }
+        return head;
+    }
 }

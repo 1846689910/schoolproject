@@ -3,6 +3,7 @@ package utils.algorithm;
 import org.junit.Test;
 
 import java.util.*;
+import java.util.function.Function;
 
 public class C3 {
     /** generate list for following demands */
@@ -16,9 +17,6 @@ public class C3 {
         }
         return head;
     }
-//    private static ListNodeR getAscList(int beg, int size, int step){
-//
-//    }
     @Test
     public void getListTest(){
         ListNode head = getAscList(1, 5, 2);
@@ -134,6 +132,16 @@ public class C3 {
         }
         return dummy.next;
     }
+    @Test
+    public void ListNodeRTest(){
+        ListNodeR head = new ListNodeR(1);
+        head.next = new ListNodeR(2);
+        head.random = new ListNodeR(5);
+        ListNodeR copiedHead = deepCopyListNodeR(head);
+        System.out.println(copiedHead.value == head.value && copiedHead.hashCode() != head.hashCode());
+        System.out.println(copiedHead.next.value == head.next.value && copiedHead.next.hashCode() != head.next.hashCode());
+        System.out.println(copiedHead.random.value == head.random.value && copiedHead.random.hashCode() != head.random.hashCode());
+    }
 
     /** Deep copy of Graph */
     public static List<GraphNode> deepCopyGraphNode(List<GraphNode> graph){
@@ -157,6 +165,386 @@ public class C3 {
         }
     }
 
+    /** find the mid node of a linked list */
+    public static ListNode findMidListNode(ListNode head){
+        if (head == null) return null;
+        ListNode slow = head, fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+    @Test
+    public void findMidListNodeTest(){
+        ListNode head = getAscList(1, 5, 1);
+        head.print();
+        System.out.println(findMidListNode(head).value);
+    }
+
+    /** check if the list node make a cycle */
+    public static boolean hasCycle(ListNode head){
+        if (head == null || head.next == null) return false;
+        ListNode slow = head, fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) return true;
+        }
+        return false;
+    }
+    @Test
+    public void hasCycleTest(){
+        ListNode head = new ListNode(1);
+        head.next = new ListNode(2);
+        head.next.next = new ListNode(3);
+        head.next.next.next = head;
+        System.out.println(hasCycle(head));
+    }
+
+    /** find the cycle start node if the linked list has cycle */
+    public static ListNode findCycleStartListNode(ListNode head){
+        if (head == null || head.next == null) return null;
+        ListNode slow = head, fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) {
+                slow = head;
+                while (slow != fast) {
+                    slow = slow.next;
+                    fast = fast.next;
+                }
+                return slow;
+            }
+        }
+        return null;
+    }
+    @Test
+    public void findCycleStartListNodeTest(){
+        ListNode head = new ListNode(1);
+        head.next = new ListNode(2);
+        head.next.next = new ListNode(3);
+        head.next.next.next = head;
+        System.out.println(findCycleStartListNode(head).value);
+    }
+    /** is the LinkedList a palindrome list (which its left half the same as the reverse of its right half) */
+    public static boolean isPalindromeList(ListNode head){
+        if (head == null || head.next == null) return true;
+        ListNode mid = findMidListNode(head);
+        ListNode left = head;
+        ListNode right = mid.next;
+        mid.next = null;
+        right = reverseLinkedListIt(right);
+        while (left != null && right != null) {
+            if (left.value != right.value) return false;
+            left = left.next;
+            right = right.next;
+        }
+        return true;
+    }
+    @Test
+    public void isPalindromeListTest(){
+        ListNode head = ListNode.getList(Arrays.asList(1, 2, 3, 3, 2, 1));
+        head.print();
+        System.out.println(isPalindromeList(head));
+
+        head = ListNode.getList(Arrays.asList(1, 2, 3, 2, 1));
+        head.print();
+        System.out.println(isPalindromeList(head));
+
+        head = ListNode.getAscList(1, 10, 1);
+        head.print();
+        System.out.println(isPalindromeList(head));
+    }
+
+    /** Are two LinkedList intersected */
+    public static boolean isIntersected(ListNode one, ListNode two){
+        if (one == null || two == null) return false;
+        while (one.next != null) one = one.next;
+        while (two.next != null) two = two.next;
+        return one.value == two.value;
+    }
+    @Test
+    public void isIntersectedTest(){
+        ListNode one = ListNode.getList(Arrays.asList(1, 2, 3, 4));
+        ListNode two = ListNode.getList(Arrays.asList(2, 3, 4));
+        System.out.println(isIntersected(one, two));
+    }
+    /** find the intersected ListNode of two LinkedList if they are intersected (method: DIFF) */
+    public static ListNode findIntersectedListNode(ListNode one, ListNode two){
+        if (one == null || two == null) return null;
+        ListNode a = one, b = two;
+        int len1 = 1, len2 = 1;
+        while (a.next != null) {
+            len1 ++;
+            a = a.next;
+        }
+        while (b.next != null) {
+            len2 ++;
+            b = b.next;
+        }
+        if (len1 > len2) {
+            ListNode tmp = one; one = two; two = tmp;
+        }
+        int diff = Math.abs(len1 - len2);
+        while (diff > 0) {
+            two = two.next;
+            diff --;
+        }
+        while (one != two) {
+            one = one.next;
+            two = two.next;
+        }
+        return one;
+    }
+    /** find intersected ListNode (method: Length) */
+    public static ListNode findIntersectedListNode1(ListNode one, ListNode two) {
+        if (one == null || two == null) return null;
+        ListNode a = one, b = two;
+        while (a != b) {
+            a = a.next == null ? two : a.next;
+            b = b.next == null ? one : b.next;
+        }
+        return a;
+    }
+    @Test
+    public void findIntersectedListNodeTest(){
+        ListNode one = ListNode.getList(Arrays.asList(1, 2, 3, 4));
+        ListNode two = new ListNode(-1);
+        two.next = one;
+        System.out.println(findIntersectedListNode(one, two).value);
+        System.out.println(findIntersectedListNode1(one, two).value);
+    }
+    /** insert in an ascending LinkedList */
+    public static ListNode insertInAscList(ListNode head, int value){
+        ListNode node = new ListNode(value);
+        if (head == null || value < head.value) {
+            node.next = head;
+            return node;
+        }
+        ListNode prev = head;
+        while (prev.next != null && prev.next.value < value) {
+            prev = prev.next;
+        }
+        node.next = prev.next;
+        prev.next = node;
+        return head;
+    }
+    @Test
+    public void insertInAscListTest(){
+        ListNode head = ListNode.getAscList(1, 10, 2);
+        head.print();
+        ListNode newHead = insertInAscList(head, 12);
+        newHead.print();
+    }
+    /** remove one or multiple node in a list  */
+    /** the following will remove all the node matches the node.value > value */
+    public static ListNode removeInList(ListNode head, int value){
+        if (head == null) return null;
+        while (head.value > value) {
+            head = head.next;
+            if (head == null) return null;
+        }
+        ListNode prev = head;
+        while (prev.next != null) {
+            if (prev.next.value > value) {
+                prev.next = prev.next.next;
+            } else {
+                prev = prev.next;
+            }
+        }
+        return head;
+    }
+    /** could stringify the condition as a Function<Integer, Boolean> */
+    public static ListNode removeInList(ListNode head, Function<Integer, Boolean> fn) {
+        if (head == null) return null;
+        while (fn.apply(head.value)) {
+            head = head.next;
+            if (head == null) return null;
+        }
+        ListNode prev = head;
+        while (prev.next != null) {
+            if (fn.apply(prev.next.value)) {
+                prev.next = prev.next.next;
+            } else {
+                prev = prev.next;
+            }
+        }
+        return head;
+    }
+    @Test
+    public void removeInListTest(){
+        ListNode head = ListNode.getAscList(1, 10, 1);
+        head.print();
+        removeInList(head, 8).print();
+
+        head = ListNode.getAscList(1, 10, 1);
+        head.print();
+        removeInList(head, (i) -> i >= 7).print();
+    }
+
+    /** remove first nth node in LinkedList */
+    public static ListNode removeFirstNthListNode(ListNode head, int n){
+        if (head == null) return null;
+        ListNode dummy = new ListNode(0);
+        ListNode prev = dummy;
+        prev.next = head;
+        while (head.next != null && n > 1) {  // n starts from 1 or n > 0 if n starts from 0
+            prev = prev.next;
+            head = head.next;
+            n --;
+        }
+        if (n > 1) return dummy.next;  // n > list size
+        prev.next = head.next;
+        head.next = null;
+        return dummy.next;
+    }
+    @Test
+    public void removeFirstNthListNodeTest(){
+        ListNode head = ListNode.getAscList(1, 10, 2);
+        head.print();
+        removeFirstNthListNode(head, 6).print();
+    }
+    /** remove last nth ListNode */
+    public static ListNode removeLastNthListNode(ListNode head, int n){
+        if (head == null) return null;
+        ListNode dummy = new ListNode(0);
+        ListNode prev = dummy;
+        prev.next = head;
+        ListNode slow = head, fast = head;
+        while (fast.next != null && n > 1) {  // n starts from 1 or n > 0 if n starts from 0
+            fast = fast.next;
+            n --;
+        }
+        if (n > 1) {  // n > list size
+            return dummy.next;
+        }
+        while (fast.next != null) {
+            slow = slow.next;
+            prev = prev.next;
+            fast = fast.next;
+        }
+        prev.next = slow.next;
+        slow.next = null;
+        return dummy.next;
+    }
+    @Test
+    public void removeLastNthListNodeTest(){
+        ListNode head = ListNode.getAscList(1, 10, 1);
+        head.print();
+        removeLastNthListNode(head, 3).print();
+    }
+    /** merge two sorted LinkedList */
+    public static ListNode mergeList(ListNode one, ListNode two){
+        ListNode dummy = new ListNode(0);
+        ListNode cur = dummy;
+        while (one != null && two != null) {
+            if (one.value <= two.value) {
+                cur.next = one;
+                one = one.next;
+            } else {
+                cur.next = two;
+                two = two.next;
+            }
+            cur = cur.next;
+        }
+        if (one != null) {
+            cur.next = one;
+        } else if (two != null) {
+            cur.next = two;
+        }
+        return dummy.next;
+    }
+    @Test
+    public void mergeListTest() {
+        ListNode one = ListNode.getAscList(1, 10, 2);
+        one.print();
+        ListNode two = ListNode.getAscList(1, 10, 3);
+        two.print();
+        mergeList(one, two).print();
+    }
+    /** Reorder LinkedList */
+    public static ListNode reorderList(ListNode head){
+        if (head == null || head.next == null) return null;
+        ListNode mid = findMidListNode(head);
+        ListNode left = head;
+        ListNode right = reverseLinkedListIt(mid.next);
+        mid.next = null;
+        return mergeList1(left, right);
+    }
+    private static ListNode mergeList1(ListNode left, ListNode right){
+        ListNode dummy = new ListNode(0);
+        ListNode cur = dummy;
+        while (left != null && right != null) {
+            cur.next = left;
+            left = left.next;
+            cur.next.next = right;
+            right = right.next;
+            cur = cur.next.next;
+        }
+        if (left != null) {
+            cur.next = left;
+        } else {
+            cur.next = right;
+        }
+        return dummy.next;
+    }
+    @Test
+    public void reorderListTest(){
+        ListNode head = ListNode.getAscList(1, 10, 1);
+        head.print();
+        reorderList(head).print();
+    }
+    /** partition LinkedList */
+    public static ListNode partitionList(ListNode head, int value){
+        if (head == null || head.next == null) return null;
+        ListNode large = new ListNode(0), curLarge = large, small = new ListNode(0), curSmall = small;
+        while (head != null) {
+            if (head.value <= value) {
+                curSmall.next = head;
+                curSmall = curSmall.next;
+            } else {
+                curLarge.next = head;
+                curLarge = curLarge.next;
+            }
+            head = head.next;
+        }
+        curSmall.next = large.next;
+        curLarge.next = null;
+        return small.next;
+    }
+    @Test
+    public void partitionListTest(){
+        ListNode head = ListNode.getList(Arrays.asList(10, 8, 1, 4, 7, 5, 3));
+        head.print();
+        partitionList(head, 6).print();
+    }
+    /** flatten a LinkedList */
+    public static List<Integer> flattenList(ListNodeC node){
+        if (node == null) return null;
+        Queue<ListNodeC> queue = new LinkedList<>();
+        List<Integer> list = new ArrayList<>();
+        while (node != null) {
+            queue.offer(node);
+            node = node.next;
+        }
+        while (! queue.isEmpty()) {
+            int size = queue.size();
+            for (int i = 0; i < size; i ++) {
+                ListNodeC cur = queue.poll();
+                if (cur.child != null) {
+                    queue.offer(cur.child);
+                }
+                while (cur.child != null && cur.child.next != null) {
+                    queue.offer(cur.child.next);
+                    cur.child.next = cur.child.next.next;
+                }
+                list.add(cur.value);
+            }
+        }
+        return list;
+    }
 }
 /** Queue by two stacks */
 class QueueBy2Stacks<E> {
@@ -225,5 +613,13 @@ class GraphNode{
     public GraphNode(int value){
         this.value = value;
         this.neighbors = new ArrayList<>();
+    }
+}
+class ListNodeC{
+    int value;
+    ListNodeC next;
+    ListNodeC child;
+    public ListNodeC(int value){
+        this.value = value;
     }
 }
