@@ -547,6 +547,285 @@ public class C4 {
         removeInBSTSingleChildNodes(root);
         System.out.println(levelOrderTraverse(root));
     }
+
+    /** closest number in BST */
+    public static TreeNode closestInBST (TreeNode root, int value){
+        TreeNode cur = root;
+        while (root != null) {
+            if (root.value == value) {
+                return root;
+            } else {
+                if (Math.abs(root.value - value) < Math.abs(cur.value - value)) {
+                    cur = root;
+                }
+                if (value < root.value) {
+                    root = root.left;
+                } else {
+                    root = root.right;
+                }
+            }
+        }
+        return cur;
+    }
+    @Test
+    public void closestInBSTTest(){
+        TreeNode root = TreeNode.BST();
+        System.out.println(levelOrderTraverse(root));
+        System.out.println(closestInBST(root, 11).value);
+    }
+
+    /** largest smaller in BST */
+    public static TreeNode largestSmallerInBST(TreeNode root, int value){
+        TreeNode cur = new TreeNode(Integer.MIN_VALUE);
+        while (root != null) {
+            if (value <= root.value) {
+                root = root.left;
+            } else {
+                cur = root;
+                root = root.right;
+            }
+        }
+        return cur;
+    }
+    @Test
+    public void largestSmallerInBSTTest(){
+        TreeNode root = TreeNode.BST();
+        System.out.println(largestSmallerInBST(root, 11).value);
+    }
+
+    /** Maximum sum path */
+    /** PLL */
+    public static int maxSumPathPLL(TreeNode root){
+        int[] max = new int[]{Integer.MIN_VALUE};
+        maxSumPathPLLHelper(root, max);
+        return max[0];
+    }
+    private static int maxSumPathPLLHelper(TreeNode root, int[] max) {
+        if (root == null) return 0;
+        int leftSum = maxSumPathPLLHelper(root.left, max);
+        int rightSum = maxSumPathPLLHelper(root.right, max);
+        if (root.left != null && root.right != null) {
+            max[0] = Math.max(max[0], leftSum + rightSum + root.value);
+            return Math.max(leftSum, rightSum) + root.value;
+        }
+        return root.left == null ? rightSum + root.value : leftSum + root.value;
+    }
+    /** PAA */
+    public static int maxSumPathPAA(TreeNode root){
+        int[] max = new int[]{Integer.MIN_VALUE};
+        maxSumPathPAAHelper(root, max);
+        return max[0];
+    }
+    private static int maxSumPathPAAHelper(TreeNode root, int[] max) {
+        if (root == null) return 0;
+        int leftSum = maxSumPathPAAHelper(root.left, max);
+        int rightSum = maxSumPathPAAHelper(root.right, max);
+        leftSum = Math.max(leftSum, 0);
+        rightSum = Math.max(rightSum, 0);
+        max[0] = Math.max(max[0], leftSum + rightSum + root.value);
+        return Math.max(leftSum, rightSum) + root.value;
+    }
+
+    /** SRL */
+    public static int maxSumPathSRL(TreeNode root){
+        int[] max = new int[]{Integer.MIN_VALUE};
+        maxSumPathSRLHelper(root, max);
+        return max[0];
+    }
+    private static int maxSumPathSRLHelper(TreeNode root, int[] max) {
+        if (root == null) return 0;
+        int leftSum = maxSumPathSRLHelper(root.left, max);
+        int rightSum = maxSumPathSRLHelper(root.right, max);
+        int temp = Math.max(leftSum, rightSum) + root.value;
+        max[0] = temp;
+        return temp;
+    }
+
+    /** SAA */
+    public static int maxSumPathSAA(TreeNode root) {
+        int[] max = new int[]{Integer.MIN_VALUE};
+        maxSumPathSAAHelper(root, max);
+        return max[0];
+    }
+    private static int maxSumPathSAAHelper(TreeNode root, int[] max) {
+        if (root == null) return 0;
+        int leftSum = maxSumPathSAAHelper(root.left, max);
+        int rightSum = maxSumPathSAAHelper(root.right, max);
+        int temp = Math.max(Math.max(leftSum, rightSum), 0) + root.value;
+        max[0] = Math.max(max[0], temp);
+        return temp;
+    }
+
+    /** sumToTarget */
+    public static boolean sumToTarget(TreeNode root, int target){
+        if (root == null) return false;
+        Set<Integer> set = new HashSet<>();
+        int sum = 0;
+        set.add(0);
+        return sumToTargetHelper(root, set, sum, target);
+    }
+    private static boolean sumToTargetHelper(TreeNode root, Set<Integer> set, int sum, int target) {
+        sum += root.value;
+        if (set.contains(sum - target)) return true;
+        boolean flag = set.add(sum);
+        if (root.left != null && sumToTargetHelper(root.left, set, sum, target)) return true;
+        if (root.right != null && sumToTargetHelper(root.right, set, sum, target)) return true;
+        if (flag) set.remove(sum);
+        return false;
+    }
+
+    /**Tree deserialization
+     * in-pre
+     * */
+    public static TreeNode inPreBuild(int[] in, int[] pre){
+        Map<Integer, Integer> inMap = new HashMap<>();
+        for (int i = 0; i < in.length; i ++) {
+            inMap.put(in[i], i);
+        }
+        return inPreBuildHelper(inMap, pre, 0, in.length - 1, 0, pre.length - 1);
+    }
+    private static TreeNode inPreBuildHelper(Map<Integer, Integer> map, int[] pre, int inLeft, int inRight, int preLeft, int preRight) {
+        if (inLeft > inRight) return null;
+        TreeNode root = new TreeNode(pre[preLeft]);
+        int inMid = map.get(root.value);
+        root.left = inPreBuildHelper(map, pre, inLeft, inMid - 1, preLeft + 1, preLeft + inMid - inLeft);
+        root.right = inPreBuildHelper(map, pre, inMid + 1, inRight, preRight + inMid - inRight + 1, preRight);
+        return root;
+    }
+    /** in-level */
+    public static TreeNode inLevelBuild(int[] in, int[] level){
+        Map<Integer, Integer> inMap = new HashMap<>();
+        for (int i = 0; i < in.length; i ++) {
+            inMap.put(in[i], i);
+        }
+        List<Integer> levelList = new ArrayList<>();
+        for (int i : level) levelList.add(i);
+        return inLevelBuildHelper(inMap, levelList);
+    }
+    private static TreeNode inLevelBuildHelper(Map<Integer, Integer> inMap, List<Integer> levelList){
+        if (levelList.isEmpty()) return null;
+        TreeNode root = new TreeNode(levelList.remove(0));
+        List<Integer> left = new ArrayList<>();
+        List<Integer> right = new ArrayList<>();
+        for (int num : levelList) {
+            if (inMap.get(num) < inMap.get(root.value)) {
+                left.add(num);
+            } else {
+                right.add(num);
+            }
+        }
+        root.left = inLevelBuildHelper(inMap, left);
+        root.right = inLevelBuildHelper(inMap, right);
+        return root;
+    }
+
+    /** post-bst build */
+    public static TreeNode postBSTBuild(int[] post){
+        int[] idx = new int[]{post.length - 1};
+        return postBSTBuildHelper(post, idx, Integer.MIN_VALUE);
+    }
+    private static TreeNode postBSTBuildHelper(int[] post, int[] idx, int min) {
+        if (idx[0] < 0 || post[idx[0]] <= min) return null;
+        TreeNode root = new TreeNode(post[idx[0] --]);
+        root.right = postBSTBuildHelper(post, idx, root.value);
+        root.left = postBSTBuildHelper(post, idx, min);
+        return root;
+    }
+
+    /** LCA1 */
+    public static TreeNode LCA1(TreeNode root, TreeNode one, TreeNode two){
+        if (root == null) return null;
+        if (root == one || root == two) return root;
+        TreeNode left = LCA1(root.left, one, two);
+        TreeNode right = LCA1(root.right, one, two);
+        if (left != null && right != null) return root;
+        return left != null ? left : right;
+    }
+
+    /** LCA2 */
+    public static TreeNodeP LCA2(TreeNodeP root, TreeNodeP one, TreeNodeP two) {
+        int l1 = length(one);
+        int l2 = length(two);
+        if (l1 < l2) {
+            return merge(one, two, l2 - l1);
+        } else {
+            return merge(two, one, l1 - l2);
+        }
+    }
+    private static int length(TreeNodeP node){
+        int len = 0;
+        while (node != null) {
+            len ++;
+            node = node.parent;
+        }
+        return len;
+    }
+    private static TreeNodeP merge(TreeNodeP s, TreeNodeP l, int diff) {
+        while (diff > 0) {
+            l = l.parent;
+            diff --;
+        }
+        while (s != l) {
+            l = l.parent;
+            s = s.parent;
+        }
+        return l;
+    }
+
+    /** LCA3 */
+    public static TreeNode LCA3(TreeNode root, TreeNode one, TreeNode two) {
+        Map<TreeNode, TreeNodeX> map = getInfoMap(root);
+        int l1 = map.containsKey(one) ? map.get(one).height : 1;
+        int l2 = map.containsKey(two) ? map.get(two).height : 1;
+        if (l1 < l2) {
+            return merge(one, two, l2 - l1, map);
+        } else {
+            return merge(two, one, l1 - l2, map);
+        }
+    }
+    private static Map<TreeNode, TreeNodeX> getInfoMap(TreeNode root){
+        Map<TreeNode, TreeNodeX> map = new HashMap<>();
+        Queue<TreeNode> queue = new LinkedList<>();
+        int height = 0;
+        queue.offer(root);
+        map.put(root, new TreeNodeX(null, false, height));
+        while (! queue.isEmpty()) {
+            int size = queue.size();
+            height ++;
+            for (int i = 0; i < size; i ++) {
+                TreeNode cur = queue.poll();
+                if (cur.left != null) map.put(cur.left, new TreeNodeX(cur, true, height));
+                if (cur.right != null) map.put(cur.right, new TreeNodeX(cur, false, height));
+            }
+        }
+        return map;
+    }
+    private static TreeNode merge(TreeNode s, TreeNode l, int diff, Map<TreeNode, TreeNodeX> map) {
+        while (diff > 0) {
+            l = map.containsKey(l) ? map.get(l).parent : null;
+            diff --;
+        }
+        while (s != l) {
+            l = map.containsKey(l) ? map.get(l).parent : null;
+            s = map.containsKey(s) ? map.get(s).parent : null;
+        }
+        return l;
+    }
+
+    /** LCA4 */
+    public static TreeNode LCA4(TreeNode root, List<TreeNode> nodes) {
+        Set<TreeNode> set = new HashSet<>(nodes);
+        return LCA4Helper(root, set);
+    }
+    private static TreeNode LCA4Helper(TreeNode root, Set<TreeNode> set) {
+        if (root == null) return null;
+        if (set.contains(root)) return root;
+        TreeNode left = LCA4Helper(root.left, set);
+        TreeNode right = LCA4Helper(root.right, set);
+        if (left != null && right != null) return root;
+        return left != null ? left : right;
+    }
+
 }
 class TreeNode{
     TreeNode left;
@@ -592,5 +871,24 @@ class TreeNode{
     }
 
 
+}
+class TreeNodeP{
+    int value;
+    TreeNodeP left;
+    TreeNodeP right;
+    TreeNodeP parent;
+    public TreeNodeP(int value){
+        this.value = value;
+    }
+}
+class TreeNodeX{
+    TreeNode parent;
+    boolean isLeft;
+    int height;
+    public TreeNodeX(TreeNode parent, boolean isLeft, int height){
+        this.parent = parent;
+        this.isLeft = isLeft;
+        this.height = height;
+    }
 }
 
