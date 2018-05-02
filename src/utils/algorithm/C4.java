@@ -355,13 +355,197 @@ public class C4 {
                 TreeNode cur = queue.poll();
                 if (cur == one || cur == two) count ++;
                 if (count == 2) return true;
-                if (cur.left != null && cur.right != null && (cur.left == one && cur.right == two || cur.left == two && cur.right == one)) return false;
+                if (cur.left != null && cur.right != null && ((cur.left == one && cur.right == two) || (cur.left == two && cur.right == one))) return false;
                 if (cur.left != null) queue.offer(cur.left);
                 if (cur.right != null) queue.offer(cur.right);
             }
-            if (count <= 1) return false;
+            if (count == 1) return false;
         }
         return false;
+    }
+    @Test
+    public void areCousinsTest(){
+        TreeNode root = TreeNode.BST();
+        System.out.println(areCousins(root, root.left.right, root.right.right));
+    }
+
+    /** get values in BST */
+    public static List<Integer> getValuesInRange(TreeNode root, int min, int max){
+        List<Integer> result = new ArrayList<>();
+        getValuesInRangeHelper(root, min, max, result);
+        return result;
+    }
+    private static void getValuesInRangeHelper(TreeNode root, int min, int max, List<Integer> result) {
+        if (root == null) return;
+        if (root.value > min) {
+            getValuesInRangeHelper(root.left, min, max, result);
+        }
+        if (root.value >= min && root.value <= max) {
+            result.add(root.value);
+        }
+        if (root.value < max){
+            getValuesInRangeHelper(root.right, min, max, result);
+        }
+    }
+    @Test
+    public void getValuesInRangeTest(){
+        TreeNode root = TreeNode.BST();
+        System.out.println(getValuesInRange(root, 12, 16));
+    }
+
+    /** insert in BST */
+    public static TreeNode insertInBSTRe(TreeNode root, int value){
+        if (root == null) return new TreeNode(value);
+        if (value < root.value) {
+            root.left = insertInBSTRe(root.left, value);
+        } else if (root.value < value) {
+            root.right = insertInBSTRe(root.right, value);
+        }
+        return root;
+    }
+    public static TreeNode insertInBSTIt(TreeNode root, int value) {
+        TreeNode node = new TreeNode(value);
+        if (root == null) return node;
+        TreeNode cur = root;
+        while (cur.value != value) {
+            if (value < cur.value) {
+                if (cur.left != null) {
+                    cur = cur.left;
+                } else {
+                    cur.left = node;
+                    break;
+                }
+            } else {
+                if (cur.right != null) {
+                    cur = cur.right;
+                } else {
+                    cur.right = node;
+                    break;
+                }
+            }
+        }
+        return root;
+    }
+    @Test
+    public void insertInBSTTest(){
+        TreeNode root = TreeNode.BST();
+        TreeNode root1 = insertInBSTRe(root, 13);
+        System.out.println(levelOrderTraverse(root1));
+        System.out.println(root1.left.right.left.value);
+
+        root = TreeNode.BST();
+        root1 = insertInBSTIt(root, 13);
+        System.out.println(levelOrderTraverse(root1));
+        System.out.println(root1.left.right.left.value);
+    }
+    /** search in BST */
+    public static TreeNode searchInBSTRe(TreeNode root, int value){
+        if (root == null || root.value == value) return root;
+        if (value < root.value) {
+            return searchInBSTRe(root.left, value);
+        } else {
+            return searchInBSTRe(root.right, value);
+        }
+    }
+    public static TreeNode searchInBSTIt(TreeNode root, int value) {
+        TreeNode cur = root;
+        while (cur != null && cur.value != value) {
+            if (value < cur.value) {
+                cur = cur.left;
+            } else {
+                cur = cur.right;
+            }
+        }
+        return cur;
+    }
+    @Test
+    public void searchInBSTTest(){
+        TreeNode root = TreeNode.BST();
+        System.out.println(searchInBSTIt(root, 20).value);
+        System.out.println(searchInBSTRe(root, 10).value);
+    }
+
+    /** delete in BST */
+    public static TreeNode removeInBST(TreeNode root, int value){
+        if (root == null) return null;
+        if (value < root.value) {
+            root.left = removeInBST(root.left, value);
+        } else if (root.value < value) {
+            root.right = removeInBST(root.right, value);
+        } else {
+            if (root.left == null) {
+                return root.right;
+            } else if (root.right == null) {
+                return root.left;
+            } else if (root.right.left == null) {
+                root.right.left = root.left;
+                return root.right;
+            } else {
+                TreeNode node = deleteSmallest(root.right);
+                node.left = root.left;
+                node.right = root.right;
+                return node;
+            }
+        }
+        return root;
+    }
+    public static TreeNode deleteSmallest(TreeNode root) {
+        while (root.left.left != null) {
+            root = root.left;
+        }
+        TreeNode smallest = root.left;
+        root.left = root.left.right;
+        return smallest;
+    }
+    @Test
+    public void removeInBSTTest(){
+        TreeNode root = TreeNode.BST();
+        System.out.println(levelOrderTraverse(root));
+        TreeNode root1 = removeInBST(root, 12);
+        System.out.println(levelOrderTraverse(root1));
+    }
+
+    /** remove nodes in BST which are not within [min, max]
+     * or remove nodes in BST until only elements within [min, max] are left
+     * */
+    public static TreeNode removeInBSTOutRange(TreeNode root, int min, int max) {
+        if (root == null) return null;
+        root.left = removeInBSTOutRange(root.left, min, max);
+        root.right = removeInBSTOutRange(root.right, min, max);
+        if (root.value < min) {
+            return root.right;
+        } else if (root.value > max) {
+            return root.left;
+        }
+        return root;
+    }
+    @Test
+    public void removeInBSTOutRangeTest(){
+        TreeNode root = TreeNode.BST();
+        System.out.println(levelOrderTraverse(root));
+        TreeNode root1 = removeInBSTOutRange(root, 12, 18);
+        System.out.println(levelOrderTraverse(root1));
+    }
+    /** remove nodes in BST which has only one child node */
+    public static TreeNode removeInBSTSingleChildNodes(TreeNode root){
+        if (root == null) return null;
+        root.left = removeInBSTSingleChildNodes(root.left);
+        root.right = removeInBSTSingleChildNodes(root.right);
+        if (root.left == null && root.right == null) {
+            return root;
+        } else if (root.left == null) {
+            return root.right;
+        } else {
+            return root.left;
+        }
+    }
+    @Test
+    public void removeInBSTSingleChildNodesTest(){
+        TreeNode root = TreeNode.BST();
+        root.right.left = null;
+        System.out.println(levelOrderTraverse(root));
+        removeInBSTSingleChildNodes(root);
+        System.out.println(levelOrderTraverse(root));
     }
 }
 class TreeNode{
