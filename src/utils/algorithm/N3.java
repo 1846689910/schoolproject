@@ -374,6 +374,35 @@ public class N3 {
         System.out.println(maxValues(new int[]{-10, 3, -2, 7, 5, 4, 6, 1, 9, 3}, 3));
     }
 
+    /** Voting
+     * find an integer whose amount took up over 50% of the array length
+     * */
+    public static int findInt(int[] arr){
+        Arrays.sort(arr);
+        return arr[arr.length / 2];
+    }
+    public static int findInt1(int[] arr){
+        Map<Integer, Integer> map = new HashMap<>();
+        for (int num : arr) map.merge(num, 1, (v1, v2) -> v1 + v2);
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()) {
+            if (entry.getValue() >= arr.length / 2) return entry.getKey();
+        }
+        return -1;
+    }
+    public static int findInt2(int[] arr){
+        Int i = new Int(arr[0], 1);
+        for (int j = 1; j < arr.length; j ++) {
+            if (i.count == 0) {
+                i.num = arr[j];
+                i.count ++;
+            } else if (arr[j] == i.num) {
+                i.count ++;
+            } else {
+                i.count --;
+            }
+        }
+        return i.num;
+    }
 
 }
 class Pair{
@@ -392,5 +421,13 @@ class Cube {
         this.row = row;
         this.col = col;
         this.val = val;
+    }
+}
+class Int{
+    int num;
+    int count;
+    public Int(int num, int count){
+        this.num = num;
+        this.count = count;
     }
 }
