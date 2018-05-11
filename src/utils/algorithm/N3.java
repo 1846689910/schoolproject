@@ -201,6 +201,11 @@ public class N3 {
         }
         return area;
     }
+    /**
+     * stack 保存升序bar的索引
+     * 数组从左向右，如果值为升序则将索引存入stack，(stack内，索引对应值 左低右高)
+     * 当遇到数小于stack的peek值也就是高点时，那么stack弹出直到栈顶的值小于该数使得stack能再次保持左低右高的顺序，将弹出的这些bar来计算面积
+     * */
     public static int largestRec1(int[] arr){  // time O(n)
         int area = 0;
         Deque<Integer> stack = new LinkedList<>();
@@ -293,6 +298,83 @@ public class N3 {
         }
         return list;
     }
+
+    /** find kth smallest element from 2 sorted array
+     * 1 merge K sorted and then get k - 1 th element (because the kth is possibly starts from 1, better confirm k )
+     * 2 use binary search
+     * */
+    public static int findKthSmallest(int[] a, int[] b, int k){
+        return findKthSmallestHelper(a, 0, b, 0, k);
+    }
+    private static int findKthSmallestHelper(int[] a, int aLeft, int[] b, int bLeft, int k) {
+        if (aLeft >= a.length) {
+            return b[bLeft + k - 1];
+        } else if (bLeft >= b.length) {
+            return a[aLeft + k - 1];
+        }
+        if (k == 1) {
+            return Math.min(a[aLeft], b[bLeft]);
+        }
+        int aMid = aLeft + k / 2 - 1;
+        int bMid = bLeft + k / 2 - 1;
+        int aVal = aMid >= a.length ? Integer.MAX_VALUE : a[aMid];
+        int bVal = bMid >= b.length ? Integer.MAX_VALUE : b[bMid];
+        if (aVal < bVal) {
+            return findKthSmallestHelper(a, aMid + 1, b, bLeft, k - k / 2);
+        } else {
+            return findKthSmallestHelper(a, aLeft, b, bMid + 1, k - k / 2);
+        }
+    }
+    @Test
+    public void findKthSmallest(){
+        int[] a = new int[]{1, 3, 5, 7, 9};
+        int[] b = new int[]{2, 4, 6, 8, 10};
+        System.out.println(findKthSmallest(a, b, 3));
+    }
+    /** find median from 2 sorted array */
+    public static double findMedian(int[] a, int[] b){
+        int len = a.length + b.length;
+        if (len % 2 == 0) {
+            int left = findKthSmallest(a, b, len / 2);
+            int right = findKthSmallest(a, b, (len + 1) / 2);
+            return (double)((left + right) / 2);
+        } else {
+            return (double)findKthSmallest(a, b, (len + 1) / 2);
+        }
+    }
+    @Test
+    public void findMedianTest(){
+        int[] a = new int[]{1, 3, 5, 7, 9};
+        int[] b = new int[]{2, 4, 6, 8, 10};
+        System.out.println(findMedian(a, b));
+    }
+    /** sliding window of size K, always return the max value in the window
+     * deque 保存降序bar的索引
+     * time O(n)
+     * */
+    public static List<Integer> maxValues(int[] arr, int k){
+        List<Integer> result = new ArrayList<>();
+        Deque<Integer> deque = new LinkedList<>();
+        for (int i = 0; i < arr.length; i ++) {
+            while (! deque.isEmpty() && arr[deque.peekLast()] <= arr[i]) {
+                deque.pollLast();
+            }
+            if (! deque.isEmpty() && deque.peekFirst() <= i - k) {
+                deque.pollFirst();
+            }
+            deque.offerLast(i);
+            if (i >= k - 1) {
+                result.add(arr[deque.peekFirst()]);
+            }
+        }
+        return result;
+    }
+    @Test
+    public void maxValuesTest(){
+        System.out.println(maxValues(new int[]{-10, 3, -2, 7, 5, 4, 6, 1, 9, 3}, 3));
+    }
+
+
 }
 class Pair{
     int left;
