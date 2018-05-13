@@ -1,6 +1,7 @@
 package utils.io;
 
 import org.junit.Assert;
+import org.junit.Test;
 
 import java.io.Serializable;
 import java.util.Arrays;
@@ -12,6 +13,11 @@ public class LocalFileSystemTutorial {
         tutorial.testStreamRead();
         tutorial.testObjectIO();
         tutorial.testReaderRead();
+    }
+    @Test
+    public void testFileCoder(){
+        System.out.println(LocalFileSystem.getFileSystem().codeFile2File("C:\\Users\\Eric\\Pictures\\Saved Pictures\\677143.jpg", "E:/6.jpg", i -> i ^ 5));
+        System.out.println(LocalFileSystem.getFileSystem().codeFile2File("E:/6.jpg", "E:/61.jpg", i -> i ^ 5));
     }
     public void testStreamRead(){
         LocalFileSystem fileSystem = LocalFileSystem.getFileSystem();
