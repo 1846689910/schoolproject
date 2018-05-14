@@ -2,10 +2,12 @@ package utils.io;
 
 import org.junit.Assert;
 import org.junit.Test;
+import utils.common.MD5;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 
 public class LocalFileSystemTutorial {
     public static void main(String[] args) {
@@ -13,11 +15,6 @@ public class LocalFileSystemTutorial {
         tutorial.testStreamRead();
         tutorial.testObjectIO();
         tutorial.testReaderRead();
-    }
-    @Test
-    public void testFileCoder(){
-        System.out.println(LocalFileSystem.getFileSystem().codeFile2File("C:\\Users\\Eric\\Pictures\\Saved Pictures\\677143.jpg", "E:/6.jpg", i -> i ^ 5));
-        System.out.println(LocalFileSystem.getFileSystem().codeFile2File("E:/6.jpg", "E:/61.jpg", i -> i ^ 5));
     }
     public void testStreamRead(){
         LocalFileSystem fileSystem = LocalFileSystem.getFileSystem();
@@ -49,7 +46,6 @@ public class LocalFileSystemTutorial {
         System.out.println(u);
         System.out.println(finished);
     }
-
 }
 class U implements Serializable {
     private final static long serialVersionUID = 1L;
