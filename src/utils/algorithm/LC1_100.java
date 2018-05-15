@@ -2,7 +2,7 @@ package utils.algorithm;
 
 import org.junit.Test;
 
-import java.util.Arrays;
+import java.util.*;
 
 public class LC1_100 {
     /**
@@ -123,8 +123,114 @@ public class LC1_100 {
         }
         return num * sign;
     }
+    /** LC9 Palindrome Number
+     * 123 -> false
+     * 121 -> true
+     * -121 -> false
+     * */
+    public boolean isPalindrome(int x) {
+        String s = String.valueOf(x);
+        int left = 0, right = s.length() - 1;
+        while (left < right) {
+            if (s.charAt(left ++) != s.charAt(right --)) return false;
+        }
+        return true;
+    }
+    /**
+     * LC11 Container with most water
+     * 实际是找垂直线图中最大矩形的问题 (不是直方图, 垂线自身没有宽度)
+     * */
+    public int maxArea(int[] height) {
+        int maxarea = 0, left = 0, right = height.length - 1;
+        while (left < right) {
+            maxarea = Math.max(maxarea, Math.min(height[left], height[right]) * (right - left));
+            if (height[left] < height[right])
+                left ++;
+            else
+                right --;
+        }
+        return maxarea;
+    }
+    /** LC12 Integer to Roman整数转罗马数字
+     *Symbol       Value
+     I             1
+     V             5
+     X             10
+     L             50
+     C             100
+     D             500
+     M             1000
+     * */
+    public String int2Roman(int num) {
+        int[] values = {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] strs = {"M", "CM", "D", "CD", "C", "XC", "L", "XL", "X", "IX", "V", "IV", "I"};
+        StringBuilder sb = new StringBuilder();
+        for(int i = 0; i < values.length; i ++) {
+            while(num >= values[i]) {
+                num -= values[i];
+                sb.append(strs[i]);
+            }
+        }
+        return sb.toString();
+    }
+    /**
+     * LC13 Roman to Integer
+     * */
+    public int romanToInt(String s) {
+        Map<Character, Integer> map = new HashMap<>();
+        map.put('I', 1); map.put('V', 5); map.put('X', 10);
+        map.put('L', 50); map.put('C', 100); map.put('D', 500); map.put('M', 1000);
+        char [] chars = s.toCharArray();
+        int num = 0;
+        for(int i = 0; i < chars.length; i ++) {
+            if(i < chars.length - 1 && map.get(chars[i]) < map.get(chars[i + 1])) {
+                num -= map.get(chars[i]);
+            } else {
+                num += map.get(chars[i]);
+            }
+        }
+        return num;
+    }
+    /**
+     * LC14 longest common prefix
+     * time O(S), space: O(1)
+     * */
+    public String longestCommonPrefix(String[] strs) {
+        if (strs.length == 0) return "";
+        String prefix = strs[0];
+        for (int i = 1; i < strs.length; i++)
+            while (strs[i].indexOf(prefix) != 0) {
+                prefix = prefix.substring(0, prefix.length() - 1);
+                if (prefix.isEmpty()) return "";
+            }
+        return prefix;
+    }
+    /**
+     * LC16 3 sum closest, 找到3数之和最接近target，如果是target就返回target
+     * */
+    public int threeSumClosest(int[] arr, int target){
+        Arrays.sort(arr);
+        int result = arr[0] + arr[1] + arr[2];
+        for (int i = 0; i < arr.length - 2; i ++) {
+            if (i > 0 && arr[i] == arr[i - 1]) continue;
+            int left = i + 1, right = arr.length - 1;
+            while (left < right) {
+                int cur = arr[left] + arr[right] + arr[i];
+                result = Math.abs(result - target) < Math.abs(cur - target) ? result : cur;
+                if (cur == target) {
+                    return target;
+                } else if (cur < target) {
+                    left ++;
+                } else {
+                    right --;
+                }
+            }
+        }
+        return result;
+    }
     @Test
     public void baseTest(){
-        System.out.println((int)'a');
+        int[] arr = new int[]{2, 1, 3, 3, 4};
+        System.out.println(maxArea(arr));
     }
 }
