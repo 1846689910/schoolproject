@@ -228,6 +228,31 @@ public class LC1_100 {
         }
         return result;
     }
+    /**
+     * LC17 Letter combination of a phone number
+     * 手机拨号键盘上每个数字基本关联3个字母，他们的组合，给定两个数字求他们的所有组合
+     * */
+    public List<String> letterCombinations(String digits) {
+        List<String> result = new ArrayList<>();
+        if (digits == null || digits.length() == 0) return result;
+        String[] table = new String[]{"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+        char[] chars = digits.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        letterCombinationsHelper(chars, sb, table, result, 0);
+        return result;
+    }
+    private void letterCombinationsHelper(char[] chars, StringBuilder sb, String[] table, List<String> result, int idx){
+        if (sb.length() == chars.length) {
+            result.add(sb.toString());
+            return;
+        }
+        String correspondingStr = table[chars[idx] - '0'];
+        for (int i = 0; i < correspondingStr.length(); i ++) {
+            sb.append(correspondingStr.charAt(i));
+            letterCombinationsHelper(chars, sb, table, result, idx + 1);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+    }
     @Test
     public void baseTest(){
         int[] arr = new int[]{2, 1, 3, 3, 4};
