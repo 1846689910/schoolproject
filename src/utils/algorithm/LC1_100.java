@@ -253,6 +253,61 @@ public class LC1_100 {
             sb.deleteCharAt(sb.length() - 1);
         }
     }
+    /**
+     * LC18 4Sum
+     * 不是判断是求和，而且是去重
+     * */
+    public List<List<Integer>> fourSum(int[] arr, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (arr == null || arr.length < 4) return result;
+        Arrays.sort(arr);
+        for (int i = 0; i < arr.length - 3; i ++) {
+            if (i > 0 && arr[i] == arr[i - 1]) continue;
+            for (int j = i + 1; j < arr.length - 2; j ++) {
+                if (j > i + 1 && arr[j] == arr[j - 1]) continue;
+                int left = j + 1, right = arr.length - 1;
+                while (left < right) {
+                    int cur = arr[i] + arr[j] + arr[left] + arr[right];
+                    if (cur == target) {
+                        result.add(Arrays.asList(arr[i], arr[j], arr[left], arr[right]));
+                        left ++;
+                        while (left < right && arr[left] == arr[left - 1]) left ++;
+                    } else if (cur < target) {
+                        left ++;
+                    } else {
+                        right --;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    /**
+     * LC20 valid parentheses
+     * 验证给定字符串是否为合法括号表达形式
+     * */
+    public boolean isValid(String s) {
+        Stack<Character> stack = new Stack<Character>();
+        for (char c : s.toCharArray()) {
+            if (c == '(')
+                stack.push(')');
+            else if (c == '{')
+                stack.push('}');
+            else if (c == '[')
+                stack.push(']');
+            else if (stack.isEmpty() || stack.pop() != c)
+                return false;
+        }
+        return stack.isEmpty();
+    }
+    public boolean isValid1(String s) {
+        while ((s.contains("{}")) || (s.contains("()")) || (s.contains("[]"))){
+            s = s.replaceAll("\\{}","");
+            s = s.replaceAll("\\[]","");
+            s = s.replaceAll("\\(\\)","");}
+        return s.equals("");
+    }
+
     @Test
     public void baseTest(){
         int[] arr = new int[]{2, 1, 3, 3, 4};
