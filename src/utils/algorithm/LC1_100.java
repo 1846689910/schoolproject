@@ -1,7 +1,14 @@
 package utils.algorithm;
 
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.junit.Test;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 import static utils.algorithm.C2.firstOccur;
@@ -849,6 +856,37 @@ public class LC1_100 {
         System.out.println(lengthOfLastWord("Hello World"));
         System.out.println(lengthOfLastWord("a"));
         System.out.println(lengthOfLastWord(" "));
+    }
+    @Test
+    public void jsonGenerateTest(){
+        double left = -109.03781035927585, right = -102.05050567177585, up = 41.01138652062278, down = 37.0007753775683;
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectNode outer = mapper.createObjectNode();
+        outer.put("type", "FeatureCollection");
+        outer.set("features", mapper.createArrayNode());
+        for (int i = 0; i < 1000000; i ++) {
+            double lng = Math.random() * (right - left + 1) + left;
+            double lat = Math.random() * (up - down + 1) + down;
+            ObjectNode inner = mapper.createObjectNode();
+            ObjectNode geometry = mapper.createObjectNode();
+            ObjectNode properties = mapper.createObjectNode();
+            geometry.put("type", "Point");
+            ArrayNode pos = mapper.createArrayNode();
+            pos.add(lng).add(lat);
+            geometry.set("coordinates", pos);
+            inner.put("type", "Feature");
+            properties.put("popupContent", "This is a B-Cycle Station. Come pick up a bike and pay by the hour. What a deal!");
+            inner.set("properties", properties);
+            inner.put("id", i);
+
+            ((ArrayNode) outer.get("features")).add(inner);
+        }
+        ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
+        try {
+            writer.writeValue(new File("src/tests/lines.json"), outer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 class Interval {

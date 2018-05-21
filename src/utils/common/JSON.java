@@ -1,9 +1,12 @@
 package utils.common;
 
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import org.junit.Test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -67,6 +70,17 @@ public class JSON {
 // 也可以用lambda表达式
         arrayNode.forEach((n) -> list.add(n.asText()));
 
+    }
+
+    @Test
+    public void writeJson2File(){
+        ObjectMapper mapper = new ObjectMapper();
+        ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
+        try {
+            writer.writeValue(new File("src/tests/lines.json"), mapper.createObjectNode());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
 
