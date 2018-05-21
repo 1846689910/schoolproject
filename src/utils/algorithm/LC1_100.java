@@ -4,6 +4,9 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static utils.algorithm.C2.firstOccur;
+import static utils.algorithm.C2.lastOccur;
+
 public class LC1_100 {
     /**
      * LC2 Add Two Numbers
@@ -307,10 +310,523 @@ public class LC1_100 {
             s = s.replaceAll("\\(\\)","");}
         return s.equals("");
     }
+    /** LC29 divide two integers
+     * 被除数dividend与除数divisor都可为32bit 有符号整数
+     * 除数肯定不为0
+     * 当除数overflows时，返回2^31 - 1
+     * */
+    public int divide(int bcs, int cs) {
+        if(bcs==Integer.MIN_VALUE && cs==-1) return Integer.MAX_VALUE;
+        if(bcs > 0 && cs > 0) return divideHelper(-bcs, -cs);
+        else if(bcs > 0) return -divideHelper(-bcs,cs);
+        else if(cs > 0) return -divideHelper(bcs,-cs);
+        else return divideHelper(bcs, cs);
+    }
 
+    private int divideHelper(int bcs, int cs){
+        // base case
+        if(cs < bcs) return 0;
+        // get highest digit of divisor
+        int cur = 0, res = 0;
+        while((cs << cur) >= bcs && (cs << cur) < 0 && cur < 31) cur++;
+        res = bcs - (cs << (cur - 1));
+        if(res > cs) return 1 << (cur - 1);
+        return (1 << (cur - 1))+divide(res, cs);
+    }
+    /**
+     * LC31 Next Permutation
+     * 在一个数字的各个位数的排列中，找到一个排列是比当前的数字大的数里最小的那个。如果找不到就倒序
+     * 123 -> 132
+     * 3,2,1 → 1,2,3
+     * 1,1,5 → 1,5,1
+     * 方法一: 全排列然后找 time： O(n!), space(On)
+     * 方法二: 从右向左找到一个降序数字，然后再向右找到一个比刚才的降序数恰好大的数字，交换两数. 并将降序数位置右边的所有数倒序
+     * timeO(n), space O(1)
+     * 方法2：
+     * */
+    public void nextPermutation(int[] arr) {
+        int i = arr.length - 2;
+        while (i >= 0 && arr[i + 1] <= arr[i]) {
+            i--;
+        }
+        if (i >= 0) {
+            int j = arr.length - 1;
+            while (j >= 0 && arr[j] <= arr[i]) {
+                j--;
+            }
+            swap(arr, i, j);
+        }
+        reverse(arr, i + 1);
+    }
+    private void reverse(int[] nums, int start) {
+        int i = start, j = nums.length - 1;
+        while (i < j) {
+            swap(nums, i, j);
+            i++;
+            j--;
+        }
+    }
+    private void swap(int[] nums, int i, int j) {
+        int temp = nums[i];
+        nums[i] = nums[j];
+        nums[j] = temp;
+    }
+
+    /**
+     * LC32 Longest Valid Parentheses
+     * 空stack放-1，遇到左括号放入idx，遇到右括号，弹出stack并用该数索引减去栈顶数作为当前最大与之前的max 比大小
+     * */
+    public int longestValidParentheses(String s) {
+        int longest = 0;
+        Deque<Integer> stack = new LinkedList<>();
+        stack.offerFirst(-1);
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                stack.offerFirst(i);
+            } else {
+                stack.pollFirst();
+                if (stack.isEmpty()) {
+                    stack.offerFirst(i);
+                } else {
+                    longest = Math.max(longest, i - stack.peekFirst());
+                }
+            }
+        }
+        return longest;
+    }
+    /**
+     * LC34 search for a Range
+     * 给定升序的数组，某数可能会重复，找到该数的起止索引
+     * Example 1:
+
+     Input: nums = [5,7,7,8,8,10], target = 8
+     Output: [3,4]
+     Example 2:
+
+     Input: nums = [5,7,7,8,8,10], target = 6
+     Output: [-1,-1]
+     二分法: Time O(logn), space O(1)
+     * */
+    public int[] searchRange(int[] nums, int target) {
+        if (nums== null || nums.length == 0) return new int[]{-1, -1};
+        return new int[]{firstOccur(nums, target), lastOccur(nums, target)};
+    }
+    /**
+     * LC35 search insert position
+     * 找到就返回位置，找不到就返回它应该插入的位置
+     * 使用C2的findLargestSmaller(arr, target), 但是后处理要先右后左，确保拿到小于target的最大数
+     * */
+    public int searchInsert(int[] arr, int target) {
+        if (arr == null || arr.length == 0) return -1;
+        int idx = findLargestSmaller(arr, target);
+        if (idx == -1 || arr[idx] != target) {
+            return idx + 1;
+        } else {
+            return idx;
+        }
+    }
+    public static int findLargestSmaller(int[] arr, int target) {
+        if (arr == null || arr.length == 0) return -1;
+        int left = 0, right = arr.length - 1;
+        while (left + 1 < right) {
+            int mid = left + (right - left) / 2;
+            if (arr[mid] == target) {
+                return mid;
+            } else if (arr[mid] < target) {
+                left = mid;
+            } else {
+                right = mid;
+            }
+        }
+        if (arr[right] < target) return right;
+        if (arr[left] < target) return left;
+        return -1;
+    }
+    /**
+     * LC36 Valid Sudoku
+     * 合法数独：每行, 每列, 每个小3x3矩阵数据1-9之间无重复, 没有填写的空格用字符0表示
+     * */
+    public boolean isValidSudoku(char[][] board) {
+        if (board == null || board.length == 0 || board[0].length == 0) return false;
+        int rows = board.length, cols = board[0].length;
+        Set<Integer> set = new HashSet<>();
+        // check rows
+        for (int i = 0; i < rows; i ++) {
+            set = new HashSet<>();
+            for (int j = 0; j < cols; j ++) {
+                if (board[i][j] == '.') continue;
+                int num = (int)(board[i][j] - '0');
+                if (num < 1 || num > 9 || set.contains(num)) return false;
+                set.add(num);
+            }
+        }
+        // check cols
+        for (int i = 0; i < cols; i ++) {
+            set = new HashSet<>();
+            for (int j = 0; j < rows; j ++) {
+                if (board[j][i] == '.') continue;
+                int num = (int)(board[j][i] - '0');
+                if (num < 1 || num > 9 || set.contains(num)) return false;
+                set.add(num);
+            }
+        }
+        // check small box
+        int boxRows = 3, boxCols = 3;
+        for (int boxRow = 0; boxRow < boxRows; boxRow ++) {
+            for (int boxCol = 0; boxCol < boxCols; boxCol ++) {
+                set = new HashSet<>();
+                for (int i = 0; i < boxRow * 3 - 1; i ++) {
+                    for (int j = 0; j < boxCol * 3 - 1; j ++) {
+                        if (board[i][j] == '.')continue;
+                        int num = (int) (board[i][j] - '0');
+                        if (num < 1 || num > 9 || set.contains(num)) return false;
+                        set.add(num);
+                    }
+                }
+            }
+        }
+        return true;
+    }
+    public boolean isValidSudoku1(char[][] board) {
+        boolean[][] row = new boolean[9][9];
+        boolean[][] column = new boolean[9][9];
+        boolean[][] block = new boolean[9][9];
+        for(int i = 0;i < 9; i ++){
+            for(int j = 0; j < 9; j ++){
+                if(board[i][j]=='.') continue;
+                int c = board[i][j] - '1';
+                if(row[i][c] || column[j][c] || block[i - i % 3 + j / 3][c]) return false;
+                row[i][c] = column[j][c] = block[i - i % 3 + j / 3][c] = true;
+            }
+        }
+        return true;
+    }
+    /**
+     * LC38 Count and Say
+     * 用字符串来描述每个数字从1开始
+     * 1 -> 被读作1
+     * 2 -> 上一个数字，就是一个1，那么就是11
+     * 3 -> 上一个数字，就是二个1，那么就是21
+     * 4 -> 上一个数字，就是一个2一个1，那么就是1211
+     * ...依次读下去，每次都读出上一次的数字
+     * */
+    public String countAndSay(int n) {
+        if(n <= 1)return "1";
+        String str = countAndSay(n - 1);
+        StringBuilder sb = new StringBuilder();
+        int idx = 0;
+        int count = 0;
+        for(int i = 0; i < str.length(); i ++){
+            if(str.charAt(i) == str.charAt(idx)){  // 数字相同就增加数量
+                count ++;
+            } else {
+                sb.append(count).append(str.charAt(idx));  // 先放入这个数字的数量, 再放入这个数字本身
+                count = 1;
+                idx = i;
+            }
+        }
+        sb.append(count).append(str.charAt(idx));  // 不要忘了最后的结果
+        return sb.toString();
+    }
+    /**
+     * LC39 Combination Sum (99 cent变体)
+     * 但是返回值中保存的不是索引对应的数量，而是那些实际数字的集合
+     * */
+    public List<List<Integer>> combinationSum(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> cur = new ArrayList<>();
+        helper(target, candidates, 0, cur, result);
+
+        return result;
+    }
+    private void helper(int target, int[] candidates, int idx, List<Integer> cur, List<List<Integer>> result) {
+        if (idx == candidates.length - 1) {
+            if (target % candidates[idx] == 0) {
+                cur.add(target / candidates[idx]);
+                List<Integer> list = new ArrayList<>();  // ----这里开始不一样
+                for (int i = 0; i < cur.size(); i ++){
+                    int count = cur.get(i);
+                    while (count > 0) {
+                        list.add(candidates[i]);
+                        count --;
+                    }
+                }
+                result.add(list);  // ----到这里
+                cur.remove(cur.size() - 1);
+            }
+            return;
+        }
+        int max = target / candidates[idx];
+        for (int i = 0; i <= max; i ++) {
+            cur.add(i);
+            helper(target - i * candidates[idx], candidates, idx + 1, cur, result);
+            cur.remove(cur.size() - 1);
+        }
+    }
+    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> cur = new ArrayList<>();
+        combinationSum2Helper(target, candidates, 0, cur, result);
+        return result;
+    }
+    private void combinationSum2Helper(int target, int[] candidates, int idx, List<Integer> cur, List<List<Integer>> result) {
+        if (idx == candidates.length - 1) {
+            if (target % candidates[idx] == 0 && target / candidates[idx] <= 1) {  // ----这里开始不一样
+                cur.add(target / candidates[idx]);
+                List<Integer> list = new ArrayList<>();
+                for (int i = 0; i < cur.size(); i ++){
+                    int count = cur.get(i);
+                    while (count > 0) {
+                        list.add(candidates[i]);
+                        count --;
+                    }
+                }
+                boolean shouldAdd = true;
+                for (List<Integer> lst : result) {
+                    if (twoListEqual(lst, list)) {
+                        shouldAdd = false;
+                        break;
+                    }
+                }
+                if (shouldAdd) result.add(list);
+                cur.remove(cur.size() - 1);
+            }
+            return;
+        }
+        int max = target / candidates[idx] > 1 ? 1 : target / candidates[idx];  // ----到这里
+        for (int i = 0; i <= max; i ++) {
+            cur.add(i);
+            combinationSum2Helper(target - i * candidates[idx], candidates, idx + 1, cur, result);
+            cur.remove(cur.size() - 1);
+        }
+    }
+    private boolean twoListEqual(List<Integer> list1, List<Integer> list2){
+        if (list1.size() != list2.size()) return false;
+        Collections.sort(list1);
+        Collections.sort(list2);
+        for (int i = 0, size = list1.size(); i < size; i ++) {
+            if (! list1.get(i).equals(list2.get(i))) return false;
+        }
+        return true;
+    }
+    /**
+     * LC41 First Missing Positive
+     * Example 1:
+
+     Input: [1,2,0]
+     Output: 3
+     Example 2:
+
+     Input: [3,4,-1,1]
+     Output: 2
+     Example 3:
+
+     Input: [7,8,9,11,12]
+     Output: 1
+     * */
+    public int firstMissingPositive(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            set.add(num);
+        }
+        for (int i = 1; i < Integer.MAX_VALUE; i ++) {
+            if (! set.contains(i)) {
+                return i;
+            }
+        }
+        return Integer.MAX_VALUE;
+    }
+    /**
+     * LC43 Multiply Strings: 将两个字符串表示的数字相乘
+     * Example 1:
+
+     Input: num1 = "2", num2 = "3"
+     Output: "6"
+     Example 2:
+
+     Input: num1 = "123", num2 = "456"
+     Output: "56088"
+     * */
+    public String multiply(String num1, String num2) {
+        int m = num1.length(), n = num2.length();
+        int[] pos = new int[m + n];
+        for(int i = m - 1; i >= 0; i--) {
+            for(int j = n - 1; j >= 0; j--) {
+                int mul = (num1.charAt(i) - '0') * (num2.charAt(j) - '0');
+                int p1 = i + j, p2 = i + j + 1;
+                int sum = mul + pos[p2];
+
+                pos[p1] += sum / 10;
+                pos[p2] = (sum) % 10;
+            }
+        }
+
+        StringBuilder sb = new StringBuilder();
+        for(int p : pos) if(!(sb.length() == 0 && p == 0)) sb.append(p);
+        return sb.length() == 0 ? "0" : sb.toString();
+    }
+    /**
+     * LC46 Permutations 全排列问题
+     * Input: [1,2,3]
+     Output:
+     [
+     [1,2,3],
+     [1,3,2],
+     [2,1,3],
+     [2,3,1],
+     [3,1,2],
+     [3,2,1]
+     ]
+     * */
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        permuteHelper(nums, result, 0);
+        return result;
+    }
+    private void permuteHelper(int[] nums, List<List<Integer>> result, int idx) {
+        if (idx == nums.length) {
+            List<Integer> cur = new ArrayList<>();
+            for(int num: nums) cur.add(num);
+            result.add(cur);
+            return;
+        }
+        for (int i = idx; i < nums.length; i ++) {
+            swap(nums, idx, i);
+            permuteHelper(nums, result, idx + 1);
+            swap(nums, idx, i);
+        }
+    }
+    /**
+     * LC47 Permutation2 去重的全排列
+     * */
+    public List<List<Integer>> permuteUnique(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        permuteUniqueHelper(nums, result, 0);
+        return result;
+    }
+    private void permuteUniqueHelper(int[] nums, List<List<Integer>> result, int idx) {
+        if (idx == nums.length) {
+            List<Integer> cur = new ArrayList<>();
+            for(int num: nums) cur.add(num);
+            result.add(cur);
+            return;
+        }
+        Set<Integer> set = new HashSet<>();
+        for (int i = idx; i < nums.length; i ++) {
+            if (set.add(nums[i])) {
+                swap(nums, idx, i);
+                permuteUniqueHelper(nums, result, idx + 1);
+                swap(nums, idx, i);
+            }
+        }
+    }
+    /**
+     * LC49 Group Anagrams
+     * */
+    public List<List<String>> groupAnagrams(String[] strs) {
+        List<List<String>> result = new ArrayList<>();
+        if (strs == null || strs.length == 0) return result;
+        Map<String, List<String>> map = new HashMap<>();
+        for (String s : strs) {
+            String mask = getStringMask(s);
+            if (! map.containsKey(mask)) {
+                map.put(mask, new ArrayList<>());
+            }
+            map.get(mask).add(s);
+        }
+        return new ArrayList<>(map.values());
+    }
+    private String getStringMask(String s){
+        char[] chars = s.toCharArray();
+        Arrays.sort(chars);
+        return new String(chars);
+    }
+    /**
+     * LC50 pow(x, n)
+     * */
+    public double myPow(double x, int n) {
+        if (n == Integer.MIN_VALUE){
+            double temp = myPow(x, n >> 1);
+            return temp * temp;
+        }
+        if (n < 0) return 1 / myPow(x, -n);
+        if (n == 0) return 1;
+        double half = myPow(x, n / 2);
+        if(n % 2 == 0)
+            return half * half;
+        else
+            return half * half * x;
+    }
+    /**
+     * LC56 merge intervals: merge all overlapping intervals
+     * Definition for an interval.
+     * public class Interval {
+     *     int start;
+     *     int end;
+     *     Interval() { start = 0; end = 0; }
+     *     Interval(int s, int e) { start = s; end = e; }
+     * }
+     * Example 1:
+     Input: [[1,3],[2,6],[8,10],[15,18]]
+     Output: [[1,6],[8,10],[15,18]]
+     Explanation: Since intervals [1,3] and [2,6] overlaps, merge them into [1,6].
+     Example 2:
+
+     Input: [[1,4],[4,5]]
+     Output: [[1,5]]
+     Explanation: Intervals [1,4] and [4,5] are considerred overlapping.
+     * */
+    public List<Interval> merge(List<Interval> intervals) {
+        Collections.sort(intervals, (i1, i2) -> {
+            if (i1.start == i2.start) return 0;
+            return i1.start < i2.start ? -1 : 1;
+        });
+        LinkedList<Interval> merged = new LinkedList<Interval>();
+        for (Interval interval : intervals) {
+            // if the list of merged intervals is empty or if the current
+            // interval does not overlap with the previous, simply append it.
+            if (merged.isEmpty() || merged.getLast().end < interval.start) {
+                merged.add(interval);
+            }
+            // otherwise, there is overlap, so we merge the current and previous
+            // intervals.
+            else {
+                merged.getLast().end = Math.max(merged.getLast().end, interval.end);
+            }
+        }
+        return merged;
+    }
+    /**
+     * LC58 Length of Last Word in String
+     * */
+    public int lengthOfLastWord(String s) {
+        if(s == null || s.length() == 0) return 0;
+        int start = 0, end = s.length() -1;
+        for (int len = s.length(), i = len - 1; i >= 0; i --) {
+            if (s.charAt(i) != ' ') {
+                end = i;
+                break;
+            }
+        }
+        for (int i = end; i >= 0; i --) {
+            if (s.charAt(i) == ' ') {
+                start = i + 1;
+                break;
+            }
+        }
+        return end - start + 1;
+    }
     @Test
     public void baseTest(){
-        int[] arr = new int[]{2, 1, 3, 3, 4};
-        System.out.println(maxArea(arr));
+        System.out.println(lengthOfLastWord("a "));
+        System.out.println(lengthOfLastWord("Hello World"));
+        System.out.println(lengthOfLastWord("a"));
+        System.out.println(lengthOfLastWord(" "));
     }
+}
+class Interval {
+    int start;
+    int end;
+    Interval() { start = 0; end = 0; }
+    Interval(int s, int e) { start = s; end = e; }
 }
