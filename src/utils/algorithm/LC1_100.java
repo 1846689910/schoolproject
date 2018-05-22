@@ -850,12 +850,181 @@ public class LC1_100 {
         }
         return sb.toString();
     }
+    /**
+     * LC61 Rotate List
+     * 翻转一个list 的右边k位，如果k很大就不停的翻转直到k小于list长度
+     *
+     * */
+    public ListNode rotateRight(ListNode head, int k) {
+        if (head == null || head.next == null) return head;
+        int len = 1;
+        ListNode curHead = head;
+        while (curHead.next != null) {
+            curHead = curHead.next;
+            len ++;  // list length
+        }
+        if (k > len) k = k - k / len * len;
+        int leftK = len - k;  // 换成左边几位
+        if (leftK == 0) return head;
+        ListNode left = head, right = head;
+        while (leftK > 1) {
+            head = head.next;
+            leftK --;
+        }
+        right = head.next;
+        head.next = null;
+        ListNode leftHead = C3.reverseLinkedListRe(left);
+        ListNode rightHead = C3.reverseLinkedListRe(right);
+        left.next = rightHead;
+        return C3.reverseLinkedListRe(leftHead);
+    }
+    /**
+     * LC62 Unique Path
+     * 排列组合问题，总共需要横着走m-1, 竖着走n-1, 那么结果就是一个组合数
+     * C(m + n - 2)_(m - 1)
+     * */
+    public int uniquePaths(int m, int n) {
+        long result = 1;
+        for(int i = 0; i < Math.min(m - 1, n - 1); i ++) {
+            result = result * (m + n - 2 - i) / (i + 1);
+        }
+        return (int) result;
+    }
+    /**
+     * LC63 Unique Path2, 有障碍物(1)的矩阵中，找出左上角到右下角的通路(0表示)有几条
+     * [
+     [0,0,0],
+     [0,1,0],
+     [0,0,0]
+     ]
+     * */
+    public int uniquePathsWithObstacles(int[][] matrix) {
+        /**
+         * base case: M[0] = 1
+         * induction rule: M[j], 从col=0到col=i总共有几条通路
+         * 0 -> 行: 从上到下, 若matrix[i][j] = 1, 该路径有路障, 没有通路，为0
+         *          否则：路径数 arr[j] = arr[j] + arr[j - 1]
+         * */
+        int cols = matrix[0].length;
+        int[] arr = new int[cols];
+        arr[0] = 1;
+        for (int i = 0; i < matrix.length; i ++) {
+            for (int j = 0; j < matrix[0].length; j ++) {
+                if (matrix[i][j] == 1) {
+                    arr[j] = 0;
+                } else if (j > 0) {
+                    arr[j] += arr[j - 1];
+                }
+            }
+        }
+        return arr[cols - 1];
+    }
+    /**
+     * LC64 minimum path sum
+     * 从一个矩阵的左上角到右下角走，找到一个路径，使得路径经过的数字之和最小
+     * 只能向下或向右走
+     * */
+    public int minPathSum(int[][] matrix) {
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        for(int i = 1; i < cols; i ++){
+            matrix[0][i] += matrix[0][i - 1];
+        }
+        for(int i = 1; i < rows; i ++){
+            matrix[i][0] += matrix[i - 1][0];
+        }
+        for(int i = 1; i < rows; i ++){
+            for(int j = 1; j < cols; j ++){
+                matrix[i][j] += Math.min(matrix[i - 1][j], matrix[i][j - 1]);
+            }
+        }
+        return matrix[rows - 1][cols - 1];
+    }
+    /**
+     * LC66 plus One,
+     * [1, 2, 3] -> [1, 2, 4]
+     * 数组的每位表示一个数字的位，将该数字+1
+     * */
+    public int[] plusOne(int[] digits) {
+        int carry = 0;
+        digits[digits.length - 1] += 1;
+        for (int i = digits.length - 1; i >= 0; i --) {
+            digits[i] += carry;
+            if (digits[i] >= 10) {
+                digits[i] -= 10;
+                carry = 1;
+            } else {
+                carry = 0;
+            }
+        }
+        if (carry > 0) {
+            int[] arr = new int[digits.length + 1];
+            arr[0] = carry;
+            System.arraycopy(digits, 0, arr, 1, digits.length);
+            return arr;
+        } else {
+            return digits;
+        }
+    }
+    /**
+     * LC67 Add Binary
+     * 两个数组分别表示两个binary data，相加
+     * */
+    public String addBinary(String a, String b) {
+        if(a == null || a.isEmpty()) {
+            return b;
+        }
+        if(b == null || b.isEmpty()) {
+            return a;
+        }
+        char[] aArray = a.toCharArray();
+        char[] bArray = b.toCharArray();
+        StringBuilder sb = new StringBuilder();
+
+        int i = aArray.length - 1;
+        int j = bArray.length - 1;
+        int carry = 0;
+        int result = 0;
+
+        while(i >= 0 || j >= 0 || carry == 1) {
+            int aByte = (i >= 0) ? Character.getNumericValue(aArray[i --]) : 0;
+            int bByte = (j >= 0) ? Character.getNumericValue(bArray[j --]) : 0;
+            result = aByte ^ bByte ^ carry;
+            carry = ((aByte + bByte + carry) >= 2) ? 1 : 0;
+            sb.append(result);
+        }
+        return sb.reverse().toString();
+    }
+    /**
+     * LC69 sqrt(x)
+     * */
+    public int mySqrt(int x) {
+        int i = 0;
+        while(x > 0){
+            x -= 2 * (i ++) + 1;
+        }
+        if(x == 0) return i;
+        return i - 1;
+    }
+    /**
+     * LC70 climbing stairs
+     * n级台阶，每次上1或2，有几种上法
+     * */
+    public int climbStairs(int n) {
+        if (n == 1) {
+            return 1;
+        }
+        int[] arr = new int[n + 1];
+        arr[1] = 1;
+        arr[2] = 2;
+        for (int i = 3; i <= n; i++) {
+            arr[i] = arr[i - 1] + arr[i - 2];
+        }
+        return arr[n];
+    }
     @Test
     public void baseTest(){
-        System.out.println(lengthOfLastWord("a "));
-        System.out.println(lengthOfLastWord("Hello World"));
-        System.out.println(lengthOfLastWord("a"));
-        System.out.println(lengthOfLastWord(" "));
+        System.out.println(Arrays.toString(plusOne(new int[]{9,9})));
     }
     @Test
     public void jsonGenerateTest(){
