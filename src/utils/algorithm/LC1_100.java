@@ -1022,6 +1022,20 @@ public class LC1_100 {
         }
         return arr[n];
     }
+    /**
+     * LC71 Simplify path
+     * */
+    public String simplifyPath(String path) {
+        Deque<String> stack = new LinkedList<>();
+        Set<String> skip = new HashSet<>(Arrays.asList("..", ".", ""));
+        for (String dir : path.split("/")) {
+            if (dir.equals("..") && !stack.isEmpty()) stack.pop();
+            else if (!skip.contains(dir)) stack.push(dir);
+        }
+        StringBuilder sb = new StringBuilder();
+        for (String dir : stack) sb.append("/").append(dir).append(sb);
+        return sb.length() == 0 ? "/" : sb.toString();
+    }
     @Test
     public void baseTest(){
         System.out.println(Arrays.toString(plusOne(new int[]{9,9})));
