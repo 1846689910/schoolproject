@@ -859,12 +859,12 @@ public class LC1_100 {
     }
     @Test
     public void jsonGenerateTest(){
-        double left = -109.03781035927585, right = -102.05050567177585, up = 41.01138652062278, down = 37.0007753775683;
+        double left = -115.03781035927585, right = -100.05050567177585, up = 45.01138652062278, down = 35.0007753775683;
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode outer = mapper.createObjectNode();
         outer.put("type", "FeatureCollection");
         outer.set("features", mapper.createArrayNode());
-        for (int i = 0; i < 1000000; i ++) {
+        for (int i = 0; i < 20000; i ++) {
             double lng = Math.random() * (right - left + 1) + left;
             double lat = Math.random() * (up - down + 1) + down;
             ObjectNode inner = mapper.createObjectNode();
@@ -874,6 +874,7 @@ public class LC1_100 {
             ArrayNode pos = mapper.createArrayNode();
             pos.add(lng).add(lat);
             geometry.set("coordinates", pos);
+            inner.set("geometry", geometry);
             inner.put("type", "Feature");
             properties.put("popupContent", "This is a B-Cycle Station. Come pick up a bike and pay by the hour. What a deal!");
             inner.set("properties", properties);
@@ -883,7 +884,7 @@ public class LC1_100 {
         }
         ObjectWriter writer = mapper.writer(new DefaultPrettyPrinter());
         try {
-            writer.writeValue(new File("src/tests/lines.json"), outer);
+            writer.writeValue(new File("/Users/eriche/Documents/reddwarf-api/public/resources/temp/lines.json"), outer);
         } catch (IOException e) {
             e.printStackTrace();
         }
