@@ -1036,9 +1036,134 @@ public class LC1_100 {
         for (String dir : stack) sb.append("/").append(dir).append(sb);
         return sb.length() == 0 ? "/" : sb.toString();
     }
+    /**
+     * LC76 Minimum Window SubString
+     * */
+
+    /**
+     * LC77 Combinations
+     * */
+    public List<List<Integer>> combinations(int n, int k) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> cur = new ArrayList<>();
+        combinationsHelper(result, cur, 1, n, k);
+        return result;
+    }
+    public void combinationsHelper(List<List<Integer>> result, List<Integer> cur, int idx, int n, int k) {
+        if(k == 0) {
+            result.add(new ArrayList<>(cur));
+            return;
+        }
+        for(int i = idx; i <= n; i ++) {
+            cur.add(i);
+            combinationsHelper(result, cur, i + 1, n, k - 1);
+            cur.remove(cur.size() - 1);
+        }
+    }
+    /**
+     * LC78 subsets
+     * */
+    public List<List<Integer>> subsets(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (nums == null) return result;
+        List<Integer> cur = new ArrayList<>();
+        subsetsHelper(nums, result, cur, 0);
+        return result;
+    }
+    private void subsetsHelper(int[] nums, List<List<Integer>> result, List<Integer> cur, int idx){
+        if (idx == nums.length) {
+            result.add(new ArrayList<>(cur));
+            return;
+        }
+        cur.add(nums[idx]);
+        subsetsHelper(nums, result, cur, idx + 1);
+        cur.remove(cur.size() - 1);
+        subsetsHelper(nums, result, cur, idx + 1);
+    }
+    /**
+     * LC79 word search
+     * 矩阵中找单词，必须是上下左右相邻的字母串起来构成一个Word
+     * */
+    public boolean exist(char[][] board, String word) {
+        boolean[][] visited = new boolean[board.length][board[0].length];
+        for(int i = 0; i < board.length; i++){
+            for(int j = 0; j < board[i].length; j++){
+                if((word.charAt(0) == board[i][j]) && exist1Helper(board, visited, word, i, j, 0)){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    private boolean exist1Helper(char[][]board, boolean[][] visited, String word, int i, int j, int idx){
+        if(idx == word.length()){
+            return true;
+        }
+
+        if(i >= board.length || i < 0 || j >= board[i].length || j < 0 || board[i][j] != word.charAt(idx) || visited[i][j]){
+            return false;
+        }
+
+        visited[i][j] = true;
+        if(exist1Helper(board, visited, word, i - 1, j, idx + 1) ||
+                exist1Helper(board, visited, word, i + 1, j, idx + 1) ||
+                exist1Helper(board, visited, word, i, j - 1, idx + 1) ||
+                exist1Helper(board, visited, word, i, j + 1, idx + 1)){
+            return true;
+        }
+        visited[i][j] = false;
+        return false;
+    }
+    /**
+     * LC80 remove duplicates from sorted array
+     * at most save two same numbers
+     * do in-place no new memory
+     * */
+    public int removeDuplicates2(int[] nums) {
+        int i = 0;
+        for (int n : nums)
+            if (i < 2 || n > nums[i - 2])
+                nums[i ++] = n;
+        return i;
+    }
+    public int removeDuplicates2_1(int[] arr) {
+        int slow = 0, fast = 0;
+        while (fast < arr.length) {
+            if (slow < 2 || arr[fast] > arr[slow - 2]) {
+                arr[slow ++] = arr[fast];
+            }
+            fast ++;
+        }
+        return slow;
+    }
+    /**
+     * remove duplicates from sorted array, no duplicates
+     * */
+    public int removeDuplicates1(int[] nums) {
+        int i = 0;
+        for(int n : nums)
+            if(i < 1 || n > nums[i - 1])
+                nums[i ++] = n;
+        return i;
+    }
+    public int removeDuplicates1_1(int[] arr) {
+        int slow = 0, fast = 0;
+        while (fast < arr.length) {
+            if (slow < 1 || arr[fast] > arr[slow - 1]) {
+                arr[slow ++] = arr[fast];
+            }
+            fast ++;
+        }
+        return slow;
+    }
     @Test
     public void baseTest(){
-        System.out.println(Arrays.toString(plusOne(new int[]{9,9})));
+        int[] arr = new int[]{1,1,1,2,2,3};
+        removeDuplicates2(arr);
+        System.out.println(Arrays.toString(arr));
+        arr = new int[]{1,1,1,2,2,3};
+        removeDuplicates2_1(arr);
+        System.out.println(Arrays.toString(arr));
     }
     @Test
     public void jsonGenerateTest(){
