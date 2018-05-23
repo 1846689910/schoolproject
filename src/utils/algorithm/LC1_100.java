@@ -1027,16 +1027,17 @@ public class LC1_100 {
      * */
     public String simplifyPath(String path) {
         Deque<String> stack = new LinkedList<>();
-        Set<String> skip = new HashSet<>(Arrays.asList("..", ".", ""));
+        Set<String> skip = new HashSet<>(Arrays.asList("..",".",""));
         for (String dir : path.split("/")) {
             if (dir.equals("..") && !stack.isEmpty()) stack.pop();
             else if (!skip.contains(dir)) stack.push(dir);
         }
         StringBuilder sb = new StringBuilder();
-        for (String dir : stack) sb.append("/").append(dir).append(sb);
-        return sb.length() == 0 ? "/" : sb.toString();
+        for (String dir : stack) sb.insert(0, "/" + dir);
+        return (sb.length() == 0) ? "/" : sb.toString();
     }
     /**
+<<<<<<< HEAD
      * LC76 Minimum Window SubString
      * */
 
@@ -1158,12 +1159,15 @@ public class LC1_100 {
     }
     @Test
     public void baseTest(){
-        int[] arr = new int[]{1,1,1,2,2,3};
-        removeDuplicates2(arr);
-        System.out.println(Arrays.toString(arr));
-        arr = new int[]{1,1,1,2,2,3};
-        removeDuplicates2_1(arr);
-        System.out.println(Arrays.toString(arr));
+        int[][] matrix = {
+                {0,1,2,0},
+                {3,4,5,2},
+                {1,3,1,5}
+        };
+        C1.setZeroes(matrix);
+        for(int[] arr : matrix) {
+            System.out.println(Arrays.toString(arr));
+        }
     }
     @Test
     public void jsonGenerateTest(){

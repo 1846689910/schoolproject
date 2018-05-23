@@ -420,6 +420,7 @@ public class C1 {
         }
         return dummy.next;
     }
+
     @Test
     public void mergeKSortedList(){
         ListNode h1 = new ListNode(2);
@@ -432,6 +433,60 @@ public class C1 {
 
         List<ListNode> list = Arrays.asList(h1, h2);
         mergeKSortedList(list).print();
+    }
+    public static void setZeroes (int[][] matrix) {
+        if (matrix == null) return;
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        boolean firstRowHas0 = false;
+        boolean firstColHas0 = false;
+        // 先看看第0行和第0列有没有为0的项，因为之后我们凡是在内部找到0值，都要映射到0行和0列，那么原来有没有0就不好说了
+        for (int i = 0; i < cols; i ++) {
+            if (matrix[0][i] == 0) {
+                firstRowHas0 = true;
+                break;
+            }
+        }
+        for (int i = 0; i < rows; i ++) {
+            if (matrix[i][0] == 0) {
+                firstColHas0 = true;
+                break;
+            }
+        }
+        for (int i = 1; i < rows; i ++) {
+            for (int j = 1; j < cols; j ++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = 0;
+                    matrix[0][j] = 0;
+                }
+            }
+        }
+        // 先处理内部有0的情况
+        for (int i = 1; i < cols; i ++) {
+            if (matrix[0][i] == 0) {
+                for (int j = 1; j < rows; j ++) {
+                    matrix[j][i] = 0;
+                }
+            }
+        }
+        for (int i = 1; i < rows; i ++) {
+            if (matrix[i][0] == 0) {
+                for (int j = 1; j < cols; j ++) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        // 再处理0行0列如果本来就有0，那么整行整列都为0
+        if (firstRowHas0) {
+            for (int i = 0; i < cols; i ++) {
+                matrix[0][i] = 0;
+            }
+        }
+        if (firstColHas0) {
+            for (int i = 0; i < rows; i ++) {
+                matrix[i][0] = 0;
+            }
+        }
     }
 }
 class ElementWithList{
