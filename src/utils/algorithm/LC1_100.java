@@ -1040,7 +1040,7 @@ public class LC1_100 {
      * LC76 Minimum Window SubString
      * 在s中找到最小能够包含所有t中出现字符的子字符串
      * */
-    public String minWindow1(String s, String t) {
+    public String minWindow(String s, String t) {
         if (s.length() < t.length() || t.length() == 0) return "";
         Map<Character, Integer> map = new HashMap<>();
         for (char c : t.toCharArray()) {
@@ -1071,9 +1071,9 @@ public class LC1_100 {
 
     @Test
     public void LC76Test(){
-        System.out.println(minWindow1("ADOBECODEBANC", "ABC"));
-        System.out.println(minWindow1("a", "aa"));
-        System.out.println(minWindow1("a", "b"));
+        System.out.println(minWindow("ADOBECODEBANC", "ABC"));
+        System.out.println(minWindow("a", "aa"));
+        System.out.println(minWindow("a", "b"));
     }
     /**
      * LC77 Combinations
