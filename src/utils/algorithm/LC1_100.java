@@ -1037,10 +1037,44 @@ public class LC1_100 {
         return (sb.length() == 0) ? "/" : sb.toString();
     }
     /**
-<<<<<<< HEAD
      * LC76 Minimum Window SubString
+     * 在s中找到最小能够包含所有t中出现字符的子字符串
      * */
+    public String minWindow1(String s, String t) {
+        if (s.length() < t.length() || t.length() == 0) return "";
+        Map<Character, Integer> map = new HashMap<>();
+        for (char c : t.toCharArray()) {
+            map.merge(c, 1, Integer::sum);  // 放每个字符的数量map.merge(c, 1, (a,b) -> a+b)
+        }
+        int start = 0, end = 0, soluStart = 0, soluEnd = 0, len = t.length(), shortest = Integer.MAX_VALUE;
+        while (end < s.length()) {
+            char c = s.charAt(end);
+            if (map.merge(c, -1, Integer::sum) >= 0) {  // 找到字符c之后，数量-1，此时数量仍然>=0
+                len --;
+            }
+            while (len == 0) {
+                char c1 = s.charAt(start);
+                if (shortest >= end - start + 1) {
+                    soluStart = start;
+                    soluEnd = end + 1;
+                    shortest = end - start + 1;
+                }
+                if (map.merge(c1, +1, Integer::sum) > 0) {
+                    len ++;
+                }
+                start ++;
+            }
+            end ++;
+        }
+        return s.substring(soluStart, soluEnd);
+    }
 
+    @Test
+    public void LC76Test(){
+        System.out.println(minWindow1("ADOBECODEBANC", "ABC"));
+        System.out.println(minWindow1("a", "aa"));
+        System.out.println(minWindow1("a", "b"));
+    }
     /**
      * LC77 Combinations
      * */
@@ -1157,6 +1191,7 @@ public class LC1_100 {
         }
         return slow;
     }
+
     @Test
     public void baseTest(){
         int[][] matrix = {
