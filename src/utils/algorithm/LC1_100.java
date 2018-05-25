@@ -1116,6 +1116,29 @@ public class LC1_100 {
         subsetsHelper(nums, result, cur, idx + 1);
     }
     /**
+     * LC90 subsets2
+     * */
+    public List<List<Integer>> subsets2(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        if (nums == null) return result;
+        List<Integer> cur = new ArrayList<>();
+        Arrays.sort(nums);
+        subsetsHelper2(nums, result, cur, 0);
+        return result;
+    }
+    private void subsetsHelper2(int[] nums, List<List<Integer>> result, List<Integer> cur, int idx){
+        if (idx == nums.length) {
+            result.add(new ArrayList<>(cur));
+            return;
+        }
+        cur.add(nums[idx]);
+        subsetsHelper2(nums, result, cur, idx + 1);
+        cur.remove(cur.size() - 1);
+        while (idx < nums.length - 1 && nums[idx] == nums[idx + 1]) idx ++;
+        subsetsHelper2(nums, result, cur, idx + 1);
+    }
+
+    /**
      * LC79 word search
      * 矩阵中找单词，必须是上下左右相邻的字母串起来构成一个Word
      * */
@@ -1154,13 +1177,6 @@ public class LC1_100 {
      * at most save two same numbers
      * do in-place no new memory
      * */
-    public int removeDuplicates2(int[] nums) {
-        int i = 0;
-        for (int n : nums)
-            if (i < 2 || n > nums[i - 2])
-                nums[i ++] = n;
-        return i;
-    }
     public int removeDuplicates2_1(int[] arr) {
         int slow = 0, fast = 0;
         while (fast < arr.length) {
@@ -1174,13 +1190,6 @@ public class LC1_100 {
     /**
      * remove duplicates from sorted array, no duplicates
      * */
-    public int removeDuplicates1(int[] nums) {
-        int i = 0;
-        for(int n : nums)
-            if(i < 1 || n > nums[i - 1])
-                nums[i ++] = n;
-        return i;
-    }
     public int removeDuplicates1_1(int[] arr) {
         int slow = 0, fast = 0;
         while (fast < arr.length) {
@@ -1191,18 +1200,101 @@ public class LC1_100 {
         }
         return slow;
     }
-
+    /**
+     * LC82 remove duplicates from sorted linkedlist
+     * 凡是有重复出现的节点都不要，只要unique的节点
+     * */
+    public ListNode deleteDuplicates2(ListNode head) {
+        if(head == null || head.next == null) return head;
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        ListNode pre = dummy;
+        ListNode cur = head;
+        while(cur != null){
+            while(cur.next != null && cur.value == cur.next.value){
+                cur = cur.next;
+            }
+            if(pre.next == cur){
+                pre = pre.next;
+            } else {
+                pre.next = cur.next;
+            }
+            cur = cur.next;
+        }
+        return dummy.next;
+    }
+    public ListNode deleteDuplicates2_1(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+        ListNode prev = dummy;
+        ListNode cur = head;
+        while (cur != null) {
+            while (cur.next != null && cur.value == cur.next.value) {
+                cur = cur.next;
+            }
+            if (prev.next == cur) {
+                prev = prev.next;
+            } else {
+                prev.next = cur.next;
+            }
+            cur = cur.next;
+        }
+        return dummy.next;
+    }
+    /**
+     * LC83 remove duplicates from sorted linkedlist
+     * 同样value的节点只出现一次
+     * */
+    public ListNode deleteDuplicates1(ListNode head) {
+        ListNode cur = head;
+        while (cur != null && cur.next != null) {
+            if (cur.next.value == cur.value) {
+                cur.next = cur.next.next;
+            } else {
+                cur = cur.next;
+            }
+        }
+        return head;
+    }
+    /**
+     * LC88 merge two sorted array
+     * 假定A要比AB有元素的长度都长，足够放下排好序的元素
+     * */
+    public void merge(int A[], int m, int B[], int n) {
+        int i = m - 1, j = n - 1, k = m + n - 1;
+        while (i >= 0 && j >= 0) {
+            if (A[i] > B[j]) {
+                A[k --] = A[i --];
+            } else {
+                A[k --] = B[j --];
+            }
+        }
+        while (j >= 0) A[k --] = B[j --];
+    }
+    /**
+     * LC89 gray code
+     * */
+    public List<Integer> grayCode(int n) {
+        List<Integer> result = new ArrayList<>();
+        if (n < 0) return result;
+        if (n == 0) {
+            result.add(0);
+            return result;
+        }
+        List<Integer> list = grayCode(n - 1);
+        result = new ArrayList<>(list);
+        int addNumber = 1 << (n - 1);
+        for (int i = list.size() - 1; i >= 0; i--) {
+            result.add(addNumber + list.get(i));
+        }
+        return result;
+    }
     @Test
     public void baseTest(){
-        int[][] matrix = {
-                {0,1,2,0},
-                {3,4,5,2},
-                {1,3,1,5}
-        };
-        C1.setZeroes(matrix);
-        for(int[] arr : matrix) {
-            System.out.println(Arrays.toString(arr));
-        }
+        int[] arr = new int[]{1,1,1,2,2,3};
+        System.out.println(removeDuplicates1_1(arr));
+        System.out.println(Arrays.toString(arr));
     }
     @Test
     public void jsonGenerateTest(){
