@@ -1290,11 +1290,168 @@ public class LC1_100 {
         }
         return result;
     }
+    /**
+     * LC91 decode ways
+     * A->Z可以表示成1->26的数字，给一个数字，有多少种方式将这个数字转换为相应的字母序列
+     * arr表示len为几时，最大可以转换的种类的数量
+     * */
+    public int numDecodings(String s) {
+        int len = s.length();
+        if (len == 0) return 0;
+        int[] arr = new int[len + 1];
+        arr[len] = 1;
+        arr[len - 1] = s.charAt(len - 1) == '0' ? 0 : 1;
+        for (int i = len - 2; i >= 0; i--){
+            if (s.charAt(i) != '0') {
+                if (Integer.parseInt(s.substring(i, i + 2)) <= 26) {
+                    arr[i] = arr[i + 1] + arr[i + 2];
+                } else {
+                    arr[i] = arr[i + 1];
+                }
+            }
+        }
+        return arr[0];
+    }
+    /**
+     * LC92 reverse LinkedList 2
+     * from position m to n
+     * Note: 1 ≤ m ≤ n ≤ length of list.
+     Example:
+     Input: 1->2->3->4->5->NULL, m = 2, n = 4
+     Output: 1->4->3->2->5->NULL
+     * */
+    public ListNode reverseBetween(ListNode head, int m, int n) {
+        if (head == null || head.next == null) return head;
+        ListNode dummy = new ListNode(0); // create a dummy node to mark the head of this list
+        ListNode cur = dummy;
+        cur.next = head;
+        for (int i = 0; i < m - 1; i ++) cur = cur.next;
+        ListNode start = cur.next; // a pointer to the beginning of a sub-list that will be reversed
+        ListNode end = start.next; // a pointer to a node that will be reversed
+        // 1 - 2 -3 - 4 - 5 ; m=2; n =4 ---> pre = 1, start = 2, then = 3
+        // dummy-> 1 -> 2 -> 3 -> 4 -> 5
+        for(int i = 0; i < n - m; i ++) {
+            start.next = end.next;
+            end.next = cur.next;
+            cur.next = end;
+            end = start.next;
+        }
+        // first reversing : dummy->1 - 3 - 2 - 4 - 5; pre = 1, start = 2, then = 4
+        // second reversing: dummy->1 - 4 - 3 - 2 - 5; pre = 1, start = 2, then = 5 (finish)
+        return dummy.next;
+    }
+    /**
+     * LC93 restore IP address
+     * 字符串解析IP地址
+     * Input: "25525511135"
+     Output: ["255.255.11.135", "255.255.111.35"]
+     * */
+    public List<String> restoreIpAddresses(String s) {
+        List<String> result = new ArrayList<>();
+        if (s == null || s.length() == 0) return result;
+        restoreIpAddressesHelper(result, s, "", 0, 0);
+        return result;
+    }
+    private void restoreIpAddressesHelper(List<String> result, String s, String s1, int idx, int count) {
+        if (count > 4) return;
+        if (count == 4 && idx == s.length()) {
+            result.add(s1);
+            return;
+        }
+        for (int i = 1; i < 4; i ++) {
+            if (idx + i > s.length()) break;
+            String substring = s.substring(idx, idx + i);
+            if ((substring.startsWith("0") && substring.length() > 1) || (i == 3 && Integer.parseInt(substring) >= 256)) continue;
+            restoreIpAddressesHelper(result, s, s1 + substring + (count == 3? "" : "."), idx + i, count + 1);
+        }
+    }
+    /**
+     * LC96 Unique binary search trees
+     * Given n, how many structurally unique BST's (binary search trees) that store values 1 ... n?
+     * Input: 3
+     Output: 5
+     Explanation:
+     Given n = 3, there are a total of 5 unique BST's:
+
+     1         3     3      2      1
+     \       /     /      / \      \
+     3     2     1      1   3      2
+     /     /       \                 \
+     2     1         2                 3
+     * */
+    public int numTrees(int n) {
+        int [] arr = new int[n + 1];  // arr[i] represents the number of BST trees built from 1....k;
+        arr[0] = arr[1] = 1;
+        for(int i = 2; i <= n; i ++) {
+            for(int j = 1; j <= i; j ++) {
+                arr[i] += arr[j - 1] * arr[i - j];
+            }
+        }
+        return arr[n];
+    }
+    /**
+     * LC95 Unique binary search trees 2
+     * Given an integer n, generate all structurally unique BST's (binary search trees) that store values 1 ... n.
+     *
+     * */
+    public static List<TreeNode> generateTrees(int n) {
+        List<TreeNode>[] result = new ArrayList[n + 1];
+        result[0] = new ArrayList<>();
+        if (n == 0) {
+            return result[0];
+        }
+
+        result[0].add(null);
+        for (int i = 1; i <= n; i ++) {
+            result[i] = new ArrayList<>();
+            for (int j = 0; j < i; j ++) {
+                for (TreeNode nodeL : result[j]) {
+                    for (TreeNode nodeR : result[i - j - 1]) {
+                        TreeNode node = new TreeNode(j + 1);
+                        node.left = nodeL;
+                        node.right = clone(nodeR, j + 1);
+                        result[i].add(node);
+                    }
+                }
+            }
+        }
+        return result[n];
+    }
+    private static TreeNode clone(TreeNode n, int offset) {
+        if (n == null) {
+            return null;
+        }
+        TreeNode node = new TreeNode(n.value + offset);
+        node.left = clone(n.left, offset);
+        node.right = clone(n.right, offset);
+        return node;
+    }
+    /**
+     * LC98 isBST
+     * */
+    public boolean isValidBST(TreeNode root) {
+        return helper(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+    private boolean helper(TreeNode root, long min, long max) {
+        if (root == null) return true;
+        if (root.value <= min || root.value >= max) return false;
+        return helper(root.left, min, root.value) && helper(root.right, root.value, max);
+    }
+    /**
+     * LC100 same Tree
+     * */
+    public boolean isSameTree(TreeNode one, TreeNode two){
+        if (one == null && two == null) return true;
+        if (one == null || two == null) return false;
+        if (one.value != two.value) return false;
+        return isSameTree(one.left, two.left) && isSameTree(one.right, two.right);
+    }
     @Test
     public void baseTest(){
-        int[] arr = new int[]{1,1,1,2,2,3};
-        System.out.println(removeDuplicates1_1(arr));
-        System.out.println(Arrays.toString(arr));
+        String ip = "25525511135";
+        System.out.println(restoreIpAddresses(ip));
+        System.out.println(restoreIpAddresses(ip));
+        StringBuilder sb = new StringBuilder();
     }
     @Test
     public void jsonGenerateTest(){
