@@ -112,14 +112,33 @@ public class LC101_200 {
         TreeNode root = sortedArrToBSTHelper(arr, 0, arr.length - 1);
         return root;
     }
-
-    public TreeNode sortedArrToBSTHelper(int[] arr, int start, int end) {
+    private TreeNode sortedArrToBSTHelper(int[] arr, int start, int end) {
         if (start > end) return null;
         int mid = start + (end - start) / 2;
         TreeNode node = new TreeNode(arr[mid]);
         node.left = sortedArrToBSTHelper(arr, start, mid - 1);
         node.right = sortedArrToBSTHelper(arr, mid + 1, end);
         return node;
+    }
+    /**
+     * LC109 Convert sorted list to BST
+     * */
+    public TreeNode sortedListToBST(ListNode head) {
+        if(head == null) return null;
+        return sortedListToBSTHelper(head,null);
+    }
+    private TreeNode sortedListToBSTHelper(ListNode head, ListNode tail){
+        ListNode slow = head;
+        ListNode fast = head;
+        if(head == tail) return null;
+        while(fast != tail && fast.next != tail){
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        TreeNode root = new TreeNode(slow.value);
+        root.left = sortedListToBSTHelper(head, slow);
+        root.right = sortedListToBSTHelper(slow.next, tail);
+        return root;
     }
 
 }
