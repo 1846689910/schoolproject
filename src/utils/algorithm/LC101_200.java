@@ -140,5 +140,68 @@ public class LC101_200 {
         root.right = sortedListToBSTHelper(slow.next, tail);
         return root;
     }
+    /**
+     * LC111 minimum depth of Binary tree
+     * */
+    public int minDepth1(TreeNode root) {
+        if (root == null) return 0;
+        int leftHeight = minDepth1(root.left);
+        int rightHeight = minDepth1(root.right);
+        if (leftHeight == 0) {
+            return rightHeight + 1;
+        } else if (rightHeight == 0) {
+            return leftHeight + 1;
+        }
+        return Math.min(leftHeight, rightHeight) + 1;
+    }
+    /**
+     * LC112 Path sum
+     * 直通根到叶，检查是否有一条通路，节点数值之和为sum
+     * */
+    public boolean hasPathSum(TreeNode root, int sum) {
+        if(root == null) return false;
+        if(root.left == null && root.right == null && sum == root.value) return true;
+        return hasPathSum(root.left, sum - root.value) || hasPathSum(root.right, sum - root.value);
+    }
+    /**
+     * LC113 Path sum 2
+     * 直通根到叶，获取所有的通路
+     * */
+    public List<List<Integer>> pathSum2(TreeNode root, int sum) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> cur = new ArrayList<>();
+        pathSum2Helper(root, sum, result, cur);
+        return result;
+    }
 
+    public void pathSum2Helper(TreeNode root, int sum, List<List<Integer>> result, List<Integer> cur){
+        if(root == null) return;
+        cur.add(root.value);
+
+        if(root.left != null) {
+            pathSum2Helper(root.left,sum - root.value, result, cur);
+            cur.remove(cur.size() - 1);
+        }
+        if(root.right != null) {
+            pathSum2Helper(root.right,sum - root.value, result, cur);
+            cur.remove(cur.size() - 1);
+        }
+        if(root.left == null && root.right == null && root.value == sum){
+            result.add(new ArrayList<>(cur));
+        }
+    }
+    /**
+     * LC437 Path sum3
+     * 直通any到any. 有多少路径可以让和为sum
+     * */
+    public int pathSum3(TreeNode root, int sum) {
+        if (root == null) return 0;
+        return pathSum3Helper(root, sum) + pathSum3(root.left, sum) + pathSum3(root.right, sum);
+    }
+
+    private int pathSum3Helper (TreeNode root, int sum) {
+        if (root == null) return 0;
+        return (root.value == sum ? 1 : 0)
+                + pathSum3Helper(root.left, sum - root.value) + pathSum3Helper(root.right, sum - root.value);
+    }
 }
