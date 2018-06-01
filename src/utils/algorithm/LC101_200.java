@@ -5,9 +5,11 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
@@ -486,6 +488,17 @@ public class LC101_200 {
         }
         return true;
     }
+    /**
+     * 验证一个字符串是否是严格的palindrome，不忽略大小写和其他字符，严格地验证
+     * */
+    public boolean isPalindrome1(String s){
+        if (s.isEmpty()) return true;
+        int left = 0, right = s.length() - 1;
+        while (left < right) {
+            if (s.charAt(left ++) != s.charAt(right --)) return false;
+        }
+        return true;
+    }
     @Test
     public void isPalindromeTest(){
         String s = ",.";
@@ -685,7 +698,51 @@ public class LC101_200 {
             }
         }
     }
-
+    /**
+     * LC131 palindrome partitioning
+     * 给定一个字符串，分隔这个字符串，使得每个部分都是一个palindrome, 列出所有的分法
+     Input: "aab"
+     Output:
+     [
+        ["aa","b"],
+        ["a","a","b"]
+     ]
+     * */
+    public List<List<String>> partition(String s) {
+        List<List<String>> result = new ArrayList<>();
+        if(s.length() == 0) return result;
+        partitionHelper(result, new ArrayList<>(), s);
+        return result;
+    }
+    private void partitionHelper(List<List<String>> result, List<String> cur, String s){
+        if(s.isEmpty()){
+            result.add(new ArrayList<>(cur));
+            return;
+        }
+        for(int i = 0; i < s.length(); i ++){
+            if(isPalindrome1(s.substring(0, i + 1))){
+                cur.add(s.substring(0, i + 1));
+                partitionHelper(result, cur, s.substring(i + 1));
+                cur.remove(cur.size() - 1);
+            }
+        }
+    }
+    /**
+     * LC133 clone graph
+     * */
+    public UndirectedGraphNode cloneGraph(UndirectedGraphNode node) {
+        return clone(node, new HashMap<>());
+    }
+    private UndirectedGraphNode clone(UndirectedGraphNode node, Map<UndirectedGraphNode, UndirectedGraphNode> map) {
+        if (node == null) return null;
+        if (map.containsKey(node)) return map.get(node);
+        UndirectedGraphNode clone = new UndirectedGraphNode(node.label);
+        map.put(node, clone);
+        for (UndirectedGraphNode neighbor : node.neighbors) {
+            clone.neighbors.add(clone(neighbor, map));
+        }
+        return clone;
+    }
 }
 class TreeLinkNode{
     TreeLinkNode left;
@@ -694,5 +751,13 @@ class TreeLinkNode{
     int val;
     public TreeLinkNode(int val){
         this.val = val;
+    }
+}
+class UndirectedGraphNode {
+    int label;
+    List<UndirectedGraphNode> neighbors;
+    public UndirectedGraphNode(int x) {
+        label = x;
+        neighbors = new ArrayList<UndirectedGraphNode>();
     }
 }
