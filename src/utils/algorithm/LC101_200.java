@@ -1,5 +1,7 @@
 package utils.algorithm;
 
+import org.junit.Test;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
@@ -360,6 +362,132 @@ public class LC101_200 {
             }
         }
         return arr[0];
+    }
+    /**
+     * LC121 Best Time to Buy and Sell Stock
+     * 给定一个array，arr[0]表示第一天的股票价格...以此类推
+     * 在这个array长度的天数中，买股票，之后再卖出去，要求收益最大，求收益
+     * Input: [7,1,5,3,6,4]
+     Output: 5
+     Explanation: Buy on day 2 (price = 1) and sell on day 5 (price = 6), profit = 6-1 = 5.
+     Not 7-1 = 6, as selling price needs to be larger than buying price.
+
+     Input: [7,6,4,3,1]
+     Output: 0
+     Explanation: In this case, no transaction is done, i.e. max profit = 0.
+     time O(n), space O(1)
+     * */
+    public int maxProfit(int prices[]) {
+        int minprice = Integer.MAX_VALUE;
+        int maxprofit = 0;
+        for (int i = 0; i < prices.length; i++) {
+            if (prices[i] < minprice)
+                minprice = prices[i];
+            else if (prices[i] - minprice > maxprofit)
+                maxprofit = prices[i] - minprice;
+        }
+        return maxprofit;
+    }
+    /**
+     * LC122 Best time to buy and sell stock 2
+     * 基本同上。但是这次你可以买卖多次。但是你只能卖掉再买，不可以同时持有很多股
+     * Input: [7,1,5,3,6,4]
+     Output: 7
+     Explanation: Buy on day 2 (price = 1) and sell on day 3 (price = 5), profit = 5-1 = 4.
+     Then buy on day 4 (price = 3) and sell on day 5 (price = 6), profit = 6-3 = 3.
+
+     Input: [1,2,3,4,5]
+     Output: 4
+     Explanation: Buy on day 1 (price = 1) and sell on day 5 (price = 5), profit = 5-1 = 4.
+     Note that you cannot buy on day 1, buy on day 2 and sell them later, as you are
+     engaging multiple transactions at the same time. You must sell before buying again.
+
+     Input: [7,6,4,3,1]
+     Output: 0
+     Explanation: In this case, no transaction is done, i.e. max profit = 0.
+     time O(n), space O(1)
+     * */
+    public int maxProfit2(int[] prices) {
+        if(prices == null || prices.length == 0) return 0;
+        int i = 0;
+        int valley = prices[0];
+        int peak = prices[0];
+        int maxprofit = 0;
+        while (i < prices.length - 1) {
+            while (i < prices.length - 1 && prices[i] >= prices[i + 1]) i++;
+            valley = prices[i];
+            while (i < prices.length - 1 && prices[i] <= prices[i + 1]) i++;
+            peak = prices[i];
+            maxprofit += peak - valley;
+        }
+        return maxprofit;
+    }
+    /**
+     * LC123 Best time to buy and sell stock3
+     * 基本要求同上，但是最多只能做两次买卖
+     * */
+    public int maxProfit3(int[] prices) {
+        int sell1 = 0, sell2 = 0, buy1 = Integer.MIN_VALUE, buy2 = Integer.MIN_VALUE;
+        for (int i = 0; i < prices.length; i ++) {
+            buy1 = Math.max(buy1, -prices[i]);  // 刚开始假设没钱，需要借钱来买，所以是支出，也就是负值
+            sell1 = Math.max(sell1, buy1 + prices[i]);  // 第一次卖出时，我们所剩的就是 price[i]-buy1绝对值，也即两者相加
+            buy2 = Math.max(buy2, sell1 - prices[i]);  // 第二次买，就从上一次卖掉后的所得里减去当日价格
+            sell2 = Math.max(sell2, buy2 + prices[i]);  // 第二次卖就是，上一次买入后剩的钱buy2, 和当日卖掉所得的price[i]之和
+        }
+        return sell2;
+    }
+    /**
+     * LC188 Best time to buy and sell stock4
+     * 基本要求同上，但是要求最多只能做k次买卖
+     * */
+    //buy[i][k]  ith day k transaction buy stock and maximum profit
+    //sell[i][k] ith day k transaction sell stock at hand and maximum profit
+    public int maxProfit4(int k, int[] prices) {
+        if(k > prices.length / 2) return maxP(prices);
+        int[][] buy = new int[prices.length][k + 1];
+        int[][] sell = new int[prices.length][k + 1];
+        buy[0][0] = - prices[0];
+        for(int i = 1; i < prices.length; i ++) buy[i][0] = Math.max(buy[i - 1][0], - prices[i]);
+        for(int j = 1; j <= k; j ++) buy[0][j] = - prices[0];
+        for(int i = 1; i < prices.length; i ++){
+            for(int j = 1; j <= k; j ++){
+                buy[i][j] = Math.max(sell[i - 1][j] - prices[i], buy[i - 1][j]);
+                sell[i][j] = Math.max(buy[i - 1][j - 1] + prices[i], sell[i - 1][j]);
+            }
+        }
+        return Math.max(buy[prices.length - 1][k], sell[prices.length - 1][k]);
+    }
+    public int maxP(int[] prices){
+        int res = 0;
+        for(int i = 0; i < prices.length; i ++){
+            if(i > 0 && prices[i] > prices[i - 1]){
+                res += prices[i] - prices[i - 1];
+            }
+        }
+        return res;
+    }
+    /**
+     * LC125 valid palindrome
+     * 验证一个字符串是否是palindrome，忽略大小写，并且只验证字母的部分
+     * */
+    public boolean isPalindrome(String s) {
+        if (s.isEmpty()) return true;
+        int left = 0, right = s.length() - 1;
+        while(left < right) {
+            if (!Character.isLetterOrDigit(s.charAt(left))) {
+                left++;
+            } else if(!Character.isLetterOrDigit(s.charAt(right))) {
+                right--;
+            } else if (Character.toLowerCase(s.charAt(left ++)) != Character.toLowerCase(s.charAt(right --))){
+                return false;
+            }
+        }
+        return true;
+    }
+    @Test
+    public void isPalindromeTest(){
+        String s = ",.";
+        System.out.println(isPalindrome(s));
     }
 }
 class TreeLinkNode{
