@@ -5,9 +5,11 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Deque;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
+import java.util.Set;
 
 public class LC101_200 {
     /**
@@ -489,6 +491,201 @@ public class LC101_200 {
         String s = ",.";
         System.out.println(isPalindrome(s));
     }
+    /**
+     * LC127 word Ladder
+     * 从一个单词变到另一个单词，每次只能变一个字母，每次变得结果都要在WordList中存在，所以要变多少步才能变过去
+     * Input:
+     beginWord = "hit",
+     endWord = "cog",
+     wordList = ["hot","dot","dog","lot","log","cog"]
+
+     Output: 5
+
+     Explanation: As one shortest transformation is "hit" -> "hot" -> "dot" -> "dog" -> "cog",
+     return its length 5.
+     * */
+    public int ladderLength(String beginWord, String endWord, List<String> wordList) {
+        Queue<String> queue = new LinkedList<>();
+        queue.offer(beginWord);
+        queue.offer(null);
+        Set<String> dict = new HashSet<>(wordList);
+        Set<String> visited = new HashSet<>();
+        visited.add(beginWord);
+        if(!dict.contains(endWord)) return 0;
+        int level = 1;
+        while (! queue.isEmpty()) {
+            String s = queue.poll();
+            if(s != null) {
+                for(int i = 0; i < s.length(); i++) {
+                    char[] chars = s.toCharArray();
+                    for(char c = 'a'; c <= 'z'; c ++) {
+                        chars[i] = c;
+                        String word = new String(chars);
+                        if(word.equals(endWord)) return level + 1;
+                        if(dict.contains(word) && !visited.contains(word)) {
+                            queue.add(word);
+                            visited.add(word);
+                        }
+                    }
+                }
+            } else {
+                level++;
+                if(!queue.isEmpty()) {
+                    queue.add(null);
+                }
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * LC128 longest consecutive sequence
+     * */
+    public int longestConsecutive(int[] arr) {
+        if (arr == null || arr.length == 0) return 0;
+
+        Arrays.sort(arr);
+
+        int longest = 1;
+        int cur = 1;
+
+        for (int i = 1; i < arr.length; i ++) {
+            if (arr[i] != arr[i - 1]) {
+                if (arr[i] == arr[i - 1] + 1) {
+                    cur += 1;
+                }
+                else {
+                    longest = Math.max(longest, cur);
+                    cur = 1;
+                }
+            }
+        }
+
+        return Math.max(longest, cur);
+    }
+    /**
+     * LC129 Sum root to leaf numbers
+     * 将根到叶的所有可能的通路上的数字组成一个数，将这些数求和
+     Input: [1,2,3]
+      1
+     / \
+     2   3
+     Output: 25
+     Explanation:
+     The root-to-leaf path 1->2 represents the number 12.
+     The root-to-leaf path 1->3 represents the number 13.
+     Therefore, sum = 12 + 13 = 25.
+     * */
+    public int sumNumbers(TreeNode root) {
+        return sum(root, 0);
+    }
+    public int sum(TreeNode root, int s){
+        if (root == null) return 0;
+        if (root.right == null && root.left == null) return s * 10 + root.value;
+        return sum(root.left, s * 10 + root.value) + sum(root.right, s * 10 + root.value);
+    }
+    /**
+     * LC130 surrounded region
+     Example:
+
+     X X X X
+     X O O X
+     X X O X
+     X O X X
+     After running your function, the board should be:
+
+     X X X X
+     X X X X
+     X X X X
+     X O X X
+     将矩阵中的字母O全部换成X，但是边界上的不行。有点类似于围棋中被吃掉的部分才能去掉，但是连接边界的点或一片不能去掉
+     * */
+    public void solve(char[][] board){
+        if (board == null || board.length == 0) return;
+        int rows = board.length, cols = board[0].length;
+        for (int i = 0; i < rows; i ++) {
+            for (int j = 0; j < cols; j ++) {
+                if ((i == 0 || i == rows - 1 || j == 0 || j == cols - 1) && board[i][j] == 'O') {
+                    Queue<Point> queue = new LinkedList<>();
+                    board[i][j] = 'B';
+                    queue.offer(new Point(i, j));
+                    while (! queue.isEmpty()) {
+                        Point cur = queue.poll();
+                        validAndPut(board, queue, cur);
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < rows; i++){
+            for (int j = 0; j < cols; j++) {
+                if (board[i][j] == 'B')
+                    board[i][j] = 'O';
+                else if (board[i][j] == 'O')
+                    board[i][j] = 'X';
+            }
+        }
+    }
+    private void validAndPut(char[][] board, Queue<Point> queue, Point cur){
+        int rows = board.length, cols = board[0].length;
+        int x = cur.x - 1;
+        int y = cur.y;
+        if (x >= 0 && x < rows && y >= 0 && y < cols && board[x][y] == 'O') {
+            board[x][y] = 'B';
+            queue.offer(new Point(x, y));
+        }
+        x = cur.x + 1;
+        y = cur.y;
+        if (x >= 0 && x < rows && y >= 0 && y < cols && board[x][y] == 'O') {
+            board[x][y] = 'B';
+            queue.offer(new Point(x, y));
+        }
+        x = cur.x;
+        y = cur.y - 1;
+        if (x >= 0 && x < rows && y >= 0 && y < cols && board[x][y] == 'O') {
+            board[x][y] = 'B';
+            queue.offer(new Point(x, y));
+        }
+        x = cur.x;
+        y = cur.y + 1;
+        if (x >= 0 && x < rows && y >= 0 && y < cols && board[x][y] == 'O') {
+            board[x][y] = 'B';
+            queue.offer(new Point(x, y));
+        }
+    }
+    public static void solve1(char[][] board) {
+        if (board == null || board.length == 0)
+            return;
+        int rows = board.length, columns = board[0].length;
+        int[][] direction = { { -1, 0 }, { 1, 0 }, { 0, 1 }, { 0, -1 } };
+        for (int i = 0; i < rows; i ++)
+            for (int j = 0; j < columns; j ++) {
+                if ((i == 0 || i == rows - 1 || j == 0 || j == columns - 1) && board[i][j] == 'O') {
+                    Queue<Point> queue = new LinkedList<>();
+                    board[i][j] = 'B';
+                    queue.offer(new Point(i, j));
+                    while (! queue.isEmpty()) {
+                        Point point = queue.poll();
+                        for (int k = 0; k < 4; k++) {
+                            int x = direction[k][0] + point.x;
+                            int y = direction[k][1] + point.y;
+                            if (x >= 0 && x < rows && y >= 0 && y < columns && board[x][y] == 'O') {
+                                board[x][y] = 'B';
+                                queue.offer(new Point(x, y));
+                            }
+                        }
+                    }
+                }
+            }
+        for (int i = 0; i < rows; i++){
+            for (int j = 0; j < columns; j++) {
+                if (board[i][j] == 'B')
+                    board[i][j] = 'O';
+                else if (board[i][j] == 'O')
+                    board[i][j] = 'X';
+            }
+        }
+    }
+
 }
 class TreeLinkNode{
     TreeLinkNode left;
