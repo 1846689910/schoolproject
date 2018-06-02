@@ -743,6 +743,54 @@ public class LC101_200 {
         }
         return clone;
     }
+    /**
+     * LC134 Gas Station
+     * N 座加油站位于环行线上，第i个加油站的油量是gas[i]. 有个车油箱无限大, 从加油站i开到加油站i+1, 需要耗费cost[i]的油量
+     * 汽车开始无油，从某一个加油站开出，它是否能环绕路线一圈。如果能返回起始加油站的索引，如果不能返回-1
+     * 假定：
+     *  如果有解，解唯一
+     *  gas和cost不空，且长度相同，并且没有负数元素
+     * Input:
+     gas  = [1,2,3,4,5]
+     cost = [3,4,5,1,2]
+
+     Output: 3
+
+     Explanation:
+     Start at station 3 (index 3) and fill up with 4 unit of gas. Your tank = 0 + 4 = 4
+     Travel to station 4. Your tank = 4 - 1 + 5 = 8
+     Travel to station 0. Your tank = 8 - 2 + 1 = 7
+     Travel to station 1. Your tank = 7 - 3 + 2 = 6
+     Travel to station 2. Your tank = 6 - 4 + 3 = 5
+     Travel to station 3. The cost is 5. Your gas is just enough to travel back to station 3.
+     Therefore, return 3 as the starting index.
+     *
+     * */
+    public int canCompleteCircuit1(int[] gas, int[] cost) {
+        int start = 0, total = 0, tank = 0;
+        for (int i = 0; i < gas.length; i ++) {
+            tank = tank + gas[i] - cost[i];
+            if (tank < 0) {
+                start = i + 1;
+                total += tank;
+                tank = 0;
+            }
+        }
+        return total + tank < 0 ? -1 : start;
+    }
+    public int canCompleteCircuit(int[] gas, int[] cost){
+        int sum = 0, result = 0, total = 0;
+        for (int i = 0; i < gas.length; i ++) {
+            sum += (gas[i] - cost[i]);
+            if (sum < 0) {
+                total += sum;
+                sum = 0;
+                result = i + 1;
+            }
+        }
+        total += sum;
+        return total < 0 ? -1 : result;
+    }
 }
 class TreeLinkNode{
     TreeLinkNode left;
