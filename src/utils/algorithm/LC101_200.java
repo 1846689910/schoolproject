@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.Queue;
 import java.util.Set;
 
+import static utils.algorithm.C3.findMidListNode;
+
 public class LC101_200 {
     /**
      * LC103 Binary Tree Zigzag Level Order Traversal
@@ -802,6 +804,91 @@ public class LC101_200 {
             twos = (twos ^ arr[i]) & ~ones;
         }
         return ones;
+    }
+    /**
+     * LC147 Insertion sort list 插入法排序list
+     * */
+    public ListNode insertionSortList(ListNode head) {
+        if(head == null || head.next == null) return head;
+        ListNode dummy = new ListNode(0); //new starter of the sorted list
+        ListNode cur = head; //the node will be inserted
+        ListNode pre = dummy; //insert node between pre and pre.next
+        ListNode next = null; //the next node will be inserted
+        //not the end of input list
+        while( cur != null ){
+            next = cur.next;
+            //find the right place to insert
+            while( pre.next != null && pre.next.value < cur.value ){
+                pre = pre.next;
+            }
+            //insert between pre and pre.next
+            cur.next = pre.next;
+            pre.next = cur;
+            cur = next;
+            pre = dummy;
+        }
+        return dummy.next;
+    }
+    /**
+     * LC148 merge sort list
+     * */
+    public ListNode mergeSort(ListNode head) {
+        if (head == null || head.next == null) return head;
+        // step 1. cut the list to two halves
+        ListNode mid = findMidListNode(head);
+        ListNode left = head;
+        ListNode right = mid.next;
+        mid.next = null;
+        // step 2. sort each half
+        ListNode l1 = mergeSort(left);
+        ListNode l2 = mergeSort(right);
+        // step 3. merge l1 and l2
+        return merge(l1, l2);
+    }
+    ListNode merge(ListNode one, ListNode two) {
+        ListNode dummy = new ListNode(0), cur = dummy;
+        while (one != null && two != null) {
+            if (one.value < two.value) {
+                cur.next = one;
+                one = one.next;
+            } else {
+                cur.next = two;
+                two = two.next;
+            }
+            cur = cur.next;
+        }
+        if (one != null) cur.next = one;
+        if (two != null) cur.next = two;
+        return dummy.next;
+    }
+    /**
+     * LC150 evaluate reverse polish notation
+     * */
+    public int evalRPN(String[] arr) {
+        Deque<Integer> stack = new LinkedList<>();
+        for (String s : arr) {
+            switch (s) {
+                case "+":
+                    stack.offerFirst(stack.pollFirst() + stack.pollFirst());
+                    break;
+
+                case "-":
+                    stack.offerFirst(-stack.pollFirst() + stack.pollFirst());
+                    break;
+
+                case "*":
+                    stack.offerFirst(stack.pollFirst() * stack.pollFirst());
+                    break;
+
+                case "/":
+                    int n1 = stack.pollFirst(), n2 = stack.pollFirst();
+                    stack.offerFirst(n2 / n1);
+                    break;
+                default:
+                    stack.offerFirst(Integer.parseInt(s));
+            }
+        }
+        return stack.pollFirst();
     }
 
 }

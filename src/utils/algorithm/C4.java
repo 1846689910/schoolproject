@@ -27,6 +27,23 @@ public class C4 {
         }
         return result;
     }
+    public static List<Integer> preOrderTraverseIt1(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        if (root == null) return result;
+        Deque<TreeNode> stack = new LinkedList<>();
+        TreeNode cur = root;
+        while (! stack.isEmpty() || cur != null) {
+            if (cur != null) {
+                stack.offerFirst(cur);
+                result.add(cur.value);
+                cur = cur.left;
+            } else {
+                cur = stack.pollFirst();
+                cur = cur.right;
+            }
+        }
+        return result;
+    }
     @Test
     public void preOrderTraverseTest(){
         System.out.println(preOrderTraverseRe(TreeNode.binaryTree1()));
@@ -100,10 +117,30 @@ public class C4 {
         }
         return result;
     }
+    public static List<Integer> postOrderTraverseIt1(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        if (root == null) return result;
+        Deque<TreeNode> stack = new LinkedList<>();
+        TreeNode cur = root;
+        while (! stack.isEmpty() || cur != null) {
+            if (cur != null) {
+                stack.offerFirst(cur);
+                result.add(cur.value);
+                cur = cur.right;
+            } else {
+                cur = stack.pollFirst();
+                cur = cur.left;
+            }
+        }
+        Collections.reverse(result);
+        return result;
+    }
+
     @Test
     public void postOrderTreaverseTest(){
         System.out.println(postOrderTraverseRe(TreeNode.binaryTree1()));
         System.out.println(postOrderTraverseIt(TreeNode.binaryTree1()));
+        System.out.println(postOrderTraverseIt1(TreeNode.binaryTree1()));
     }
     /** level order traverse */
     public static List<List<Integer>> levelOrderTraverse(TreeNode root){
