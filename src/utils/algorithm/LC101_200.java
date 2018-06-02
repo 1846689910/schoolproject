@@ -2,12 +2,7 @@ package utils.algorithm;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 public class LC101_200 {
     /**
@@ -483,6 +478,18 @@ public class LC101_200 {
             }
         }
         return true;
+    }
+    /**
+     * LC137 Single Number2
+     * 一个数组中，每个数都重复3遍，只有一个数是unique的，找到该数
+     * */
+    public int singleNumber(int[] arr) {
+        int ones = 0, twos = 0;
+        for(int i = 0; i < arr.length; i++){
+            ones = (ones ^ arr[i]) & ~twos;
+            twos = (twos ^ arr[i]) & ~ones;
+        }
+        return ones;
     }
     @Test
     public void isPalindromeTest(){
