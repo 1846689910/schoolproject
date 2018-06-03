@@ -862,6 +862,70 @@ public class LC101_200 {
         return dummy.next;
     }
     /**
+     * LC149 max points on a line
+     * */
+//    public int maxPoints(Point[] points) {
+//        // assume: points is not null, and points.length >= 2
+//        // record the maximum number of points on the same line
+//        int result = 0;
+//        // we use each pair of points to form a line
+//        for (int i = 0; i < points.length; i ++) {
+//            // any line can be represented by a point and a slope
+//            // we take the point as seed and try to find all possible slopes
+//            Point seed = points[i];
+//            // record the points with same <x, y>
+//            int same = 1;
+//            // record the points with same x, for the special case of infinite slope
+//            // infinite slope
+//            int sameX = 0;
+//            // record the maximum number of points on the same line
+//            // crossing the seed point
+//            int most = 0;
+//            // a map with all possible slopes
+//            Map<Double, Integer> cnt = new HashMap<>();  // 使用的是点斜式的直线表示法
+//            // 第一个for循环确定一个点，以这个点出发连线别的点，如果发现斜率相等
+//            // 那么就是同一条直线
+//            for (int j = 0; j < points.length; j ++) {
+//                if (i == j) {
+//                    continue;
+//                }
+//                Point tmp = points[j];
+//                if (tmp.x == seed.x && tmp.y == seed.y) {
+//                    // handle the points with same <x, y>
+//                    same ++;
+//                } else if (tmp.x == seed.x) {
+//                    // handle the points with same x
+//                    sameX ++;
+//                } else {
+//                    // otherwise, just calculate the slope and increment the counter
+//                    // for the calculated slope
+//                    double slope = ((tmp.y - seed.y) + 0.0) / (tmp.x - seed.x);
+//                    if (! cnt.containsKey(slope)) {
+//                        cnt.put(slope, 1);
+//                    } else {
+//                        cnt.put(slope, cnt.get(slope) + 1);
+//                    }
+//                    most = Math.max(most, cnt.get(slope));
+//                }
+//            }
+//            most = Math.max(most, sameX) + same;  // 总共点斜式的直线就两种情况，斜率为0和不为0
+//            System.out.println("here: " + most);
+//            result = Math.max(result, most);
+//        }
+//        return result;
+//
+//    }
+//    @Test
+//    public void maxPointsTest(){
+//        Point[] points = new Point[3];
+//        points[0] = new Point(0, 0);
+//        points[1] = new Point(94911151,94911150);
+//        points[2] = new Point(94911152,94911151);
+//        System.out.println(maxPoints(points));
+//        System.out.println((double)(points[1].y / points[1].x) == (double)(points[2].y / points[2].x));
+////        System.out.println((double)(points[2].y / points[2].x));
+//    }
+    /**
      * LC150 evaluate reverse polish notation
      * */
     public int evalRPN(String[] arr) {
@@ -890,6 +954,7 @@ public class LC101_200 {
         }
         return stack.pollFirst();
     }
+
 
 }
 class TreeLinkNode{
