@@ -1035,6 +1035,128 @@ public class LC101_200 {
         System.out.println(findMin2(new int[]{3, 4, 5, 1, 2}));
         System.out.println(findMin2(new int[]{3, 1, 1}));
     }
+    /**
+     * LC162 find peak element
+     * Example 1:
+     Input: nums = [1,2,3,1]
+     Output: 2
+     Explanation: 3 is a peak element and your function should return the index number 2.
+
+     Example 2:
+     Input: nums = [1,2,1,3,5,6,4]
+     Output: 1 or 5
+     Explanation: Your function can return either index number 1 where the peak element is 2,
+     or index number 5 where the peak element is 6.
+     * */
+    public int findPeakElement(int[] arr) {
+        int left = 0, right = arr.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (arr[mid] > arr[mid + 1])
+                right = mid;
+            else
+                left = mid + 1;
+        }
+        return left;
+    }
+    /**
+     * LC165 compare version numbers
+     * Example 1:
+
+     Input: version1 = "0.1", version2 = "1.1"
+     Output: -1
+     Example 2:
+
+     Input: version1 = "1.0.1", version2 = "1"
+     Output: 1
+     Example 3:
+
+     Input: version1 = "7.5.2.4", version2 = "7.5.3"
+     Output: -1
+     * */
+    public int compareVersion(String version1, String version2) {
+        int num1 = 0,num2 = 0;
+        int len1 = version1.length(), len2 = version2.length();
+        int i = 0, j = 0;
+        while(i < len1 || j < len2) {
+            num1 = 0;
+            num2 = 0;
+            while(i < len1 && version1.charAt(i) != '.') {
+                num1 = num1 * 10 + version1.charAt(i ++) - '0';
+
+            }
+            while(j < len2 && version2.charAt(j) != '.') {
+                num2 = num2 * 10 + version2.charAt(j ++) - '0';
+
+            }
+            if(num1 > num2) {
+                return 1;
+            } else if(num1<num2){
+                return -1;
+            } else {
+                i ++;
+                j ++;
+            }
+        }
+        return 0;
+    }
+    /**
+     * LC166 Fraction to recurring decimal
+     * */
+    public String fractionToDecimal(int numerator, int denominator) {
+        boolean isNegative = numerator < 0 && denominator > 0 || numerator > 0 && denominator < 0;
+        long numeratorL = Math.abs((long) numerator);
+        long denominatorL = Math.abs((long) denominator);
+        Map<Long, Integer> remains = new HashMap<>();
+        StringBuilder sb = new StringBuilder();
+        long quotient = numeratorL / denominatorL;
+        sb.append(quotient);
+        numeratorL %= denominatorL;
+        if (numeratorL != 0) {
+            sb.append(".");
+        }
+        int quotientIndex = 0;
+        while (numeratorL != 0) {
+            numeratorL *= 10;
+            quotient = Math.abs(numeratorL / denominatorL);
+            if (!remains.containsKey(numeratorL)) {
+                sb.append(quotient);
+                remains.put(numeratorL, quotientIndex ++);
+            } else {
+                int firstIndex = 1 + remains.get(numeratorL) + sb.indexOf(".");
+                sb.insert(firstIndex, '(');
+                sb.append(")");
+                break;
+            }
+            numeratorL %= denominatorL;
+        }
+        if (isNegative) {
+            sb.insert(0, "-");
+        }
+        return sb.toString();
+    }
+    /**
+     * LC168 Excel Sheet column number to letter
+     * */
+    public String convertToTitle(int n) {
+        StringBuilder sb = new StringBuilder();
+        while(n > 0){
+            n --;
+            sb.insert(0, (char)('A' + n % 26));
+            n /= 26;
+        }
+        return sb.toString();
+    }
+    /**
+     * LC171 Excel Sheet column letter to num
+     * */
+    public int titleToNumber(String s) {
+        int result = 0;
+        for (int i = 0; i < s.length(); i++){
+            result = result * 26 + (s.charAt(i) - 'A' + 1);
+        }
+        return result;
+    }
 }
 class TreeLinkNode{
     TreeLinkNode left;
