@@ -1157,6 +1157,39 @@ public class LC101_200 {
         }
         return result;
     }
+    /**
+     * LC172 Factorial trailing zeroes
+     * 计算一个数得阶乘的结果有多少0，0基本都是由5*2产生的，所以我们需要数里面总共有多少个5
+     * */
+    public int trailingZeroes(int n) {
+        return n == 0 ? 0 : n / 5 + trailingZeroes(n / 5);
+    }
+
+    /**
+     *          15
+     *         /  \
+     *       12   19
+     *       /\   / \
+     *     10 14 16 20
+     * */
+    public TreeNode BST(){
+        TreeNode root = new TreeNode(15);
+        root.left = new TreeNode(12);
+        root.right = new TreeNode(19);
+        root.left.left = new TreeNode(10);
+        root.left.right = new TreeNode(14);
+        root.right.left = new TreeNode(16);
+        root.right.right = new TreeNode(20);
+        return root;
+    }
+    @Test
+    public void BSTIteratorTest(){
+        TreeNode root = BST();
+        BSTIterator it = new BSTIterator(root);
+        while (it.hasNext()) {
+            System.out.println(it.next());
+        }
+    }
 }
 class TreeLinkNode{
     TreeLinkNode left;
@@ -1173,5 +1206,48 @@ class UndirectedGraphNode {
     public UndirectedGraphNode(int x) {
         label = x;
         neighbors = new ArrayList<UndirectedGraphNode>();
+    }
+}
+/**
+ * LC173 BST Iterator
+ * should run in O(1) time and O(h) memory, h is the height of the tree
+ * inOrder will work
+ * */
+class BSTIterator {
+    private Deque<TreeNode> stack;
+    public BSTIterator(TreeNode root) {
+        stack = new LinkedList<>();
+        TreeNode cur = root;
+        while(cur != null){
+            stack.offerFirst(cur);
+            if(cur.left != null) {
+                cur = cur.left;
+            } else {
+                break;
+            }
+        }
+    }
+
+    /** @return whether we have a next smallest number */
+    public boolean hasNext() {
+        return ! stack.isEmpty();
+    }
+
+    /** @return the next smallest number */
+    public int next() {
+        TreeNode node = stack.pollFirst();
+        TreeNode cur = node;
+        // traversal right branch
+        if(cur.right != null){
+            cur = cur.right;
+            while(cur != null){
+                stack.offerFirst(cur);
+                if(cur.left != null)
+                    cur = cur.left;
+                else
+                    break;
+            }
+        }
+        return node.value;
     }
 }

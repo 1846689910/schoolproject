@@ -80,6 +80,7 @@ public class C4 {
     public void inOrderTraverseTest(){
         System.out.println(inOrderTraverseRe(TreeNode.binaryTree1()));
         System.out.println(inOrderTraverseIt(TreeNode.binaryTree1()));
+        System.out.println(inOrderTraverseRe(TreeNode.BST()));
     }
     /** post order traverse */
     public static List<Integer> postOrderTraverseRe(TreeNode root){
@@ -906,7 +907,6 @@ class TreeNode{
         root.right.right = new TreeNode(20);
         return root;
     }
-
 
 }
 class TreeNodeP{
