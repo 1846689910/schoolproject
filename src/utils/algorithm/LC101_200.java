@@ -954,8 +954,87 @@ public class LC101_200 {
         }
         return stack.pollFirst();
     }
+    /**
+     * LC152 Maximum product subarray
+     * Example 1:
 
+     Input: [2,3,-2,4]
+     Output: 6
+     Explanation: [2,3] has the largest product 6.
+     Example 2:
 
+     Input: [-2,0,-1]
+     Output: 0
+     Explanation: The result cannot be 2, because [-2,-1] is not a subarray.
+     * */
+    public int maxProduct(int[] arr) {
+        if (arr == null || arr.length == 0) return 0;
+        int result = arr[0], min = arr[0], max = arr[0];
+        for (int i = 1; i < arr.length; i ++) {
+            if (arr[i] >= 0) {
+                max = Math.max(arr[i], max * arr[i]);
+                min = Math.min(arr[i], min * arr[i]);
+            } else {
+                int tmp = max;
+                max = Math.max(arr[i], min * arr[i]);
+                min = Math.min(arr[i], tmp * arr[i]);
+            }
+            result = Math.max(result, max);
+        }
+        return result;
+    }
+    @Test
+    public void maxProductTest(){
+//        System.out.println(maxProduct(new int[]{2, 3, -2, 4}));
+        System.out.println(maxProduct(new int[]{-1, -2, 1, 1, 4, 5, -3}));
+//        System.out.println(maxProduct(new int[]{-2, 0, -1}));
+//        System.out.println(maxProduct(new int[]{-4, -3}));
+//        System.out.println(maxProduct(new int[]{0, 2}));
+    }
+    /**
+     * LC153 find minimum in rotated sorted array
+     * */
+    public int findMin (int[] arr) {
+        if (arr == null || arr.length == 0) return -1;
+        int left = 0;
+        int right = arr.length - 1;
+        while (left < right) {
+            if (arr[left] < arr[right]) {
+                return arr[left];
+            }
+            int mid = left + (right - left) / 2;
+            if (arr[mid] >= arr[right]) {
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        return arr[left];
+    }
+    /**
+     * LC154 find minimum in rotated sorted array2
+     * 有可能有重复的数字
+     * */
+    public int findMin2(int[] arr){
+        if (arr == null || arr.length == 0) return -1;
+        int left = 0, right = arr.length - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (arr[mid] > arr[right]) {
+                left = mid + 1;
+            } else if (arr[mid] < arr[right]) {
+                right = mid;
+            } else {
+                right --;
+            }
+        }
+        return arr[left];
+    }
+    @Test
+    public void findMinTest(){
+        System.out.println(findMin2(new int[]{3, 4, 5, 1, 2}));
+        System.out.println(findMin2(new int[]{3, 1, 1}));
+    }
 }
 class TreeLinkNode{
     TreeLinkNode left;
