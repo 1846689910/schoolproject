@@ -1227,6 +1227,91 @@ public class LC101_200 {
         }
         return new ArrayList<>(repeated);
     }
+    /**
+     * LC198 House Robber
+     * 给定arr，找出不相邻的数，他们的和最大
+     * */
+    public int rob(int[] arr) {
+        int rob = 0; //max monney can get if rob current house
+        int notRob = 0; //max money can get if not rob current house
+        for(int i = 0; i < arr.length; i ++) {
+            int currob = notRob + arr[i]; //if rob current value, previous house must not be robbed
+            notRob = Math.max(notRob, rob); //if not rob ith house, take the max value of robbed (i-1)th house and not rob (i-1)th house
+            rob = currob;
+        }
+        return Math.max(rob, notRob);
+    }
+    /**
+     * LC199 Tree right side view
+     * 从Tree的右边看去，获取每一层的最右边的元素
+     * */
+    public List<Integer> rightSideView(TreeNode root) {
+        List<Integer> result = new ArrayList<>();
+        if (root == null) return result;
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.offer(root);
+        while (! queue.isEmpty()){
+            int size = queue.size();
+            for (int i = 0; i < size; i ++) {
+                TreeNode cur = queue.poll();
+                if (cur.left != null) queue.offer(cur.left);
+                if (cur.right != null) queue.offer(cur.right);
+                if (i == size - 1) {
+                    result.add(cur.value);
+                }
+            }
+        }
+        return result;
+    }
+    /**
+     * LC200 Number of Islands
+     * 一个2维矩阵，1表示陆地, 0表示水.
+     * island是和陆地垂直或水平相连的
+     Example 1:
+
+     Input:
+     11110
+     11010
+     11000
+     00000
+
+     Output: 1
+
+     Example 2:
+
+     Input:
+     11000
+     11000
+     00100
+     00011
+
+     Output: 3
+     抵消法，从[0,0]开始，将1相邻的点都变成0，这一块陆地都被填为海，那么岛屿数量+1
+     * */
+    public int numIslands(char[][] grid) {
+        int count = 0;
+        int rows = grid.length;
+        if (rows == 0) return 0;
+        int cols = grid[0].length;
+        for (int i = 0; i < rows; i ++){
+            for (int j = 0; j < cols; j ++){
+                if (grid[i][j] == '1') {
+                    DFSMarking(grid, i, j, rows, cols);
+                    count ++;
+                }
+            }
+        }
+        return count;
+    }
+
+    private void DFSMarking(char[][] grid, int i, int j, int rows, int cols) {
+        if (i < 0 || j < 0 || i >= rows || j >= cols || grid[i][j] != '1') return;
+        grid[i][j] = '0';
+        DFSMarking(grid, i + 1, j, rows, cols);
+        DFSMarking(grid, i - 1, j, rows, cols);
+        DFSMarking(grid, i, j + 1, rows, cols);
+        DFSMarking(grid, i, j - 1, rows, cols);
+    }
 
 }
 class TreeLinkNode{
