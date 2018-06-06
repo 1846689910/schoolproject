@@ -1190,6 +1190,44 @@ public class LC101_200 {
             System.out.println(it.next());
         }
     }
+    /**
+     * LC179 Largest Number
+     * 给定一个非负数组，如何调整元素顺序，使得这些元素连接组成一个数字，该数值最大
+     * */
+    public String largestNumber(int[] num) {
+        String[] array = Arrays.stream(num).mapToObj(String::valueOf).toArray(String[]::new);
+        Arrays.sort(array, (String s1, String s2) -> (s2 + s1).compareTo(s1 + s2));
+        return Arrays.stream(array).reduce((x, y) -> x.equals("0") ? y : x + y).get();
+        /*
+        *
+          for (String s : array) {
+            if (! sb.toString().equals("0")) {
+                sb.append(s);
+            }
+          }
+          return sb.toString();
+        * */
+    }
+    /**
+     * LC187 repeated DNA sequence
+     * 找到所有10个字符长度的重复DNA片段
+     * 所有n个字符长度的重复DNA片段
+     * Example:
+
+     Input: s = "AAAAACCCCCAAAAACCCCCCAAAAAGGGTTT"
+
+     Output: ["AAAAACCCCC", "CCCCCAAAAA"]
+     * */
+    public List<String> findRepeatedDnaSequences(String s, int n) {
+        Set<String> seen = new HashSet<>();
+        Set<String> repeated = new HashSet<>();
+        for (int i = 0; i + n - 1 < s.length(); i ++) {
+            String s1 = s.substring(i, i + n);
+            if (!seen.add(s1)) repeated.add(s1);
+        }
+        return new ArrayList<>(repeated);
+    }
+
 }
 class TreeLinkNode{
     TreeLinkNode left;
