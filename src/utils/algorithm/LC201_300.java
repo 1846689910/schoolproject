@@ -48,6 +48,95 @@ public class LC201_300 {
         System.out.println(isHappy(19));
     }
     /**
+     * LC204 Count Primes
+     * 计算小于某个非负数n得所有质数的数量
+     * Input: 10
+     Output: 4
+     Explanation: There are 4 prime numbers less than 10, they are 2, 3, 5, 7.
+     * */
+    public int countPrimes(int n) {
+        boolean[] notPrime = new boolean[n];
+        int count = 0;
+        for (int i = 2; i < n; i ++) {
+            if (! notPrime[i]) {
+                count ++;
+                for (int j = 2; i * j < n; j ++) {
+                    notPrime[i * j] = true;
+                }
+            }
+        }
+        return count;
+    }
+    /**
+     * LC205 isomorphic strings
+     * 如果一个字符串中的相同字符被替换后可以变成另一个字符串。他们两是isomorphic
+     * Input: s = "egg", t = "add"
+     Output: true
+     * */
+    public boolean isIsomorphic(String s, String t) {
+        if (s == null || t == null || s.length() != t.length()) return false;
+        int[] arr1 = new int[256];
+        int[] arr2 = new int[256];
+        int len = s.length();
+        for (int i = 0; i < len; i ++) {
+            if (arr1[s.charAt(i)] != arr2[t.charAt(i)]) return false;
+            arr1[s.charAt(i)] = i + 1;
+            arr2[t.charAt(i)] = i + 1;
+        }
+        return true;
+    }
+    @Test
+    public void isIsomorphicTest(){
+        System.out.println(isIsomorphic("att", "egg"));
+    }
+    /**
+     * LC207 course schedule
+     * [0, 1]每个课程表示为数组，表示要想上课程0,必须先修课程1
+     *Input: 2, [[1,0]]
+     Output: true
+     Explanation: There are a total of 2 courses to take.
+     To take course 1 you should have finished course 0. So it is possible.
+
+     Input: 2, [[1,0],[0,1]]
+     Output: false
+     Explanation: There are a total of 2 courses to take.
+     To take course 1 you should have finished course 0, and to take course 0 you should
+     also have finished course 1. So it is impossible.
+     * */
+    public boolean canFinish(int numCourses, int[][] prerequisites) {
+        List<Integer>[] preAndAfter = new List[numCourses];  // [List<Integer>, List<Integer>, ...] 数组序号表示的是先修课程的号, 该序号对应的list里保存的是所有以该课程为先修课的课号
+        for (int i = 0; i < numCourses; i++) {
+            preAndAfter[i] = new ArrayList<>();
+        }
+        for (int[] p: prerequisites) {
+            preAndAfter[p[1]].add(p[0]);
+        }
+        int[] visited = new int[numCourses];  // 该课程被检索过的次数
+        for (int i = 0; i < numCourses; i ++) {
+            if (! validCourse(preAndAfter, i, visited)) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private boolean validCourse(List<Integer>[] preAndAfter, int idx, int[] visited) {
+        if (visited[idx] == 1) {
+            return false;
+        }
+        if (visited[idx] == 2) {
+            return true;
+        }
+        visited[idx] = 1;
+        for (int after: preAndAfter[idx]) {
+            if (! validCourse(preAndAfter, after, visited)) {
+                return false;
+            }
+        }
+        visited[idx] = 2;
+        return true;
+    }
+    /**
      * LC287
      * find duplicate number
      * 在一个数组中，有一个数重复多次，找出这个数
