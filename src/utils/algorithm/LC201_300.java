@@ -119,7 +119,6 @@ public class LC201_300 {
         }
         return true;
     }
-
     private boolean validCourse(List<Integer>[] preAndAfter, int idx, int[] visited) {
         if (visited[idx] == 1) {
             return false;
@@ -135,6 +134,23 @@ public class LC201_300 {
         }
         visited[idx] = 2;
         return true;
+    }
+    /**
+     * LC209 Minimum size subarray sum
+     * 给定num和arr，从arr中找到最小的片段使得和>=num
+     * */
+    public int minSubArrayLen(int num, int[] arr){
+        int result = Integer.MAX_VALUE;
+        int left = 0, right = arr.length - 1;
+        int sum = 0;
+        for (int i = 0; i < arr.length; i ++) {
+            sum += arr[i];
+            while (sum >= num) {
+                result = Math.min(result, i + 1 - left);
+                sum -= arr[left ++];
+            }
+        }
+        return result != Integer.MAX_VALUE ? result : 0;
     }
     /**
      * LC287
