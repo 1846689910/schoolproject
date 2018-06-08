@@ -104,35 +104,35 @@ public class LC201_300 {
      also have finished course 1. So it is impossible.
      * */
     public boolean canFinish(int numCourses, int[][] prerequisites) {
-        List<Integer>[] preAndAfter = new List[numCourses];  // [List<Integer>, List<Integer>, ...] 数组序号表示的是先修课程的号, 该序号对应的list里保存的是所有以该课程为先修课的课号
+        List<Integer>[] graph = new List[numCourses];  // [List<Integer>, List<Integer>, ...] 数组序号表示的是先修课程的号, 该序号对应的list里保存的是所有以该课程为先修课的课号
         for (int i = 0; i < numCourses; i++) {
-            preAndAfter[i] = new ArrayList<>();
+            graph[i] = new ArrayList<>();
         }
         for (int[] p: prerequisites) {
-            preAndAfter[p[1]].add(p[0]);
+            graph[p[1]].add(p[0]);
         }
         int[] visited = new int[numCourses];  // 该课程被检索过的次数
         for (int i = 0; i < numCourses; i ++) {
-            if (! validCourse(preAndAfter, i, visited)) {
+            if (! validCourse(graph, i, visited)) {
                 return false;
             }
         }
         return true;
     }
-    private boolean validCourse(List<Integer>[] preAndAfter, int idx, int[] visited) {
-        if (visited[idx] == 1) {
+    private boolean validCourse(List<Integer>[] graph, int idx, int[] visited) {
+        if (visited[idx] == 1) {  // loop
             return false;
         }
-        if (visited[idx] == 2) {
+        if (visited[idx] == 2) {  // point is already clear
             return true;
         }
-        visited[idx] = 1;
-        for (int after: preAndAfter[idx]) {
-            if (! validCourse(preAndAfter, after, visited)) {
+        visited[idx] = 1;  // start exploring
+        for (int after: graph[idx]) {
+            if (! validCourse(graph, after, visited)) {
                 return false;
             }
         }
-        visited[idx] = 2;
+        visited[idx] = 2;  // point clear
         return true;
     }
     /**
@@ -178,4 +178,84 @@ public class LC201_300 {
         return -1;
     }
 
+}
+/** LC208 Implement Trie (Prefix Tree)
+ *  Implement a trie with insert, search, and startsWith methods.
+ * */
+class Trie {
+    private TrieNode root;
+
+    public Trie() {
+        root = new TrieNode();
+    }
+
+    // Inserts a word into the trie. time O(m) m is the key length, space O(m) worst case no prefix of the the word exists, need to add new nodes
+    public void insert(String word) {
+        TrieNode node = root;
+        for (int i = 0; i < word.length(); i++) {
+            char currentChar = word.charAt(i);
+            if (!node.containsKey(currentChar)) {
+                node.put(currentChar, new TrieNode());
+            }
+            node = node.get(currentChar);
+        }
+        node.setEnd();
+    }
+
+    // search a prefix or whole key in trie and
+    // returns the node where search ends, time O(m), space O(1)
+    private TrieNode searchPrefix(String word) {
+        TrieNode node = root;
+        for (int i = 0; i < word.length(); i++) {
+            char curLetter = word.charAt(i);
+            if (node.containsKey(curLetter)) {
+                node = node.get(curLetter);
+            } else {
+                return null;
+            }
+        }
+        return node;
+    }
+
+    // Returns if the word is in the trie.
+    public boolean search(String word) {
+        TrieNode node = searchPrefix(word);
+        return node != null && node.isEnd();
+    }
+
+    // Returns if there is any word in the trie
+    // that starts with the given prefix.
+    public boolean startsWith(String prefix) {  // time O(m), space O(1)
+        TrieNode node = searchPrefix(prefix);
+        return node != null;
+    }
+}
+class TrieNode {
+
+    // R links to node children
+    private TrieNode[] links;
+
+    private final int R = 26;
+
+    private boolean isEnd;
+
+    public TrieNode() {
+        links = new TrieNode[R];
+    }
+
+    public boolean containsKey(char ch) {
+        return links[ch -'a'] != null;
+    }
+    public TrieNode get(char ch) {
+        return links[ch -'a'];
+    }
+    public void put(char ch, TrieNode node) {
+        links[ch -'a'] = node;
+    }
+    public void setEnd() {
+        isEnd = true;
+    }
+    public boolean isEnd() {
+        return isEnd;
+    }
 }
