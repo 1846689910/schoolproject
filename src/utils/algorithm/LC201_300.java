@@ -141,16 +141,57 @@ public class LC201_300 {
      * */
     public int minSubArrayLen(int num, int[] arr){
         int result = Integer.MAX_VALUE;
-        int left = 0, right = arr.length - 1;
+        int left = 0;
         int sum = 0;
         for (int i = 0; i < arr.length; i ++) {
             sum += arr[i];
             while (sum >= num) {
-                result = Math.min(result, i + 1 - left);
+                result = Math.min(result, i + 1 - left);  // i + 1 - left is the current size of subarray
                 sum -= arr[left ++];
             }
         }
+        System.out.println(left - 1);  // left - 1是开始，left + result - 1是结束
         return result != Integer.MAX_VALUE ? result : 0;
+    }
+    @Test
+    public void minSubArrayLenTest(){
+        System.out.println(minSubArrayLen(7, new int[]{2, 3, 1, 2, 4, 3}));
+//        System.out.println(minSubArrayLen(2, new int[]{0, 0, 0, 1, 3, 1, 0, 0}));
+    }
+    /**
+     * LC210 course schedule 2
+     * 给定要选课的数量和[[课号, 先修课号], ...], 如果能修完，那么顺序是什么. 可能有多重顺序，只要得出一种即可。如果不能，返回空数组
+     * */
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        int[] edges = new int[numCourses];
+        List<List<Integer>> graph = new ArrayList<>(numCourses);
+        buildGraph(edges, graph, prerequisites);
+        return solveByBFS(edges, graph);
+    }
+    private void buildGraph(int[] edges, List<List<Integer>> graph, int[][] prerequisites){
+        int n = edges.length;
+        while (n-- > 0) graph.add(new ArrayList<>());
+        for (int[] edge : prerequisites) {
+            edges[edge[0]] ++;  // 每个节点的边数，有边表示有先修课
+            graph.get(edge[1]).add(edge[0]);
+        }
+    }
+    private int[] solveByBFS(int[] edges, List<List<Integer>> graph){
+        int[] order = new int[edges.length];
+        Queue<Integer> queue = new LinkedList<>();  // 需要修的课程
+        for (int i = 0; i < edges.length; i ++) {  // 先把没有先修课的课程放入queue, 他们是根节点
+            if (edges[i] == 0) queue.offer(i);
+        }
+        int idx = 0;
+        while (! queue.isEmpty()) {
+            int cur = queue.poll();
+            order[idx ++] = cur;
+            for (int to : graph.get(cur)) {
+                edges[to] --;
+                if (edges[to] == 0) queue.offer(to);
+            }
+        }
+        return idx == edges.length ? order : new int[0];
     }
     /**
      * LC287
