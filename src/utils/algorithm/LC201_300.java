@@ -218,7 +218,40 @@ public class LC201_300 {
 
         return -1;
     }
+    /**
+     * LC213 House robbers 2
+     * 数组成环形，也就是说第一个元素代表的房子和最后一个房子是相邻的
+     * */
+    public int rob(int[] arr) {
 
+        if (arr.length == 1)
+            return arr[0];
+
+        int a = 0, b = 0;
+
+        for (int i = 0; i < arr.length - 1; i ++) {
+            if (i % 2 == 0) {
+                a = Math.max(b, a + arr[i]);
+            } else {
+                b = Math.max(a, b + arr[i]);
+            }
+        }
+
+        int max = Math.max(a, b);
+        a = 0; b = 0;
+
+        for (int i = 1; i < arr.length; i ++) {
+            if (i % 2 == 0) {
+                a = Math.max(b, a + arr[i]);
+            } else {
+                b = Math.max(a, b + arr[i]);
+            }
+        }
+
+        max = Math.max(max, Math.max(a,b));
+
+        return max;
+    }
 }
 /** LC208 Implement Trie (Prefix Tree)
  *  Implement a trie with insert, search, and startsWith methods.
@@ -276,12 +309,10 @@ class TrieNode {
     // R links to node children
     private TrieNode[] links;
 
-    private final int R = 26;
-
     private boolean isEnd;
 
     public TrieNode() {
-        links = new TrieNode[R];
+        links = new TrieNode[26];
     }
 
     public boolean containsKey(char ch) {
@@ -299,4 +330,58 @@ class TrieNode {
     public boolean isEnd() {
         return isEnd;
     }
+}/**
+ * LC211 Add and Search Word - Data structure design
+ * 设计一个word dictionary支持search和add
+ */
+class WordDictionary {
+
+    private static class TrieNode{
+        boolean isWord;
+        TrieNode[] children;
+        TrieNode(){
+            isWord = false;
+            children = new TrieNode[26];
+        }
+    }
+    TrieNode root;
+    /** Initialize your data structure here. */
+    public WordDictionary() {
+        root = new TrieNode();
+    }
+
+    /** Adds a word into the data structure. */
+    public void addWord(String word) {
+        TrieNode node = root;
+        for (int i = 0; i < word.length(); i ++){
+            int j = word.charAt(i) - 'a';
+            if (node.children[j] == null){
+                node.children[j] = new TrieNode();
+            }
+            node = node.children[j];
+        }
+        node.isWord = true;
+    }
+
+    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    public boolean search(String word) {
+        return dfs(word, root, 0);
+    }
+
+    private boolean dfs(String word, TrieNode node, int index){
+        if (index == word.length()){
+            return node.isWord;
+        }
+        if (word.charAt(index) == '.'){
+            for (TrieNode temp : node.children){
+                if (temp != null && dfs(word, temp, index + 1)) return true;
+            }
+            return false;
+        } else {
+            int i = word.charAt(index) - 'a';
+            TrieNode temp = node.children[i];
+            return temp != null && dfs(word, temp, index + 1);
+        }
+    }
 }
+
