@@ -4,6 +4,8 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static utils.algorithm.C8.reverse;
+
 public class LC201_300 {
     /**
      * LC201 Bitwise and of Number range
@@ -251,6 +253,98 @@ public class LC201_300 {
         max = Math.max(max, Math.max(a,b));
 
         return max;
+    }
+    /**
+     * LC214 shortest Palindrome
+     * */
+    public String shortestPalindrome(String s){
+        int j = 0;
+        for (int i = s.length() - 1; i >= 0; i--) {
+            if (s.charAt(i) == s.charAt(j)) j ++;
+        }
+        if (j == s.length()) return s;
+        String suffix = s.substring(j);
+        return new StringBuilder(suffix).reverse().toString() + shortestPalindrome(s.substring(0, j)) + suffix;
+    }
+    /**
+     * LC215 kth largest element in array
+     * */
+    public int findKthLargest(int[] nums, int k) {
+        Arrays.sort(nums);
+        return nums[nums.length - k];
+    }
+    public int findKthLargest1(int[] arr, int k) {
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>(k);
+        for(int val : arr) {
+            minHeap.offer(val);
+            if(minHeap.size() > k) {
+                minHeap.poll();
+            }
+        }
+        return minHeap.peek();
+    }
+    /**
+     * LC216 Combination Sum 3
+     * */
+    public List<List<Integer>> combinationSum3(int k, int n) {
+        List<List<Integer>> result = new ArrayList<>();
+        combinationSum3Helper(result, new ArrayList<>(), k, n, 1);
+        return result;
+    }
+    private void combinationSum3Helper(List<List<Integer>> result, List<Integer> cur, int k, int n, int start) {
+        if (cur.size() == k && n == 0) {
+            result.add(new ArrayList<>(cur));
+            return;
+        }
+        for (int i = start; i <= 9; i ++) {
+            cur.add(i);
+            combinationSum3Helper(result, cur, k, n - i, i + 1);
+            cur.remove(cur.size() - 1);
+        }
+    }
+    /**
+     * LC217 contains duplicate
+     * */
+    public boolean containsDuplicate(int[] nums) {
+        Set<Integer> set = new HashSet<>();
+        for (int num : nums) {
+            if (! set.add(num)) return true;
+        }
+        return false;
+    }
+    /**
+     * LC219 contains duplicate2
+     * arr中是否存在两个数，他们数值相同，但是索引最多相差k
+     * */
+    public boolean containsNearbyDuplicate(int[] nums, int k) {
+        Set<Integer> set = new HashSet<>();
+        for(int i = 0; i < nums.length; i++){
+            if(i > k) set.remove(nums[i - k - 1]);
+            if(! set.add(nums[i])) return true;
+        }
+        return false;
+    }
+    /**
+     * LC220 contains duplicate3
+     * arr中是否存在arr[i]和arr[j],他们数值最多相差t，索引最多相差k
+     * */
+    public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
+        if (k < 1 || t < 0) return false;
+        Map<Long, Long> map = new HashMap<>();
+        for (int i = 0; i < nums.length; i ++) {
+            long remappedNum = (long) nums[i] - Integer.MIN_VALUE;
+            long bucket = remappedNum / ((long) t + 1);
+            if (map.containsKey(bucket)
+                    || (map.containsKey(bucket - 1) && remappedNum - map.get(bucket - 1) <= t)
+                    || (map.containsKey(bucket + 1) && map.get(bucket + 1) - remappedNum <= t))
+                return true;
+            if (map.entrySet().size() >= k) {
+                long lastBucket = ((long) nums[i - k] - Integer.MIN_VALUE) / ((long) t + 1);
+                map.remove(lastBucket);
+            }
+            map.put(bucket, remappedNum);
+        }
+        return false;
     }
 }
 /** LC208 Implement Trie (Prefix Tree)
