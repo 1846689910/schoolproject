@@ -346,6 +346,129 @@ public class LC201_300 {
         }
         return false;
     }
+    /**
+     * LC211 maximal square
+     * */
+    public int maximalSquare(char[][] matrix) {
+        int rows = matrix.length, cols = rows > 0 ? matrix[0].length : 0;
+        int[][] largest = new int[rows + 1][cols + 1];
+        int maxsqlen = 0;
+        for (int i = 1; i <= rows; i++) {
+            for (int j = 1; j <= cols; j++) {
+                if (matrix[i - 1][j - 1] == '1'){
+                    largest[i][j] = Math.min(Math.min(largest[i][j - 1], largest[i - 1][j]), largest[i - 1][j - 1]) + 1;
+                    maxsqlen = Math.max(maxsqlen, largest[i][j]);
+                }
+            }
+        }
+        return maxsqlen * maxsqlen;
+    }
+    @Test
+    public void largestSquareTest(){
+        System.out.println(maximalSquare(new char[][]{
+                {'0', '0', '0'},
+                {'0', '0', '0'},
+                {'0', '0', '0'},
+                {'0', '0', '0'}
+        }));
+
+    }
+    /**
+     * LC222 count complete tree node
+     * given a complete binary tree, 计算共有多少个节点
+     * */
+    public int countNodes(TreeNode root) {
+        int leftDepth = getDepth(root, true);
+        int rightDepth = getDepth(root, false);
+        if (leftDepth == rightDepth) {
+            return (1 << leftDepth) - 1;  // 正好对称
+        } else {
+            return 1 + countNodes(root.left) + countNodes(root.right);
+        }
+    }
+    private int getDepth(TreeNode root, boolean goLeft) {
+        int dep = 0;
+        while (root != null) {
+            if (goLeft) {
+                root = root.left;
+            } else {
+                root = root.right;
+            }
+            dep ++;
+        }
+        return dep;
+    }
+    /**
+     * LC223 Rectangle area
+     * 给定两个矩形，每个矩形对角线的坐标，求两个矩形的覆盖的总面积
+     * (A,B), (C,D), (E,F), (G,H)
+     * */
+    public int computeArea(int A, int B, int C, int D, int E, int F, int G, int H) {
+        int areaOfSqrA = (C-A) * (D-B);
+        int areaOfSqrB = (G-E) * (H-F);
+        int left = Math.max(A, E);
+        int right = Math.min(G, C);
+        int bottom = Math.max(F, B);
+        int top = Math.min(D, H);
+        //If overlap
+        int overlap = 0;
+        if(right > left && top > bottom)
+            overlap = (right - left) * (top - bottom);
+        return areaOfSqrA + areaOfSqrB - overlap;
+    }
+    /**
+     * LC228 Summary Ranges
+     * 给定一个无dup的数组，找出它的元素的范围
+     * Example 1:
+
+     Input:  [0,1,2,4,5,7]
+     Output: ["0->2","4->5","7"]
+     Explanation: 0,1,2 form a continuous range; 4,5 form a continuous range.
+     Example 2:
+
+     Input:  [0,2,3,4,6,8,9]
+     Output: ["0","2->4","6","8->9"]
+     Explanation: 2,3,4 form a continuous range; 8,9 form a continuous range.
+
+     * */
+    public List<String> summaryRanges(int[] arr) {
+        List<String> result = new ArrayList<>();
+        if(arr.length == 1){
+            result.add(arr[0] + "");
+            return result;
+        }
+        for(int i = 0; i < arr.length; i ++){
+            int a = arr[i];
+            while(i + 1 < arr.length && (arr[i + 1] - arr[i]) == 1){
+                i ++;
+            }
+            if(a != arr[i]){
+                result.add(a + "->" + arr[i]);
+            } else {
+                result.add(a + "");
+            }
+        }
+        return result;
+    }
+    /**
+     * LC230 kth smallest element in BST, 1<=k<=元素数
+     * */
+    public int kthSmallest(TreeNode root, int k) {
+        Stack<TreeNode> stack = new Stack<>();
+        TreeNode cur = root;
+        int count = 0;
+        while(!stack.isEmpty() || cur != null) {
+            if(cur != null) {
+                stack.push(cur);  // Just like recursion
+                cur = cur.left;
+            } else {
+                TreeNode node = stack.pop();
+                if(++ count == k) return node.value;
+                cur = node.right;
+            }
+        }
+        return Integer.MIN_VALUE;
+    }
 }
 /** LC208 Implement Trie (Prefix Tree)
  *  Implement a trie with insert, search, and startsWith methods.
@@ -478,4 +601,35 @@ class WordDictionary {
         }
     }
 }
-
+/**
+ * LC225 implement stack using queues
+ * */
+class MyStack {
+    Queue<Integer> queue;
+    public MyStack() {
+        this.queue=new LinkedList<>();
+    }
+    // Push element x onto stack.
+    public void push(int x) {
+        queue.add(x);
+        reverse();
+    }
+    private void reverse(){
+        int size = queue.size();
+        for (int i = 0; i < size - 1; i ++) {
+            queue.add(queue.poll());
+        }
+    }
+    // Removes the element on top of the stack.
+    public int pop() {
+        return queue.poll();
+    }
+    // Get the top element.
+    public int top() {
+        return queue.peek();
+    }
+    // Return whether the stack is empty.
+    public boolean empty() {
+        return queue.isEmpty();
+    }
+}
