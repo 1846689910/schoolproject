@@ -469,6 +469,32 @@ public class LC201_300 {
         }
         return Integer.MIN_VALUE;
     }
+    /**
+     * LC237 Delete Node in LinkedList
+     * 给定一个 未知LinkedList的节点，删除这个节点,
+     * 交换数值法，将自己的值改为下一个节点的值，然后将next连接下下节点
+     * */
+    public void deleteNode(ListNode node) {
+        node.value = node.next.value;
+        node.next = node.next.next;
+    }
+    /**
+     * LC238 product of array except itself
+     * */
+    public int[] productExceptSelf(int[] arr) {
+        int n = arr.length;
+        int[] ret = new int[n];
+        ret[0] = 1;
+        for (int i = 1; i < n; i ++) {
+            ret[i] = ret[i - 1] * arr[i - 1];
+        }
+        int right = 1;
+        for (int i = n - 1; i >= 0; i --) {
+            ret[i] *= right;
+            right *= arr[i];
+        }
+        return ret;
+    }
 }
 /** LC208 Implement Trie (Prefix Tree)
  *  Implement a trie with insert, search, and startsWith methods.
