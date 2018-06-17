@@ -495,6 +495,97 @@ public class LC201_300 {
         }
         return ret;
     }
+    /**
+     * LC 241 different ways to add parentheses
+     * 给定字符串的算数式，决定有多少种加括号的方式产生不同的结果
+     * Example 1:
+
+     Input: "2-1-1"
+     Output: [0, 2]
+     Explanation:
+     ((2-1)-1) = 0
+     (2-(1-1)) = 2
+     Example 2:
+
+     Input: "2*3-4*5"
+     Output: [-34, -14, -10, -10, 10]
+     Explanation:
+     (2*(3-(4*5))) = -34
+     ((2*3)-(4*5)) = -14
+     ((2*(3-4))*5) = -10
+     (2*((3-4)*5)) = -10
+     (((2*3)-4)*5) = 10
+     * */
+    public List<Integer> diffWaysToCompute(String s) {
+        List<Integer> result = new ArrayList<>();
+        for (int i = 0; i < s.length(); i ++) {
+            if (s.charAt(i) == '-' ||
+                    s.charAt(i) == '*' ||
+                    s.charAt(i) == '+' ) {
+                String part1 = s.substring(0, i);
+                String part2 = s.substring(i + 1);
+                List<Integer> part1Ret = diffWaysToCompute(part1);
+                List<Integer> part2Ret = diffWaysToCompute(part2);
+                for (Integer p1 : part1Ret) {
+                    for (Integer p2 : part2Ret) {
+                        int c = 0;
+                        switch (s.charAt(i)) {
+                            case '+':
+                                c = p1 + p2;
+                                break;
+                            case '-':
+                                c = p1 - p2;
+                                break;
+                            case '*':
+                                c = p1 * p2;
+                                break;
+                        }
+                        result.add(c);
+                    }
+                }
+            }
+        }
+        if (result.size() == 0) {
+            result.add(Integer.valueOf(s));
+        }
+        return result;
+    }
+    /**
+     * LC257 binary tree paths
+     * 找到一个树从root到leaf的所有path
+     * */
+    public List<String> binaryTreePaths(TreeNode root) {
+        List<String> result = new ArrayList<>();
+        if (root == null) return result;
+        searchBT(root, "", result);
+        return result;
+    }
+    private void searchBT(TreeNode root, String path, List<String> result) {
+        if (root.left == null && root.right == null) result.add(path + root.value);
+        if (root.left != null) searchBT(root.left, path + root.value + "->", result);
+        if (root.right != null) searchBT(root.right, path + root.value + "->", result);
+    }
+    @Test
+    public void binaryTeePathsTest(){
+        TreeNode root = new TreeNode(1);
+        root.left = new TreeNode(2);
+        root.right = new TreeNode(3);
+        root.left.right = new TreeNode(5);
+        System.out.println(binaryTreePaths(root));
+    }
+    /**
+     * LC258 add digits
+     * 将一个数的所有数位相加，直到最后只剩一位数
+     * */
+    public int addDigits(int num) {
+        while (num >= 10) {
+            num = num / 10 + num % 10;
+        }
+        return num;
+    }
+
+
+
 }
 /** LC208 Implement Trie (Prefix Tree)
  *  Implement a trie with insert, search, and startsWith methods.
