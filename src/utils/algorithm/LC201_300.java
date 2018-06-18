@@ -626,6 +626,256 @@ public class LC201_300 {
         }
         return xor;
     }
+    /** LC274 H Index
+     * A scientist has index h if h of his/her N papers have at least h citations each, and the other N − h papers have no more than h citations each.
+     * 一名科研人员的h指数是他的N个paper中, 有h个paper至少被引用h次，剩下N - h个paper被引用次数不超过h
+     * Input: citations = [3,0,6,1,5]
+     Output: 3
+     Explanation: [3,0,6,1,5] means the researcher has 5 papers in total and each of them had
+     received 3, 0, 6, 1, 5 citations respectively.
+     Since the researcher has 3 papers with at least 3 citations each and the remaining
+     two with no more than 3 citations each, her h-index is 3.
+     * */
+    public int hIndex(int[] citations) {
+        int len = citations.length;
+        int[] arr = new int[len + 1];
+        for(int i = 0; i < len; i ++) {
+            int val = citations[i];
+            arr[Math.min(val, len)] ++;
+        }
+        int sum = 0;
+        for(int i = len; i >= 0; i --) {
+            sum += arr[i];
+            if(sum >= i) return i;
+        }
+        return 0;
+    }
+    /**
+     * LC275 h index2
+     * Given an array of citations sorted in ascending order (each citation is a non-negative integer) of a researcher,
+     * write a function to compute the researcher's h-index.
+     * Input: citations = [0,1,3,5,6]
+     Output: 3
+     Explanation: [0,1,3,5,6] means the researcher has 5 papers in total and each of them had
+     received 0, 1, 3, 5, 6 citations respectively.
+     Since the researcher has 3 papers with at least 3 citations each and the remaining
+     two with no more than 3 citations each, her h-index is 3.
+     * */
+    public int hIndex2(int[] arr) {
+        int len = arr.length;
+        int left = 0, right = len - 1;
+        while (left <= right) {
+            int med = left + (right - left) / 2;
+            if (arr[med] == len - med) {
+                return len - med;
+            } else if (arr[med] < len - med) {
+                left = med + 1;
+            } else {
+                //(citations[med] > len-med), med qualified as a hIndex,
+                // but we have to continue to search for a higher one.
+                right = med - 1;
+            }
+        }
+        return len - left;
+    }
+    /**
+     * LC278 First bad version
+     * 一批产品，一个坏了，后边都坏，找到最开始坏的那个，会给一个判断是否坏的API
+
+     Given n = 5, and version = 4 is the first bad version.
+
+     call isBadVersion(3) -> false
+     call isBadVersion(5) -> true
+     call isBadVersion(4) -> true
+
+     Then 4 is the first bad version.
+
+     * */
+    public int firstBadVersion(int n) {
+        int left = 1;
+        int right = n;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (isBadVersion(mid)) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        return left;
+    }
+    private boolean isBadVersion(int version){
+        /** system will give the API, will return good or bad */
+        return false;
+    }
+    /**
+     * LC279 perfect square
+     * 用最少的平方数来加和得到该数
+     * Given a positive integer n, find the least number of perfect square numbers (for example, 1, 4, 9, 16, ...) which sum to n.
+
+     Example 1:
+
+     Input: n = 12
+     Output: 3
+     Explanation: 12 = 4 + 4 + 4.
+     Example 2:
+
+     Input: n = 13
+     Output: 2
+     Explanation: 13 = 4 + 9.
+     * */
+    // Reference to DP: 切数字
+
+    /**
+     * LC289 Game of Life
+     * m x n 矩阵的棋盘, 里面数字1代表活，0代表死, 每个点周围有8个元素
+     * 规则: 一个点周围活子少于2则死，活子为2或3则生, 活子多于3则死因为人口太多，如果一个子已死但是周围有三个活子则他自己死而复生，
+     * 计算这个棋盘的下一个状态
+     * Any live cell with fewer than two live neighbors dies, as if caused by under-population.
+     Any live cell with two or three live neighbors lives on to the next generation.
+     Any live cell with more than three live neighbors dies, as if by over-population..
+     Any dead cell with exactly three live neighbors becomes a live cell, as if by reproduction.
+     Input:
+     [
+     [0,1,0],
+     [0,0,1],
+     [1,1,1],
+     [0,0,0]
+     ]
+     Output:
+     [
+     [0,0,0],
+     [1,0,1],
+     [0,1,1],
+     [0,1,0]
+     ]
+     https://leetcode.com/problems/game-of-life/discuss/73223/Easiest-JAVA-solution-with-explanation
+     * */
+    public void gameOfLife(int[][] board) {
+        /*
+状态: 前一位表示下一代的状态,后一位表示当前的状态
+00: 死->死
+10: 死->活
+01: 活->死
+11: 活->活
+        * */
+        if (board == null || board.length == 0) return;
+        int m = board.length, n = board[0].length;
+        for (int i = 0; i < m; i ++) {
+            for (int j = 0; j < n; j ++) {
+                int lives = liveNeighbors(board, m, n, i, j);
+                // In the beginning, every 2nd bit is 0;
+                // So we only need to care about when will the 2nd bit become 1.
+                if (board[i][j] == 1 && lives >= 2 && lives <= 3) {
+                    board[i][j] = 3; // Make the 2nd bit 1: 01 ---> 11
+                }
+                if (board[i][j] == 0 && lives == 3) {
+                    board[i][j] = 2; // Make the 2nd bit 1: 00 ---> 10
+                }
+            }
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                board[i][j] >>= 1;  // Get the 2nd state.
+            }
+        }
+    }
+    private int liveNeighbors(int[][] board, int m, int n, int i, int j) {
+        int lives = 0;
+        for (int x = Math.max(i - 1, 0); x <= Math.min(i + 1, m - 1); x ++) {
+            for (int y = Math.max(j - 1, 0); y <= Math.min(j + 1, n - 1); y ++) {
+                lives += board[x][y] & 1;
+            }
+        }
+        lives -= board[i][j] & 1;
+        return lives;
+    }
+    /**
+     * LC290 word pattern,
+     * 给定字符串和一个pattern，看看单词是否遵照这个pattern
+     * 假定全小写，且单词间只有一个空格
+     * Input: pattern = "abba", str = "dog cat cat dog"
+     Output: true
+     Example 2:
+
+     Input:pattern = "abba", str = "dog cat cat fish"
+     Output: false
+     Example 3:
+
+     Input: pattern = "aaaa", str = "dog cat cat dog"
+     Output: false
+     Example 4:
+
+     Input: pattern = "abba", str = "dog dog dog dog"
+     Output: false
+
+     * */
+    public boolean wordPattern(String pattern, String str) {
+        String[] arr= str.split(" ");
+        Map<Character, String> map = new HashMap<>();
+        if (arr.length != pattern.length()) return false;
+        for(int i = 0; i < arr.length; i ++){
+            char c = pattern.charAt(i);
+            if(map.containsKey(c)){
+                if(!map.get(c).equals(arr[i]))
+                    return false;
+            } else {
+                if(map.containsValue(arr[i])) return false;
+                map.put(c, arr[i]);
+            }
+        }
+        return true;
+    }
+    /**
+     * LC292 Nim game
+     * 你和朋友玩一堆石头，你先取石头,每次1~3个，拿走最后一个石头的是赢家，问你能赢吗
+     * Input: 4
+     Output: false
+     Explanation: If there are 4 stones in the heap, then you will never win the game;
+     No matter 1, 2, or 3 stones you remove, the last stone will always be
+     removed by your friend.
+     * */
+    public boolean canWinNim(int n) {
+        return n % 4 != 0;
+    }
+    /**
+     * LC299 Bulls and Cows
+     * 猜数字游戏，实际数字和猜想数字.
+     * 如果所猜数字中有些位数量和位置都对叫Bulls，用A表示
+     * 如果所猜数字中有些位数量对但位置不对叫cows，用B表示
+     * Example 1:
+
+     Input: secret = "1807", guess = "7810"
+
+     Output: "1A3B"
+
+     Explanation: 1 bull and 3 cows. The bull is 8, the cows are 0, 1 and 7.
+     Example 2:
+
+     Input: secret = "1123", guess = "0111"
+
+     Output: "1A1B"
+
+     Explanation: The 1st 1 in friend's guess is a bull, the 2nd or 3rd 1 is a cow.
+     * */
+    public String getHint(String s, String guess) {
+        int bulls = 0;
+        int cows = 0;
+        int[] arr = new int[10];
+        for (int i = 0; i < s.length(); i ++) {
+            if (s.charAt(i) == guess.charAt(i)) {
+                bulls++;
+            } else {
+                if (arr[s.charAt(i)-'0']++ < 0) cows++;
+                if (arr[guess.charAt(i)-'0']-- > 0) cows++;
+            }
+        }
+        return bulls + "A" + cows + "B";
+    }
+    /**
+     * LC300 longest increasing subsequence
+     * */
+    // reference to DP longest ascending subsequence
 
 }
 /** LC208 Implement Trie (Prefix Tree)
@@ -789,5 +1039,37 @@ class MyStack {
     // Return whether the stack is empty.
     public boolean empty() {
         return queue.isEmpty();
+    }
+}
+/**
+ * LC284 peeking iterator
+ * */
+class PeekingIterator implements Iterator<Integer> {
+    private Integer next = null;
+    private Iterator<Integer> it;
+
+    public PeekingIterator(Iterator<Integer> iterator) {
+        // initialize any member here.
+        it = iterator;
+        if (it.hasNext()) next = it.next();
+    }
+
+    // Returns the next element in the iteration without advancing the iterator.
+    public Integer peek() {
+        return next;
+    }
+
+    // hasNext() and next() should behave the same as in the Iterator interface.
+    // Override them if needed.
+    @Override
+    public Integer next() {
+        Integer res = next;
+        next = it.hasNext() ? it.next() : null;
+        return res;
+    }
+
+    @Override
+    public boolean hasNext() {
+        return next != null;
     }
 }
