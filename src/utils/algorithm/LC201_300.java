@@ -594,8 +594,38 @@ public class LC201_300 {
         while(num % 5 == 0) num = num / 5;
         return num == 1;
     }
-
-
+    /**
+     * LC264 ugly number 2
+     * 找到nth ugly number
+     * */
+    public int nthUglyNumber(int n) {
+        int[] arr = new int[n];
+        arr[0] = 1;
+        int idx2 = 0, idx3 = 0, idx5 = 0;
+        int factor2 = 2, factor3 = 3, factor5 = 5;
+        for(int i = 1; i < n; i ++){
+            int min = Math.min(Math.min(factor2, factor3), factor5);
+            arr[i] = min;
+            if(factor2 == min)
+                factor2 = 2 * arr[++ idx2];
+            if(factor3 == min)
+                factor3 = 3 * arr[++ idx3];
+            if(factor5 == min)
+                factor5 = 5 * arr[++ idx5];
+        }
+        return arr[n - 1];
+    }
+    /**
+     * LC268 missing number
+     * */
+    public int missingNumber(int[] nums) {
+        int xor = 0;
+        for (int n : nums) xor ^= n;
+        for (int i = 0; i <= nums.length; i ++) {
+            xor ^= i;
+        }
+        return xor;
+    }
 
 }
 /** LC208 Implement Trie (Prefix Tree)
