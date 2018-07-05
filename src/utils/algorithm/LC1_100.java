@@ -125,7 +125,7 @@ public class LC1_100 {
             if(digit < 0 || digit > 9) break;
 
             //check if num will be overflow after 10 times and add digit，为了提前停止
-            if(num * 10 > Integer.MAX_VALUE || num * 10 == Integer.MAX_VALUE && Integer.MAX_VALUE % 10 < digit) {
+            if(num > Integer.MAX_VALUE / 10 || num == Integer.MAX_VALUE / 10 && Integer.MAX_VALUE % 10 < digit) {
                 return sign == 1 ? Integer.MAX_VALUE : Integer.MIN_VALUE;
             }
             num = 10 * num + digit;
