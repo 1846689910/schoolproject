@@ -108,11 +108,11 @@ public class LC1_100 {
      * 120 -> 21
      * 翻转后的结果超出Int范围 -> 0
      * */
-    public int reverseInt(int x) {
+    public int reverseInt(int num) {
         long result = 0;
-        while (x != 0 ){
-            result = result * 10 + x % 10;
-            x /= 10;
+        while (num != 0 ){
+            result = result * 10 + num % 10;
+            num /= 10;
         }
         if (result < Integer.MIN_VALUE || result > Integer.MAX_VALUE) {
             return 0;
