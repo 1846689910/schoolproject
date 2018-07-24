@@ -4,6 +4,7 @@ import org.junit.Test;
 
 import java.util.*;
 
+import static utils.algorithm.C1.swap;
 import static utils.algorithm.C8.reverse;
 
 public class LC201_300 {
@@ -148,7 +149,7 @@ public class LC201_300 {
         for (int i = 0; i < arr.length; i ++) {
             sum += arr[i];
             while (sum >= num) {
-                result = Math.min(result, i + 1 - left);  // i + 1 - left is the current size of subarray
+                result = Math.min(result, i + 1 - left);  // it1 + 1 - left is the current size of subarray
                 sum -= arr[left ++];
             }
         }
@@ -326,7 +327,7 @@ public class LC201_300 {
     }
     /**
      * LC220 contains duplicate3
-     * arr中是否存在arr[i]和arr[j],他们数值最多相差t，索引最多相差k
+     * arr中是否存在arr[it1]和arr[it2],他们数值最多相差t，索引最多相差k
      * */
     public boolean containsNearbyAlmostDuplicate(int[] nums, int k, int t) {
         if (k < 1 || t < 0) return false;
@@ -551,6 +552,327 @@ public class LC201_300 {
         return result;
     }
     /**
+     * LC243 Shortest Word distance
+     * Assume that words = ["practice", "makes", "perfect", "coding", "makes"].
+
+     Input: word1 = “coding”, word2 = “practice”
+     Output: 3
+     Input: word1 = "makes", word2 = "coding"
+     Output: 1
+     Note:
+     You may assume that word1 does not equal to word2, and word1 and word2 are both in the list.
+     * */
+    public int shortestDistance(String[] words, String word1, String word2) {
+        int i1 = -1, i2 = -1;
+        int dist = words.length;
+        for (int i = 0; i < words.length; i++) {
+            if (words[i].equals(word1)) {
+                i1 = i;
+            } else if (words[i].equals(word2)) {
+                i2 = i;
+            }
+            if (i1 != -1 && i2 != -1) {
+                dist = Math.min(dist, Math.abs(i1 - i2));
+            }
+        }
+        return dist;
+    }
+    /**
+     * LC245 Shortest Word distance 3
+     * Assume that words = ["practice", "makes", "perfect", "coding", "makes"].
+     Input: word1 = “makes”, word2 = “coding”
+     Output: 1
+     Input: word1 = "makes", word2 = "makes"
+     Output: 3
+     Note:
+     You may assume word1 and word2 are both in the list.
+     * */
+    public int shortestWordDistance(String[] words, String word1, String word2) {
+        long dist = Integer.MAX_VALUE, i1 = dist, i2 = -dist;
+        boolean same = word1.equals(word2);
+        for (int i=0; i<words.length; i++) {
+            if (words[i].equals(word1)) {
+                if (same) {
+                    i1 = i2;
+                    i2 = i;
+                } else {
+                    i1 = i;
+                }
+            } else if (words[i].equals(word2)) {
+                i2 = i;
+            }
+            dist = Math.min(dist, Math.abs(i1 - i2));
+        }
+        return (int) dist;
+    }
+    /**
+     * LC246 Strobogrammatic Number
+     * 一个数旋转180度之后还和原来相等(上下颠倒之后还相等)
+     * Example 1:
+
+     Input:  "69"
+     Output: true
+     Example 2:
+
+     Input:  "88"
+     Output: true
+     Example 3:
+
+     Input:  "962"
+     Output: false
+     * */
+    public boolean isStrobogrammatic(String num) {
+        int[] map = new int[10];
+        map[6] = 9;
+        map[9] = 6;
+        map[1] = 1;
+        map[0] = 0;
+        map[8] = 8;
+
+        char[] ca = num.toCharArray();
+        int i = 0, j = ca.length - 1;
+        while(i <= j) {
+            int begin = ca[i] - '0';
+            int end = ca[j] - '0';
+            if((begin != 0 && map[begin] == 0) || map[begin] != end) {
+                return false;
+            }
+            i++;
+            j--;
+        }
+        return true;
+    }
+    /**LC247 Strobogrammatic Number 2
+     * 找到有n位的strobogrammatic数
+     * Example:
+     Input:  n = 2
+     Output: ["11","69","88","96"]
+     * */
+    public List<String> findStrobogrammatic1(int n) {
+        List<String> list;
+        if (n % 2 == 1) {
+            list = Arrays.asList("0", "1", "8");
+        } else {
+            list = Arrays.asList("");
+        }
+        for(int i = (n % 2) + 2; i <= n; i += 2){
+            List<String> newList = new ArrayList<>();
+            for(String str : list){
+                if(i != n)
+                    newList.add("0" + str + "0");
+                newList.add("1" + str + "1");
+                newList.add("6" + str + "9");
+                newList.add("8" + str + "8");
+                newList.add("9" + str + "6");
+            }
+            list = newList;
+        }
+        return list;
+    }
+    /**
+     * LC249 Group Shifted Strings
+     * Given a string, we can "shift" each of its letter to its successive letter, for example: "abc" -> "bcd". We can keep "shifting" which forms the sequence:
+
+     "abc" -> "bcd" -> ... -> "xyz"
+     Given a list of strings which contains only lowercase alphabets, group all strings that belong to the same shifting sequence.
+
+     Example:
+
+     Input: ["abc", "bcd", "acef", "xyz", "az", "ba", "a", "z"],
+     Output:
+     [
+     ["abc","bcd","xyz"],
+     ["az","ba"],
+     ["acef"],
+     ["a","z"]
+     ]
+     * */
+    public List<List<String>> groupStrings(String[] strs) {
+        //Create a hashmap. key is a number (the offset compared to its first char),
+        //value is a list of strings which have the same offset.
+        //For each string, convert it to char array
+        //Then subtract its first character for every character
+        //eg. "abc" -> "0,1,2,"        "am"->"0,12,"
+        Map<String,List<String>> map = new HashMap<>();
+        for(String str : strs) {
+            String key = "";
+            char first = str.charAt(0);
+            for(char c:str.toCharArray())
+                key+=(c-first<0?c-first+26:c-first)+",";
+            if(!map.containsKey(key))
+                map.put(key,new ArrayList<String>());
+            map.get(key).add(str);
+        }
+        for(String key:map.keySet())
+            Collections.sort(map.get(key));
+        return new ArrayList<List<String>>(map.values());
+    }
+    /**
+     * LC250 count univalue subtrees
+     * Given a binary tree, count the number of uni-value subtrees.
+     A Uni-value subtree means all nodes of the subtree have the same value.
+     Example :
+     Input:  root = [5,1,5,5,5,null,5]
+
+         5
+        / \
+       1   5
+      / \   \
+     5   5   5
+     Output: 4
+     * */
+    public int countUnivalSubtrees(TreeNode root) {
+        int[] count = new int[1];
+        countUnivalSubtreesHelper(root, count);
+        return count[0];
+    }
+    private boolean countUnivalSubtreesHelper(TreeNode node, int[] count) {
+        if (node == null) {
+            return true;
+        }
+        boolean left = countUnivalSubtreesHelper(node.left, count);
+        boolean right = countUnivalSubtreesHelper(node.right, count);
+        if (left && right) {
+            if (node.left != null && node.value != node.left.value) {
+                return false;
+            }
+            if (node.right != null && node.value != node.right.value) {
+                return false;
+            }
+            count[0]++;
+            return true;
+        }
+        return false;
+    }
+    /**
+     * LC252 Meeting Rooms
+     * Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), determine if a person could attend all meetings.
+     Example 1:
+     Input: [[0,30],[5,10],[15,20]]
+     Output: false
+     Example 2:
+     Input: [[7,10],[2,4]]
+     Output: true
+     * */
+    public boolean canAttendMeetings(Interval[] intervals) {
+        Arrays.sort(intervals, (i1, i2) -> {
+            return i1.start - i2.start;
+        });
+        for (int i = 0; i < intervals.length - 1; i++) {
+            if (intervals[i].end > intervals[i + 1].start) return false;
+        }
+        return true;
+    }
+    /**
+     * LC253 Meeting Rooms 2
+     * Given an array of meeting time intervals consisting of start and end times [[s1,e1],[s2,e2],...] (si < ei), find the minimum number of conference rooms required.
+     Example 1:
+     Input: [[0, 30],[5, 10],[15, 20]]
+     Output: 2
+     Example 2:
+     Input: [[7,10],[2,4]]
+     Output: 1
+     * */
+    public int minMeetingRooms(Interval[] intervals) {
+        if (intervals == null || intervals.length == 0) return 0;
+        // Sort the intervals by start time
+        Arrays.sort(intervals, (a, b) -> { return a.start - b.start; });
+        // Use a min heap to track the minimum end time of merged intervals
+        PriorityQueue<Interval> heap = new PriorityQueue<>(intervals.length, (a, b) -> { return a.end - b.end; });
+        // start with the first meeting, put it to a meeting room
+        heap.offer(intervals[0]);
+        for (int i = 1; i < intervals.length; i++) {
+            // get the meeting room that finishes earliest
+            Interval interval = heap.poll();
+            if (intervals[i].start >= interval.end) {
+                // if the current meeting starts right after
+                // there's no need for a new room, merge the interval
+                interval.end = intervals[i].end;
+            } else {
+                // otherwise, this meeting needs a new room
+                heap.offer(intervals[i]);
+            }
+            // don't forget to put the meeting room back
+            heap.offer(interval);
+        }
+        return heap.size();
+    }
+    /**
+     * LC254 Factor Combinations
+     * */
+    public List<List<Integer>> getFactors(int n) {
+        List<List<Integer>> result = new ArrayList<>();
+        factorHelper(result, new ArrayList<>(), n, 2);
+        return result;
+    }
+
+    public void factorHelper(List<List<Integer>> result, List<Integer> item, int n, int start){
+        if (n <= 1) {
+            if (item.size() > 1) {
+                result.add(new ArrayList<>(item));
+            }
+            return;
+        }
+
+        for (int i = start; i <= n; ++i) {
+            if (n % i == 0) {
+                item.add(i);
+                factorHelper(result, item, n/i, i);
+                item.remove(item.size()-1);
+            }
+        }
+    }
+    /**
+     * LC255 verify preorder sequence in BST
+     5
+     / \
+     2   6
+     / \
+     1   3
+     Example 1:
+
+     Input: [5,2,6,1,3]
+     Output: false
+     Example 2:
+
+     Input: [5,2,1,3,6]
+     Output: true
+     * */
+    public boolean verifyPreorder(int[] preorder) {
+        int low = Integer.MIN_VALUE, i = -1;
+        for (int p : preorder) {
+            if (p < low)
+                return false;
+            while (i >= 0 && p > preorder[i])
+                low = preorder[i--];
+            preorder[++i] = p;
+        }
+        return true;
+    }
+    /**LC256 Paint house 相邻不同色问题
+     There are a row of n houses, each house can be painted with one of the three colors: red, blue or green. The cost of painting each house with a certain color is different. You have to paint all the houses such that no two adjacent houses have the same color.
+     The cost of painting each house with a certain color is represented by a n x 3 cost matrix. For example, costs[0][0] is the cost of painting house 0 with color red; costs[1][2] is the cost of painting house 1 with color green, and so on... Find the minimum cost to paint all houses.
+     Note:
+     All costs are positive integers.
+     Example:
+     Input: [[17,2,17],[16,16,5],[14,3,19]]
+     Output: 10
+     Explanation: Paint house 0 into blue, paint house 1 into green, paint house 2 into blue.
+     Minimum cost: 2 + 5 + 3 = 10.
+     * */
+    public int minCost(int[][] costs) {
+        if(costs == null || costs.length == 0){
+            return 0;
+        }
+        for(int i=1; i<costs.length; i++){
+            costs[i][0] += Math.min(costs[i-1][1],costs[i-1][2]);
+            costs[i][1] += Math.min(costs[i-1][0],costs[i-1][2]);
+            costs[i][2] += Math.min(costs[i-1][1],costs[i-1][0]);
+        }
+        int n = costs.length-1;
+        return Math.min(Math.min(costs[n][0], costs[n][1]), costs[n][2]);
+    }
+    /**
      * LC257 binary tree paths
      * 找到一个树从root到leaf的所有path
      * */
@@ -584,6 +906,111 @@ public class LC201_300 {
         return num;
     }
     /**
+     * LC259 3Sum Smaller
+     Given an array of n integers nums and a target, find the number of index triplets i, j, k with 0 <= i < j < k < n that satisfy the condition nums[i] + nums[j] + nums[k] < target.
+     Example:
+     Input: nums = [-2,0,1,3], and target = 2
+     Output: 2
+     Explanation: Because there are two triplets which sums are less than 2:
+     [-2,0,1]
+     [-2,0,3]
+     Follow up: Could you solve it in O(n2) runtime?
+     * */
+    public int threeSumSmaller(int[] arr, int target) {
+        Arrays.sort(arr);
+        int ret = 0;
+        for (int i = 0; i < arr.length - 2; i ++) {
+            //if(i > 0 && arr[i] == arr[i - 1])continue;
+            int left = i + 1, right = arr.length - 1;
+            while (left < right) {
+                int cur = arr[left] + arr[right] + arr[i];
+                if (cur < target) {
+                    System.out.println(cur);
+                    ret += right - left;
+                    left ++;
+                } else {
+                    right --;
+                }
+            }
+        }
+        return ret;
+    }
+    private int twoSumSmaller(int[] arr, int target) {
+        int ret = 0;
+        int left = 0;
+        int right = arr.length - 1;
+        while (left < right) {
+            int cur = arr[left] + arr[right];
+            if (cur < target) {
+                ret += right - left;
+                left++;
+            } else {
+                right--;
+            }
+        }
+        return ret;
+    }
+    /**
+     * LC260 single number 3
+     * 一个数组里，有两个数各自只出现一次，其他数都是重复两次的
+     * Example:
+     Input:  [1,2,1,3,2,5]
+     Output: [3,5] 结果顺序无所谓 [5,3]也行
+     要求: time O(n), space O(1)
+     * */
+    public int[] singleNumber(int[] nums) {
+        // Pass 1 :
+        // Get the XOR of the two numbers we need to find
+        int diff = 0;
+        for (int num : nums) {
+            diff ^= num;
+        }
+        // Get its last set bit
+        diff &= -diff;
+        // Pass 2 :
+        int[] rets = {0, 0}; // this array stores the two numbers we will return
+        for (int num : nums) {
+            if ((num & diff) == 0) { // the bit is not set
+                rets[0] ^= num;
+            } else {  // the bit is set
+                rets[1] ^= num;
+            }
+        }
+        return rets;
+    }
+    /**
+     * LC261 Graph Valid Tree
+     * 给一个数组的数组(矩阵)每一组数都表示一条边，看看能不能组成一个树
+     * Example 1:
+     Input: n = 5, and edges = [[0,1], [0,2], [0,3], [1,4]]
+     Output: true
+     Example 2:
+     Input: n = 5, and edges = [[0,1], [1,2], [2,3], [1,3], [1,4]]
+     Output: false
+     Note: you can assume that no duplicate edges will appear in edges. Since all edges are undirected, [0,1] is the same as [1,0] and thus will not appear together in edges.
+     * */
+    public boolean validTree(int n, int[][] edges) {
+        // initialize n isolated islands
+        int[] arr = new int[n];
+        Arrays.fill(arr, -1);
+        // perform union find
+        for (int i = 0; i < edges.length; i++) {
+            int x = find(arr, edges[i][0]);
+            int y = find(arr, edges[i][1]);
+            // if two vertices happen to be in the same set
+            // then there's a cycle
+            if (x == y) return false;
+            // union
+            arr[x] = y;
+        }
+
+        return edges.length == n - 1;
+    }
+    private int find(int[] arr, int i) {
+        if (arr[i] == -1) return i;
+        return find(arr, arr[i]);
+    }
+    /**
      * LC263 Ugly Number
      * */
     public boolean isUgly(int num) {
@@ -614,6 +1041,92 @@ public class LC201_300 {
                 factor5 = 5 * arr[++ idx5];
         }
         return arr[n - 1];
+    }
+    /**LC266 Palindrome Permutation
+     * 给一个string，它的排列能形成palindrome吗
+     Example 1:
+     Input: "code"
+     Output: false
+     Example 2:
+     Input: "aab"
+     Output: true
+     Example 3:
+     Input: "carerac"
+     Output: true
+     * */
+    public boolean canPermutePalindrome1(String s) {  // time O(n), space O(n)
+        Set < Character > set = new HashSet < > ();
+        for (int i = 0; i < s.length(); i++) {
+            if (!set.add(s.charAt(i)))
+                set.remove(s.charAt(i));
+        }
+        return set.size() <= 1;
+    }
+    public boolean canPermutePalindrome2(String s) {  // time O(n), space O(1)
+        int[] map = new int[128];
+        for (int i = 0; i < s.length(); i++) {
+            map[s.charAt(i)]++;
+        }
+        int count = 0;
+        for (int key = 0; key < map.length && count <= 1; key++) {
+            count += map[key] % 2;
+        }
+        return count <= 1;
+    }
+    /**
+     * LC267 Palindrome permutation2
+     * Given a string s, return all the palindromic permutations (without duplicates) of it. Return an empty list if no palindromic permutation could be form.
+     Example 1:
+     Input: "aabb"
+     Output: ["abba", "baab"]
+     Example 2:
+     Input: "abc"
+     Output: []
+     * */
+    public List<String> generatePalindromes(String s) {
+        int odd = 0;
+        String mid = "";
+        List<String> res = new ArrayList<>();
+        List<Character> list = new ArrayList<>();
+        Map<Character, Integer> map = new HashMap<>();
+        // step 1. build character count map and count odds
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            map.put(c, map.containsKey(c) ? map.get(c) + 1 : 1);
+            odd += map.get(c) % 2 != 0 ? 1 : -1;
+        }
+        // cannot form any palindromic string
+        if (odd > 1) return res;
+        // step 2. add half count of each character to list
+        for (Map.Entry<Character, Integer> entry : map.entrySet()) {
+            char key = entry.getKey();
+            int val = entry.getValue();
+            if (val % 2 != 0) mid += key;
+            for (int i = 0; i < val / 2; i++) list.add(key);
+        }
+        // step 3. generate all the permutations
+        getPerm(list, mid, new boolean[list.size()], new StringBuilder(), res);
+        return res;
+    }
+    // generate all unique permutation from list
+    private void getPerm(List<Character> list, String mid, boolean[] used, StringBuilder sb, List<String> res) {
+        if (sb.length() == list.size()) {
+            // form the palindromic string
+            res.add(sb.toString() + mid + sb.reverse().toString());
+            sb.reverse();
+            return;
+        }
+        for (int i = 0; i < list.size(); i++) {
+            // avoid duplication
+            if (i > 0 && list.get(i) == list.get(i - 1) && !used[i - 1]) continue;
+            if (!used[i]) {
+                used[i] = true; sb.append(list.get(i));
+                // recursion
+                getPerm(list, mid, used, sb, res);
+                // backtracking
+                used[i] = false; sb.deleteCharAt(sb.length() - 1);
+            }
+        }
     }
     /**
      * LC268 missing number
@@ -679,6 +1192,64 @@ public class LC201_300 {
         return len - left;
     }
     /**
+     * LC276 Paint Fence
+     * 有一个篱笆有n个桩，可以被涂上k种任意的颜色，但是相邻两个桩不同色
+     There is a fence with n posts, each post can be painted with one of the k colors.
+     You have to paint all the posts such that no more than two adjacent fence posts have the same color.
+     Return the total number of ways you can paint the fence.
+     Note:
+     n and k are non-negative integers.
+     Example:
+     Input: n = 3, k = 2
+     Output: 6
+     Explanation: Take c1 as color 1, c2 as color 2. All possible ways are:
+
+     post1  post2  post3
+     -----      -----  -----  -----
+     1         c1     c1     c2
+     2         c1     c2     c1
+     3         c1     c2     c2
+     4         c2     c1     c1
+     5         c2     c1     c2
+     6         c2     c2     c1
+     * */
+    public int numWays(int n, int k) {
+        if(n == 0) {
+            return 0;
+        } else if(n == 1) {
+            return k;
+        }
+        int diffColorCounts = k * (k - 1);  // 相邻不同色的涂法有几种
+        int sameColorCounts = k;  // 同色的涂法
+        for(int i=2; i<n; i++) {
+            int temp = diffColorCounts;
+            diffColorCounts = (diffColorCounts + sameColorCounts) * (k-1);
+            sameColorCounts = temp;
+        }
+        return diffColorCounts + sameColorCounts;
+    }
+    /**
+     * LC277 Find the Celebrity
+     * n个人的聚会，里面有个名人(他不认识另外n-1个人，但是剩下所有人都认识他，找出他来)
+     * Suppose you are at a party with n people (labeled from 0 to n - 1) and among them, there may exist one celebrity. The definition of a celebrity is that all the other n - 1 people know him/her but he/she does not know any of them.
+     Now you want to find out who the celebrity is or verify that there is not one. The only thing you are allowed to do is to ask questions like: "Hi, A. Do you know B?" to get information of whether A knows B. You need to find out the celebrity (or verify there is not one) by asking as few questions as possible (in the asymptotic sense).
+     You are given a helper function bool knows(a, b) which tells you whether A knows B. Implement a function int findCelebrity(n), your function should minimize the number of calls to knows.
+     Note: There will be exactly one celebrity if he/she is in the party. Return the celebrity's label if there is a celebrity in the party. If there is no celebrity, return -1.
+     *
+     * 提供一个工具API knows方法，可以知道a是否认识b
+     * */
+    boolean knows(int a, int b) {return false;}
+    public int findCelebrity(int n) {
+        int candidate = 0;
+        for(int i = 1; i < n; i++){  // 名人不认识剩下的人, 所以先找出一个可能是名人的，因为剩余所有人都认识名人
+            if(knows(candidate, i)) candidate = i;
+        }
+        for(int i = 0; i < n; i++){
+            if(i != candidate && (knows(candidate, i) || !knows(i, candidate))) return -1;
+        }
+        return candidate;
+    }
+    /**
      * LC278 First bad version
      * 一批产品，一个坏了，后边都坏，找到最开始坏的那个，会给一个判断是否坏的API
 
@@ -725,6 +1296,142 @@ public class LC201_300 {
      Explanation: 13 = 4 + 9.
      * */
     // Reference to DP: 切数字
+    /**
+     * LC280 wiggle sort
+     * Given an unsorted array nums, reorder it in-place such that nums[0] <= nums[1] >= nums[2] <= nums[3]....
+     Example:
+     Input: nums = [3,5,2,1,6,4]
+     Output: One possible answer is [3,5,1,6,2,4]
+     * */
+    public void wiggleSort(int[] nums) {
+        Arrays.sort(nums);
+        for (int i = 1; i < nums.length - 1; i += 2) {
+            swap(nums, i, i + 1);
+        }
+    }
+    public void wiggleSort1(int[] nums) {
+        boolean less = true;
+        for (int i = 0; i < nums.length - 1; i++) {
+            if (less) {
+                if (nums[i] > nums[i + 1]) {
+                    swap(nums, i, i + 1);
+                }
+            } else {
+                if (nums[i] < nums[i + 1]) {
+                    swap(nums, i, i + 1);
+                }
+            }
+            less = !less;
+        }
+    }
+    public void wiggleSort2(int[] nums) {
+        for (int i = 0; i < nums.length - 1; i++) {
+            if (((i % 2 == 0) && nums[i] > nums[i + 1])
+                    || ((i % 2 == 1) && nums[i] < nums[i + 1])) {
+                swap(nums, i, i + 1);
+            }
+        }
+    }
+    /**
+     * LC285 Inorder successor in BST
+     * Given a binary search tree and a node in it, find the in-order successor of that node in the BST.
+
+     Note: If the given node has no in-order successor in the tree, return null.
+
+     Example 1:
+
+     Input: root = [2,1,3], p = 1
+     2
+     / \
+     1   3
+     Output: 2
+     Example 2:
+     Input: root = [5,3,6,2,4,null,null,1], p = 6
+
+     5
+     / \
+     3   6
+     / \
+     2   4
+     /
+     1
+     Output: null
+     * */
+    public TreeNode successor(TreeNode root, TreeNode p) {
+        if (root == null)
+            return null;
+        if (root.value <= p.value) {
+            return successor(root.right, p);
+        } else {
+            TreeNode left = successor(root.left, p);
+            return (left != null) ? left : root;
+        }
+    }
+    public TreeNode predecessor(TreeNode root, TreeNode p) {
+        if (root == null)
+            return null;
+        if (root.value >= p.value) {
+            return predecessor(root.left, p);
+        } else {
+            TreeNode right = predecessor(root.right, p);
+            return (right != null) ? right : root;
+        }
+    }
+    /**
+     * LC286 Walls and Gates
+     You are given a m x n 2D grid initialized with these three possible values.
+     -1 - A wall or an obstacle.
+     0 - A gate.
+     INF - Infinity means an empty room. We use the value 231 - 1 = 2147483647 to represent INF as you may assume that the distance to a gate is less than 2147483647.
+     Fill each empty room with the distance to its nearest gate. If it is impossible to reach a gate, it should be filled with INF.
+     Example:
+
+     Given the 2D grid:
+     INF  -1  0  INF
+     INF INF INF  -1
+     INF  -1 INF  -1
+     0  -1 INF INF
+     After running your function, the 2D grid should be:
+     3  -1   0   1
+     2   2   1  -1
+     1  -1   2  -1
+     0  -1   3   4
+     * */
+    public void wallsAndGates(int[][] rooms) {
+        int EMPTY = Integer.MAX_VALUE;
+        int GATE = 0;
+        int[][] DIRECTIONS = {
+                {1, 0},
+                {-1, 0},
+                {0, 1},
+                {0, -1}
+        };
+        int m = rooms.length;
+        if (m == 0) return;
+        int n = rooms[0].length;
+        Queue<int[]> q = new LinkedList<>();
+        for (int row = 0; row < m; row++) {
+            for (int col = 0; col < n; col++) {
+                if (rooms[row][col] == GATE) {
+                    q.add(new int[] { row, col });
+                }
+            }
+        }
+        while (!q.isEmpty()) {
+            int[] point = q.poll();
+            int row = point[0];
+            int col = point[1];
+            for (int[] direction : DIRECTIONS) {
+                int r = row + direction[0];
+                int c = col + direction[1];
+                if (r < 0 || c < 0 || r >= m || c >= n || rooms[r][c] != EMPTY) {
+                    continue;
+                }
+                rooms[r][c] = rooms[row][col] + 1;
+                q.add(new int[] { r, c });
+            }
+        }
+    }
 
     /**
      * LC289 Game of Life
@@ -837,6 +1544,102 @@ public class LC201_300 {
      * */
     public boolean canWinNim(int n) {
         return n % 4 != 0;
+    }
+    /**
+     * LC293 Flip Game
+     * You are playing the following Flip Game with your friend: Given a string that contains only these two characters: + and -, you and your friend take turns to flip two consecutive "++" into "--". The game ends when a person can no longer make a move and therefore the other person will be the winner.
+     Write a function to compute all possible states of the string after one valid move.
+     Example:
+
+     Input: s = "++++"
+     Output:
+     [
+     "--++",
+     "+--+",
+     "++--"
+     ]
+     Note: If there is no valid move, return an empty list [].
+     * */
+    public List<String> generatePossibleNextMoves(String s) {
+        List<String> list = new ArrayList<>();
+        for (int i = -1; (i = s.indexOf("++", i + 1)) >= 0; )
+            list.add(s.substring(0, i) + "--" + s.substring(i + 2));
+        return list;
+    }
+    /**
+     * LC294 Flip Game2
+     * You are playing the following Flip Game with your friend: Given a string that contains only these two characters: + and -, you and your friend take turns to flip two consecutive "++" into "--". The game ends when a person can no longer make a move and therefore the other person will be the winner.
+     Write a function to determine if the starting player can guarantee a win.
+     Example:
+
+     Input: s = "++++"
+     Output: true
+     Explanation: The starting player can guarantee a win by flipping the middle "++" to become "+--+".
+     Follow up:
+     Derive your algorithm's runtime complexity.
+     * */
+    public boolean canWin(String s) {
+        if (s == null || s.length() < 2) {
+            return false;
+        }
+        for (int i = 0; i < s.length() - 1; i++) {
+            if (s.startsWith("++", i)) {
+                String t = s.substring(0, i) + "--" + s.substring(i + 2);
+                if (!canWin(t)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    /**
+     * LC298 Binary Tree Longest Consecutive Sequence
+     * Given a binary tree, find the length of the longest consecutive sequence path.
+
+     The path refers to any sequence of nodes from some starting node to any node in the tree along the parent-child connections. The longest consecutive path need to be from parent to child (cannot be the reverse).
+
+     Example 1:
+
+     Input:
+
+     1
+     \
+      3
+     / \
+     2   4
+         \
+         5
+
+     Output: 3
+
+     Explanation: Longest consecutive sequence path is 3-4-5, so return 3.
+     Example 2:
+
+     Input:
+
+     2
+     \
+      3
+     /
+    2
+   /
+  1
+
+     Output: 2
+
+     Explanation: Longest consecutive sequence path is 2-3, not 3-2-1, so return 2.
+     * */
+    public int longestConsecutive(TreeNode root) {
+        int[] maxLen = new int[1];
+        longestConsecutiveHelper(root, null, 0, maxLen);
+        return maxLen[0];
+    }
+    private void longestConsecutiveHelper(TreeNode p, TreeNode parent, int length, int[] maxLen) {
+        if (p == null) return;
+        length = (parent != null && p.value == parent.value + 1) ? length + 1 : 1;
+        maxLen[0] = Math.max(maxLen[0], length);
+        longestConsecutiveHelper(p.left, p, length, maxLen);
+        longestConsecutiveHelper(p.right, p, length, maxLen);
     }
     /**
      * LC299 Bulls and Cows
@@ -1071,5 +1874,121 @@ class PeekingIterator implements Iterator<Integer> {
     @Override
     public boolean hasNext() {
         return next != null;
+    }
+}
+/**
+ * LC244 Shortest Word Distance 2
+ * */
+class WordDistance {
+    private Map<String, List<Integer>> map;
+    public WordDistance(String[] words) {
+        map = new HashMap<>();
+        for(int i = 0; i < words.length; i++) {
+            String w = words[i];
+            if(map.containsKey(w)) {
+                map.get(w).add(i);
+            } else {
+                List<Integer> list = new ArrayList<>();
+                list.add(i);
+                map.put(w, list);
+            }
+        }
+    }
+    public int shortest(String word1, String word2) {
+        List<Integer> list1 = map.get(word1);
+        List<Integer> list2 = map.get(word2);
+        int ret = Integer.MAX_VALUE;
+        for(int i = 0, j = 0; i < list1.size() && j < list2.size(); ) {
+            int index1 = list1.get(i), index2 = list2.get(j);
+            if(index1 < index2) {
+                ret = Math.min(ret, index2 - index1);
+                i++;
+            } else {
+                ret = Math.min(ret, index1 - index2);
+                j++;
+            }
+        }
+        return ret;
+    }
+}
+/**
+ * LC251 Flatten 2D vector
+ * Implement an iterator to flatten a 2d vector.
+ * Example:
+ Input: 2d vector =
+ [
+ [1,2],
+ [3],
+ [4,5,6]
+ ]
+ Output: [1,2,3,4,5,6]
+ Explanation: By calling next repeatedly until hasNext returns false,
+ the order of elements returned by next should be: [1,2,3,4,5,6].
+ * */
+class Vector2D {
+    private Iterator<List<Integer>> it1;
+    private Iterator<Integer> it2;
+    public Vector2D(List<List<Integer>> vec2d) {
+        it1 = vec2d.iterator();
+    }
+    public int next() {
+        move();
+        return it2.next();
+    }
+    private void move(){
+        while ((it2 == null || !it2.hasNext()) && it1.hasNext())
+            it2 = it1.next().iterator();
+    }
+    public boolean hasNext() {
+        move();
+        return it2 != null && it2.hasNext();
+    }
+}
+/**
+ * LC271 Encode and Decode a string
+ * */
+class Codec {
+    // Encodes a list of strings to a single string.
+    public String encode(List<String> strs) {
+        StringBuilder sb = new StringBuilder();
+        for(String s : strs) {
+            sb.append(s.length()).append('/').append(s);
+        }
+        return sb.toString();
+    }
+
+    // Decodes a single string to a list of strings.
+    public List<String> decode(String s) {
+        List<String> ret = new ArrayList<String>();
+        int i = 0;
+        while(i < s.length()) {
+            int slash = s.indexOf('/', i);
+            int size = Integer.valueOf(s.substring(i, slash));
+            ret.add(s.substring(slash + 1, slash + size + 1));
+            i = slash + size + 1;
+        }
+        return ret;
+    }
+}
+/**
+ * LC281
+ * */
+class ZigzagIterator {
+    LinkedList<Iterator<Integer>> list;
+    public ZigzagIterator(List<Integer> v1, List<Integer> v2) {
+        list = new LinkedList<>();
+        if(!v1.isEmpty()) list.add(v1.iterator());
+        if(!v2.isEmpty()) list.add(v2.iterator());
+    }
+
+    public int next() {
+        Iterator<Integer> it = list.pollFirst();
+        int result = it.next();
+        if(it.hasNext()) list.add(it);
+        return result;
+    }
+
+    public boolean hasNext() {
+        return !list.isEmpty();
     }
 }

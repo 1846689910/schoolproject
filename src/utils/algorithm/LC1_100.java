@@ -9,6 +9,8 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.*;
 
 import static utils.algorithm.C2.firstOccur;
@@ -21,7 +23,26 @@ public class LC1_100 {
      Output: 7 -> 0 -> 8
      Explanation: 342 + 465 = 807.
      */
-    public static ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        ListNode dummyHead = new ListNode(0);
+        ListNode a = l1, b = l2, cur = dummyHead;
+        int carry = 0;
+        while (a != null || b != null) {
+            int x = (a != null) ? a.value : 0;
+            int y = (b != null) ? b.value : 0;
+            int sum = carry + x + y;
+            carry = sum / 10;
+            cur.next = new ListNode(sum % 10);
+            cur = cur.next;
+            if (a != null) a = a.next;
+            if (b != null) b = b.next;
+        }
+        if (carry > 0) {
+            cur.next = new ListNode(carry);
+        }
+        return dummyHead.next;
+    }
+    public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
         ListNode dummy = new ListNode(0);
         ListNode cur = dummy;
         int carry = 0;
@@ -48,6 +69,7 @@ public class LC1_100 {
         }
         return dummy.next;
     }
+
     /** LC6 ZigZag Conversion
      * Input: s = "PAYPALISHIRING", numRows = 4
      Output: "PINALSIGYAHRPI"
@@ -322,23 +344,41 @@ public class LC1_100 {
      * 除数肯定不为0
      * 当除数overflows时，返回2^31 - 1
      * */
-    public int divide(int bcs, int cs) {
-        if(bcs==Integer.MIN_VALUE && cs==-1) return Integer.MAX_VALUE;
-        if(bcs > 0 && cs > 0) return divideHelper(-bcs, -cs);
-        else if(bcs > 0) return -divideHelper(-bcs,cs);
-        else if(cs > 0) return -divideHelper(bcs,-cs);
-        else return divideHelper(bcs, cs);
-    }
+    public int divide(int dividend, int divisor) {
+        if (divisor == 0 || dividend == Integer.MIN_VALUE && divisor == -1) {
+            return Integer.MAX_VALUE;
+        }
 
-    private int divideHelper(int bcs, int cs){
-        // base case
-        if(cs < bcs) return 0;
-        // get highest digit of divisor
-        int cur = 0, res = 0;
-        while((cs << cur) >= bcs && (cs << cur) < 0 && cur < 31) cur++;
-        res = bcs - (cs << (cur - 1));
-        if(res > cs) return 1 << (cur - 1);
-        return (1 << (cur - 1))+divide(res, cs);
+        // 求符号位
+        int sign = ((dividend < 0) ^ (divisor < 0)) ? -1 : 1;
+
+        // 求绝对值，为防止溢出使用long
+        long bcs = Math.abs((long) dividend);
+        long cs = Math.abs((long) divisor);
+
+        // 记录结果
+        int result = 0;
+
+        // 被除数大于除数
+        while (bcs >= cs) {
+            // 记录除数
+            long tmp = cs;
+            // 记录商的大小
+            long mul = 1;
+
+            while (bcs >= (tmp << 1)) {
+                tmp <<= 1;
+                mul <<= 1;
+            }
+
+            // 减去最接近dvd的dvs的指数倍的值（值为tmp）
+            bcs -= tmp;
+
+            // 修正结果
+            result += mul;
+        }
+
+        return result * sign;
     }
     /**
      * LC31 Next Permutation
@@ -901,8 +941,8 @@ public class LC1_100 {
     public int uniquePathsWithObstacles(int[][] matrix) {
         /**
          * base case: M[0] = 1
-         * induction rule: M[j], 从col=0到col=i总共有几条通路
-         * 0 -> 行: 从上到下, 若matrix[i][j] = 1, 该路径有路障, 没有通路，为0
+         * induction rule: M[i], 从col=0到col=i总共有几条通路
+         * 0 -> 行: 0 -> 列: 从上到下, 若matrix[i][j] = 1, 该路径有路障, 没有通路，为0
          *          否则：路径数 arr[j] = arr[j] + arr[j - 1]
          * */
         int cols = matrix[0].length;
@@ -1484,6 +1524,37 @@ public class LC1_100 {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    @Test
+    public void mapMergeTest(){
+        String s = "hello world";
+        Map<Character, Integer> map = new HashMap<>();
+        Map<Character, Integer> map1 = new HashMap<>();
+        for (char c : s.toCharArray()) {
+            Integer count = map.get(c);
+            if (count == null) {
+                map.put(c, 1);
+            } else {
+                map.put(c, count + 1);
+            }
+        }
+        map.forEach((k, v) -> {
+            System.out.println(k + " : " + v);
+        });
+        for (char c : s.toCharArray()) {
+            map1.merge(c, 1, (i1, i2) -> i1 + i2);
+        }
+        map1.forEach((k, v) -> {
+            System.out.println(k + " : " + v);
+        });
+    }
+    private int gcd(int a, int b) {
+        if ( a == 0 ) return b;
+        return gcd ( b % a, a );
+    }
+    @Test
+    public void gcdTest(){
+        System.out.println(gcd(18, 48));
     }
 }
 class Interval {
