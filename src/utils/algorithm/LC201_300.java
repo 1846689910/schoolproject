@@ -339,11 +339,54 @@ public class LC201_300 {
                     || (map.containsKey(bucket - 1) && remappedNum - map.get(bucket - 1) <= t)
                     || (map.containsKey(bucket + 1) && map.get(bucket + 1) - remappedNum <= t))
                 return true;
-            if (map.entrySet().size() >= k) {
+            if (map.size() >= k) {
                 long lastBucket = ((long) nums[i - k] - Integer.MIN_VALUE) / ((long) t + 1);
                 map.remove(lastBucket);
             }
             map.put(bucket, remappedNum);
+        }
+        return false;
+    }
+    public boolean containsNearbyAlmostDuplicate1(int[] nums, int k, int t) {
+        TreeSet<Integer> set = new TreeSet<>();
+        for (int i = 0; i < nums.length; ++i) {
+            // Find the successor of current element
+            Integer s = set.ceiling(nums[i]);
+            if (s != null && s <= nums[i] + t) return true;
+            // Find the predecessor of current element
+            Integer g = set.floor(nums[i]);
+            if (g != null && nums[i] <= g + t) return true;
+
+            set.add(nums[i]);
+            if (set.size() > k) {
+                set.remove(nums[i - k]);
+            }
+        }
+        return false;
+    }
+    // Get the ID of the bucket from element value x and bucket width w
+    // In Java, `-3 / 5 = 0` and but we need `-3 / 5 = -1`.
+    private long getID(long x, long w) {
+        return x < 0 ? (x + 1) / w - 1 : x / w;
+    }
+
+    public boolean containsNearbyAlmostDuplicate2(int[] nums, int k, int t) {
+        if (t < 0) return false;
+        Map<Long, Long> d = new HashMap<>();
+        long w = (long)t + 1;
+        for (int i = 0; i < nums.length; ++i) {
+            long m = getID(nums[i], w);
+            // check if bucket m is empty, each bucket may contain at most one element
+            if (d.containsKey(m))
+                return true;
+            // check the neighbor buckets for almost duplicate
+            if (d.containsKey(m - 1) && Math.abs(nums[i] - d.get(m - 1)) < w)
+                return true;
+            if (d.containsKey(m + 1) && Math.abs(nums[i] - d.get(m + 1)) < w)
+                return true;
+            // now bucket m is empty and no almost duplicate in neighbor buckets
+            d.put(m, (long)nums[i]);
+            if (i >= k) d.remove(getID(nums[i - k], w));
         }
         return false;
     }
@@ -778,24 +821,24 @@ public class LC201_300 {
         // Sort the intervals by start time
         Arrays.sort(intervals, (a, b) -> { return a.start - b.start; });
         // Use a min heap to track the minimum end time of merged intervals
-        PriorityQueue<Interval> heap = new PriorityQueue<>(intervals.length, (a, b) -> { return a.end - b.end; });
+        PriorityQueue<Interval> minHeap = new PriorityQueue<>(intervals.length, (a, b) -> { return a.end - b.end; });
         // start with the first meeting, put it to a meeting room
-        heap.offer(intervals[0]);
+        minHeap.offer(intervals[0]);
         for (int i = 1; i < intervals.length; i++) {
             // get the meeting room that finishes earliest
-            Interval interval = heap.poll();
+            Interval interval = minHeap.poll();
             if (intervals[i].start >= interval.end) {
                 // if the current meeting starts right after
                 // there's no need for a new room, merge the interval
                 interval.end = intervals[i].end;
             } else {
                 // otherwise, this meeting needs a new room
-                heap.offer(intervals[i]);
+                minHeap.offer(intervals[i]);
             }
             // don't forget to put the meeting room back
-            heap.offer(interval);
+            minHeap.offer(interval);
         }
-        return heap.size();
+        return minHeap.size();
     }
     /**
      * LC254 Factor Combinations
@@ -841,14 +884,31 @@ public class LC201_300 {
     public boolean verifyPreorder(int[] preorder) {
         int low = Integer.MIN_VALUE, i = -1;
         for (int p : preorder) {
-            if (p < low)
-                return false;
-            while (i >= 0 && p > preorder[i])
-                low = preorder[i--];
+            if (p < low) return false;
+            while (i >= 0 && p > preorder[i]) low = preorder[i--];
             preorder[++i] = p;
         }
         return true;
     }
+    public boolean verifyInorder(int arr[]) {
+        // Array has one or no element
+        if (arr.length == 0 || arr.length == 1) return true;
+        for (int i = 1; i < arr.length; i ++) {
+            // Unsorted pair found
+            if (arr[i - 1] > arr[i]) return false;
+        }
+        // No unsorted pair found
+        return true;
+    }
+    @Test
+    public void testVerifyPreorder(){
+        int[] arr = new int[]{10,6,5,8,7,9};
+        System.out.println(verifyPreorder(arr));
+        System.out.println(verifyInorder(arr));
+        System.out.println(verifyInorder(new int[]{1, 2, 3, 5, 6}));
+        System.out.println(verifyInorder(new int[]{5, 6, 7, 8, 9, 10}));
+    }
+
     /**LC256 Paint house 相邻不同色问题
      There are a row of n houses, each house can be painted with one of the three colors: red, blue or green. The cost of painting each house with a certain color is different. You have to paint all the houses such that no two adjacent houses have the same color.
      The cost of painting each house with a certain color is represented by a n x 3 cost matrix. For example, costs[0][0] is the cost of painting house 0 with color red; costs[1][2] is the cost of painting house 1 with color green, and so on... Find the minimum cost to paint all houses.
@@ -1971,24 +2031,45 @@ class Codec {
     }
 }
 /**
- * LC281
+ * LC281 zigzag iterator
+ * Given two 1d vectors, implement an iterator to return their elements alternately.
+
+ Example:
+
+ Input:
+ v1 = [1,2]
+ v2 = [3,4,5,6]
+
+ Output: [1,3,2,4,5,6]
+
+ Explanation: By calling next repeatedly until hasNext returns false,
+ the order of elements returned by next should be: [1,3,2,4,5,6].
+ Follow up: What if you are given k 1d vectors? How well can your code be extended to such cases?
+
+ Clarification for the follow up question:
+ The "Zigzag" order is not clearly defined and is ambiguous for k > 2 cases. If "Zigzag" does not look right to you, replace "Zigzag" with "Cyclic". For example:
+
+ Input:
+ [1,2,3]
+ [4,5,6,7]
+ [8,9]
+
+ Output: [1,4,8,2,5,9,3,6,7].
  * */
 class ZigzagIterator {
-    LinkedList<Iterator<Integer>> list;
+    private Queue<Iterator<Integer>> queue;
     public ZigzagIterator(List<Integer> v1, List<Integer> v2) {
-        list = new LinkedList<>();
-        if(!v1.isEmpty()) list.add(v1.iterator());
-        if(!v2.isEmpty()) list.add(v2.iterator());
+        queue = new LinkedList<>();
+        if(!v1.isEmpty()) queue.offer(v1.iterator());
+        if(!v2.isEmpty()) queue.offer(v2.iterator());
     }
-
     public int next() {
-        Iterator<Integer> it = list.pollFirst();
+        Iterator<Integer> it = queue.poll();
         int result = it.next();
-        if(it.hasNext()) list.add(it);
+        if(it.hasNext()) queue.offer(it);
         return result;
     }
-
     public boolean hasNext() {
-        return !list.isEmpty();
+        return !queue.isEmpty();
     }
 }

@@ -223,6 +223,12 @@ public class LC1_100 {
         }
         return num;
     }
+    @Test
+    public void romanToIntTest(){
+        String s = "MXXV";
+        System.out.println(romanToInt(s));
+        System.out.println(int2Roman(romanToInt(s)));
+    }
     /**
      * LC14 longest common prefix
      * time O(S), space: O(1)
@@ -380,6 +386,32 @@ public class LC1_100 {
 
         return result * sign;
     }
+    public int divide1(int dividend, int divisor) {
+        if (divisor == 0 || (dividend == Integer.MIN_VALUE && divisor == -1)) return Integer.MAX_VALUE;
+
+        long div = (long) dividend;
+        long dis = (long) divisor;
+
+        int sign = 1;
+        if (div < 0){
+            div = -div;
+            sign = -sign;
+        }
+        if (dis < 0){
+            dis = -dis;
+            sign = -sign;
+        }
+        int res = 0;
+        while ( div >= dis){
+            int shift = 0;
+            while (div >= dis << shift ){
+                shift ++;
+            }
+            res += (1 << (shift-1));
+            div -= dis << (shift -1);
+        }
+        return  sign * res;
+    }
     /**
      * LC31 Next Permutation
      * 在一个数字的各个位数的排列中，找到一个排列是比当前的数字大的数里最小的那个。如果找不到就倒序
@@ -496,10 +528,9 @@ public class LC1_100 {
     public boolean isValidSudoku(char[][] board) {
         if (board == null || board.length == 0 || board[0].length == 0) return false;
         int rows = board.length, cols = board[0].length;
-        Set<Integer> set = new HashSet<>();
         // check rows
         for (int i = 0; i < rows; i ++) {
-            set = new HashSet<>();
+            Set<Integer> set = new HashSet<>();
             for (int j = 0; j < cols; j ++) {
                 if (board[i][j] == '.') continue;
                 int num = (int)(board[i][j] - '0');
@@ -509,7 +540,7 @@ public class LC1_100 {
         }
         // check cols
         for (int i = 0; i < cols; i ++) {
-            set = new HashSet<>();
+            Set<Integer> set = new HashSet<>();
             for (int j = 0; j < rows; j ++) {
                 if (board[j][i] == '.') continue;
                 int num = (int)(board[j][i] - '0');
@@ -521,9 +552,9 @@ public class LC1_100 {
         int boxRows = 3, boxCols = 3;
         for (int boxRow = 0; boxRow < boxRows; boxRow ++) {
             for (int boxCol = 0; boxCol < boxCols; boxCol ++) {
-                set = new HashSet<>();
-                for (int i = 0; i < boxRow * 3 - 1; i ++) {
-                    for (int j = 0; j < boxCol * 3 - 1; j ++) {
+                Set<Integer> set = new HashSet<>();
+                for (int i = boxRow * 3; i < (boxRow + 1) * 3; i ++) {
+                    for (int j = boxCol * 3; j < (boxCol + 1) * 3; j ++) {
                         if (board[i][j] == '.')continue;
                         int num = (int) (board[i][j] - '0');
                         if (num < 1 || num > 9 || set.contains(num)) return false;
@@ -793,8 +824,8 @@ public class LC1_100 {
      * */
     public double myPow(double x, int n) {
         if (n == Integer.MIN_VALUE){
-            double temp = myPow(x, n >> 1);
-            return temp * temp;
+            double half = myPow(x, n >> 1);
+            return half * half;
         }
         if (n < 0) return 1 / myPow(x, -n);
         if (n == 0) return 1;
@@ -1011,30 +1042,39 @@ public class LC1_100 {
      * 两个数组分别表示两个binary data，相加
      * */
     public String addBinary(String a, String b) {
-        if(a == null || a.isEmpty()) {
-            return b;
-        }
-        if(b == null || b.isEmpty()) {
-            return a;
-        }
-        char[] aArray = a.toCharArray();
-        char[] bArray = b.toCharArray();
-        StringBuilder sb = new StringBuilder();
-
-        int i = aArray.length - 1;
-        int j = bArray.length - 1;
         int carry = 0;
-        int result = 0;
+        int ai = a.length() - 1,
+                bi = b.length() - 1;
 
-        while(i >= 0 || j >= 0 || carry == 1) {
-            int aByte = (i >= 0) ? Character.getNumericValue(aArray[i --]) : 0;
-            int bByte = (j >= 0) ? Character.getNumericValue(bArray[j --]) : 0;
-            result = aByte ^ bByte ^ carry;
-            carry = ((aByte + bByte + carry) >= 2) ? 1 : 0;
-            sb.append(result);
+        char[] arr = a.toCharArray();
+        char[] brr = b.toCharArray();
+        StringBuilder sb = new StringBuilder();
+        while(ai >= 0 || bi >= 0) {
+            if(ai >= 0) carry += (arr[ai--] - '0');
+            if(bi >= 0) carry += (brr[bi--] - '0');
+            int ans = carry % 2;
+            carry = carry / 2;
+            sb.append((char) (ans + '0')) ;
+        }
+        if(carry > 0) {
+            sb.append((char) (carry + '0')) ;
         }
         return sb.reverse().toString();
     }
+    public String addBinary1(String a, String b) {
+        int i = a.length() - 1, j = b.length() - 1, carry = 0;
+        StringBuilder sb = new StringBuilder();
+        while (i >= 0 || j >= 0) {
+            int sum = carry;
+            if(i >= 0) sum += (a.charAt(i --) - '0');
+            if(j >= 0) sum += (b.charAt(j --) - '0');
+            carry = sum / 2;
+            sb.append(sum % 2);
+        }
+        if (carry == 1) sb.append(1);
+        return sb.reverse().toString();
+    }
+
     /**
      * LC69 sqrt(x)
      * */
@@ -1075,6 +1115,24 @@ public class LC1_100 {
         StringBuilder sb = new StringBuilder();
         for (String dir : stack) sb.insert(0, "/" + dir);
         return (sb.length() == 0) ? "/" : sb.toString();
+    }
+    public String simplifyPath1(String path) {
+        String[] folders = path.split("/");
+        Deque<String> stack = new LinkedList<>();
+        for(String str : folders) {
+            if(str.equals("") || str.equals(".")) continue;
+            if(str.equals("..")) {
+                if(!stack.isEmpty()) stack.pollLast();
+            } else {
+                stack.offerLast(str);
+            }
+        }
+        StringBuilder sb = new StringBuilder();
+        for(String str : stack) {
+            sb.append("/");
+            sb.append(str);
+        }
+        return sb.length() == 0 ? "/" : sb.toString();
     }
     /**
      * LC76 Minimum Window SubString
@@ -1398,11 +1456,15 @@ public class LC1_100 {
             result.add(s1);
             return;
         }
-        for (int i = 1; i < 4; i ++) {
-            if (idx + i > s.length()) break;
-            String substring = s.substring(idx, idx + i);
-            if ((substring.startsWith("0") && substring.length() > 1) || (i == 3 && Integer.parseInt(substring) >= 256)) continue;
-            restoreIpAddressesHelper(result, s, s1 + substring + (count == 3? "" : "."), idx + i, count + 1);
+        for(int i = 1; i < 4; i ++) {
+            if(idx + i > s.length()) break;
+            String sub = s.substring(idx, idx + i);
+            if((sub.startsWith("0") && sub.length() > 1) || (i == 3 && Integer.parseInt(sub) >= 256)) continue;
+            if(count == 3){
+                restoreIpAddressesHelper(result, s, s1 + sub, idx + i, count + 1);
+            } else {
+                restoreIpAddressesHelper(result, s, s1 + sub + ".", idx + i, count + 1);
+            }
         }
     }
     /**

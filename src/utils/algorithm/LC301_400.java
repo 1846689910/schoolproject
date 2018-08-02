@@ -2,6 +2,18 @@ package utils.algorithm;
 import java.util.*;
 public class LC301_400 {
     /**
+     * LC324 wiggle sort 2
+     * 与wiggle sort1的区别在于，这次需要nums[0] < nums[1] > nums[2] < nums[3]....
+     * 并且数组可能有重复元素
+     * */
+    public void wiggleSort(int[] nums) {
+        Arrays.sort(nums);
+        int lo = (nums.length - 1) / 2, hi = nums.length - 1;
+        int[] ans = new int[nums.length];
+        for (int i = 0; i < nums.length; i++) ans[i] = (i % 2 == 0) ? nums[lo--] : nums[hi--];
+        System.arraycopy(ans, 0, nums, 0, nums.length);
+    }
+    /**
      * LC326 Power of three
      * */
     public boolean isPowerOfThree(int n) {

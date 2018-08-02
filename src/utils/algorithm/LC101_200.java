@@ -937,7 +937,9 @@ public class LC101_200 {
                     break;
 
                 case "-":
-                    stack.offerFirst(-stack.pollFirst() + stack.pollFirst());
+                    int one = stack.pollFirst();
+                    int two = stack.pollFirst();
+                    stack.offerFirst(two - one);
                     break;
 
                 case "*":
@@ -1242,10 +1244,10 @@ public class LC101_200 {
         StringBuilder sb = new StringBuilder();
         while(n > 0){
             n --;
-            sb.insert(0, (char)('A' + n % 26));
+            sb.append((char)('A' + n % 26));
             n /= 26;
         }
-        return sb.toString();
+        return sb.reverse().toString();
     }
     /**
      * LC171 Excel Sheet column letter to num
