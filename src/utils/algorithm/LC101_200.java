@@ -937,7 +937,9 @@ public class LC101_200 {
                     break;
 
                 case "-":
-                    stack.offerFirst(-stack.pollFirst() + stack.pollFirst());
+                    int one = stack.pollFirst();
+                    int two = stack.pollFirst();
+                    stack.offerFirst(two - one);
                     break;
 
                 case "*":
@@ -1036,6 +1038,68 @@ public class LC101_200 {
         System.out.println(findMin2(new int[]{3, 1, 1}));
     }
     /**
+     * LC157 Read N Characters Given Read4
+     * */
+    private int read4(char[] chars){
+        return 0;
+    }
+    /**
+     * @param buf Destination buffer
+     * @param n   Maximum number of characters to read
+     * @return    The number of characters read
+     */
+    public int read(char[] buf, int n) {
+        for(int i = 0; i < n; i += 4){
+            char[] tmp = new char[4];
+            // 将数据读入临时数组
+            int len = read4(tmp);
+            // 将临时数组拷贝至buf数组，这里拷贝的长度是本次读到的个数和剩余所需个数中较小的
+            System.arraycopy(tmp, 0, buf, i, Math.min(len, n - i));
+            // 如果读不满4个，说明已经读完了，返回总所需长度和目前已经读到的长度的较小的
+            if(len < 4) return Math.min(i + len, n);
+        }
+        // 如果循环内没有返回，说明读取的字符是4的倍数
+        return n;
+    }
+    /**
+     * LC161 One Edit Distance
+     * There are 3 possiblities to satisify one edit distance apart:
+
+     Insert a character into s to get t
+     Delete a character from s to get t
+     Replace a character of s to get t
+     Example 1:
+
+     Input: s = "ab", t = "acb"
+     Output: true
+     Explanation: We can insert 'c' into s to get t.
+     Example 2:
+
+     Input: s = "cab", t = "ad"
+     Output: false
+     Explanation: We cannot get t from s by only one step.
+     Example 3:
+
+     Input: s = "1203", t = "1213"
+     Output: true
+     Explanation: We can replace '0' with '1' to get t.
+     * */
+    public boolean isOneEditDistance(String s, String t) {
+        for (int i = 0; i < Math.min(s.length(), t.length()); i++) {
+            if (s.charAt(i) != t.charAt(i)) {
+                if (s.length() == t.length()) // s has the same length as t, so the only possibility is replacing one char in s and t
+                    return s.substring(i + 1).equals(t.substring(i + 1));
+                else if (s.length() < t.length()) // t is longer than s, so the only possibility is deleting one char from t
+                    return s.substring(i).equals(t.substring(i + 1));
+                else // s is longer than t, so the only possibility is deleting one char from s
+                    return t.substring(i).equals(s.substring(i + 1));
+            }
+        }
+        //All previous chars are the same, the only possibility is deleting the end char in the longer one of s and t
+        return Math.abs(s.length() - t.length()) == 1;
+    }
+
+    /**
      * LC162 find peak element
      * Example 1:
      Input: nums = [1,2,3,1]
@@ -1059,6 +1123,44 @@ public class LC101_200 {
         }
         return left;
     }
+    /**
+     * LC163 Missing Ranges
+     * Given a sorted integer array nums, where the range of elements are in the inclusive range [lower, upper], return its missing ranges.
+     Example:
+     Input: nums = [0, 1, 3, 50, 75], lower = 0 and upper = 99,
+     Output: ["2", "4->49", "51->74", "76->99"]
+     * */
+    public List<String> findMissingRanges(int[] nums, int lower, int upper) {
+        List<String> result = new ArrayList<>();
+        if(nums.length == 0) {
+            addRange(result, lower, upper);
+            return result;
+        }
+        int next = lower;
+        for(int num : nums) {
+            // 1. We don't need to add [Integer.MAX_VALUE, ...] to result
+            if(lower == Integer.MAX_VALUE) return result;
+            if(num < next) continue;
+            if(num == next) {
+                next = num + 1;
+                continue;
+            }
+            addRange(result, next, num - 1);
+            // 2. We don't need to proceed after we have process Integer.MAX_VALUE in array
+            if(num == Integer.MAX_VALUE) return result;
+            next = num + 1;
+        }
+        if(next <= upper) addRange(result, next, upper);
+        return result;
+    }
+    private void addRange(List<String> result, int left, int right) {
+        if(right == left) {
+            result.add(left + "");
+        } else {
+            result.add(left + "->" + right);
+        }
+    }
+
     /**
      * LC165 compare version numbers
      * Example 1:
@@ -1142,10 +1244,10 @@ public class LC101_200 {
         StringBuilder sb = new StringBuilder();
         while(n > 0){
             n --;
-            sb.insert(0, (char)('A' + n % 26));
+            sb.append((char)('A' + n % 26));
             n /= 26;
         }
-        return sb.toString();
+        return sb.reverse().toString();
     }
     /**
      * LC171 Excel Sheet column letter to num
@@ -1372,5 +1474,41 @@ class BSTIterator {
             }
         }
         return node.value;
+    }
+}
+/**
+ * LC170 Two Sum 3, data structure design
+ * Design and implement a TwoSum class. It should support the following operations: add and find.
+ add - Add the number to an internal data structure.
+ find - Find if there exists any pair of numbers which sum is equal to the value.
+ Example 1:
+ add(1); add(3); add(5);
+ find(4) -> true
+ find(7) -> false
+ Example 2:
+ add(3); add(1); add(2);
+ find(3) -> true
+ find(6) -> false
+ * */
+class TwoSum {
+    private Map<Integer, Integer> map;
+    /** Initialize your data structure here. */
+    public TwoSum() {
+        this.map = new HashMap<>();
+    }
+
+    /** Add the number to an internal data structure.. */
+    public void add(int number) {
+        map.merge(number, 1, Integer::sum);
+    }
+
+    /** Find if there exists any pair of numbers which sum is equal to the value. */
+    public boolean find(int value) {
+        for (Map.Entry<Integer, Integer> entry : map.entrySet()){
+            int one = entry.getKey();
+            int two = value - one;
+            if((one == two && entry.getValue() > 1) || (one != two && map.containsKey(two))) return true;
+        }
+        return false;
     }
 }
