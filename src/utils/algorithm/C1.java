@@ -74,7 +74,7 @@ public class C1 {
         swap(arr, lp, right);
         return lp;
     }
-    public static void swap(int[] arr, int i, int j) {
+    protected static void swap(int[] arr, int i, int j) {
         int tmp = arr[i];
         arr[i] = arr[j];
         arr[j] = tmp;

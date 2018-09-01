@@ -24,10 +24,10 @@ public class LC201_300 {
      * Input: 19
      Output: true
      Explanation:
-     12 + 92 = 82
-     82 + 22 = 68
-     62 + 82 = 100
-     12 + 02 + 02 = 1
+     1^2 + 9^2 = 82
+     8^2 + 2^2 = 68
+     6^2 + 8^2 = 100
+     1^2 + 0^2 + 0^2 = 1
      * */
     public boolean isHappy(int n) {
         Set<Integer> set = new HashSet<>();
@@ -107,35 +107,23 @@ public class LC201_300 {
      also have finished course 1. So it is impossible.
      * */
     public boolean canFinish(int numCourses, int[][] prerequisites) {
-        List<Integer>[] graph = new List[numCourses];  // [List<Integer>, List<Integer>, ...] 数组序号表示的是先修课程的号, 该序号对应的list里保存的是所有以该课程为先修课的课号
-        for (int i = 0; i < numCourses; i++) {
-            graph[i] = new ArrayList<>();
-        }
-        for (int[] p: prerequisites) {
-            graph[p[1]].add(p[0]);
-        }
-        int[] visited = new int[numCourses];  // 该课程被检索过的次数
-        for (int i = 0; i < numCourses; i ++) {
-            if (! validCourse(graph, i, visited)) {
-                return false;
-            }
+        List<List<Integer>> graph = new ArrayList<>();
+        for(int i = 0; i < numCourses; i ++) graph.add(new ArrayList<>());
+        for(int[] arr : prerequisites) graph.get(arr[1]).add(arr[0]);
+        int[] visited = new int[numCourses];
+        for(int i = 0; i < numCourses; i ++){
+            if(! valid(graph, visited, i))return false;
         }
         return true;
     }
-    private boolean validCourse(List<Integer>[] graph, int idx, int[] visited) {
-        if (visited[idx] == 1) {  // loop
-            return false;
+    private boolean valid(List<List<Integer>> graph, int[] visited, int i){
+        if(visited[i] == 1) return false;
+        if(visited[i] == 2) return true;
+        visited[i] = 1;
+        for(int idx : graph.get(i)){
+            if(! valid(graph, visited, idx)) return false;
         }
-        if (visited[idx] == 2) {  // point is already clear
-            return true;
-        }
-        visited[idx] = 1;  // start exploring
-        for (int after: graph[idx]) {
-            if (! validCourse(graph, after, visited)) {
-                return false;
-            }
-        }
-        visited[idx] = 2;  // point clear
+        visited[i] = 2;
         return true;
     }
     /**
@@ -166,20 +154,16 @@ public class LC201_300 {
      * 给定要选课的数量和[[课号, 先修课号], ...], 如果能修完，那么顺序是什么. 可能有多重顺序，只要得出一种即可。如果不能，返回空数组
      * */
     public int[] findOrder(int numCourses, int[][] prerequisites) {
-        int[] edges = new int[numCourses];
-        List<List<Integer>> graph = new ArrayList<>(numCourses);
-        buildGraph(edges, graph, prerequisites);
-        return solveByBFS(edges, graph);
-    }
-    private void buildGraph(int[] edges, List<List<Integer>> graph, int[][] prerequisites){
-        int n = edges.length;
-        while (n-- > 0) graph.add(new ArrayList<>());
-        for (int[] edge : prerequisites) {
+        int[] edges = new int[numCourses];  // 索引是课，值为先修课数
+        List<List<Integer>> graph = new ArrayList<>(numCourses);  // List<先修课--> List<课号>>
+        for(int i = 0; i < numCourses; i ++) graph.add(new ArrayList<>());
+        for(int[] edge : prerequisites) {
             edges[edge[0]] ++;  // 每个节点的边数，有边表示有先修课
             graph.get(edge[1]).add(edge[0]);
         }
+        return BFS(edges, graph);
     }
-    private int[] solveByBFS(int[] edges, List<List<Integer>> graph){
+    private int[] BFS(int[] edges, List<List<Integer>> graph){
         int[] order = new int[edges.length];
         Queue<Integer> queue = new LinkedList<>();  // 需要修的课程
         for (int i = 0; i < edges.length; i ++) {  // 先把没有先修课的课程放入queue, 他们是根节点
@@ -189,9 +173,9 @@ public class LC201_300 {
         while (! queue.isEmpty()) {
             int cur = queue.poll();
             order[idx ++] = cur;
-            for (int to : graph.get(cur)) {
-                edges[to] --;
-                if (edges[to] == 0) queue.offer(to);
+            for (int j : graph.get(cur)) {
+                edges[j] --;
+                if (edges[j] == 0) queue.offer(j);
             }
         }
         return idx == edges.length ? order : new int[0];
@@ -274,15 +258,30 @@ public class LC201_300 {
         Arrays.sort(nums);
         return nums[nums.length - k];
     }
-    public int findKthLargest1(int[] arr, int k) {
+    public int findKthLargest2(int[] arr, int k) {
         PriorityQueue<Integer> minHeap = new PriorityQueue<>(k);
-        for(int val : arr) {
-            minHeap.offer(val);
-            if(minHeap.size() > k) {
-                minHeap.poll();
-            }
+        for(int i = 0; i < arr.length; i ++) {
+            minHeap.offer(arr[i]);
+            if(i >= k) minHeap.poll();
         }
         return minHeap.peek();
+    }
+    private int findKthSmallest(int[] arr, int k) {
+        PriorityQueue<Integer> maxHeap = new PriorityQueue<>(k, (i1, i2) -> {
+            if(i1.equals(i2)) return 0;
+            return i1 > i2 ? -1 : 1;
+        });
+        for(int i = 0; i < arr.length; i ++) {
+            maxHeap.offer(arr[i]);
+            if(i >= k) maxHeap.poll();
+        }
+        return maxHeap.peek();
+    }
+    @Test
+    public void kthTest(){
+        int[] arr = new int[]{3, 2, 1, 5, 6, 4};
+        System.out.println(findKthSmallest(arr, 2));
+//        System.out.println(findKthLargest2(arr, 2));
     }
     /**
      * LC216 Combination Sum 3
@@ -540,7 +539,7 @@ public class LC201_300 {
         return ret;
     }
     /**
-     * LC 241 different ways to add parentheses
+     * LC241 different ways to add parentheses
      * 给定字符串的算数式，决定有多少种加括号的方式产生不同的结果
      * Example 1:
 
@@ -865,6 +864,28 @@ public class LC201_300 {
             }
         }
     }
+    public List<List<Integer>> getFactors1(int n) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> cur = new ArrayList<>();
+        factor1Helper(n, result, cur, 2);
+        return result;
+    }
+
+    private void factor1Helper(int n, List<List<Integer>> result, List<Integer> cur, int idx) {
+        if (!cur.isEmpty()) {
+            List<Integer> nsol = new ArrayList<>(cur);
+            nsol.add(n);
+            result.add(nsol);
+        }
+
+        for (int i = idx; i * i <= n; ++i) {
+            if (n % i == 0) {
+                cur.add(i);
+                factor1Helper(n / i, result, cur, i);
+                cur.remove(cur.size() - 1);
+            }
+        }
+    }
     /**
      * LC255 verify preorder sequence in BST
      5
@@ -887,6 +908,18 @@ public class LC201_300 {
             if (p < low) return false;
             while (i >= 0 && p > preorder[i]) low = preorder[i--];
             preorder[++i] = p;
+        }
+        return true;
+    }
+    public boolean verifyPreorder1(int[] preorder) {
+        int low = Integer.MIN_VALUE;
+        Stack<Integer> path = new Stack<>();
+        for (int p : preorder) {
+            if (p < low)
+                return false;
+            while (!path.empty() && p > path.peek())
+                low = path.pop();
+            path.push(p);
         }
         return true;
     }
@@ -1123,13 +1156,14 @@ public class LC201_300 {
         return set.size() <= 1;
     }
     public boolean canPermutePalindrome2(String s) {  // time O(n), space O(1)
-        int[] map = new int[128];
+        int[] arr = new int[128];
         for (int i = 0; i < s.length(); i++) {
-            map[s.charAt(i)]++;
+            arr[s.charAt(i)]++;
         }
         int count = 0;
-        for (int key = 0; key < map.length && count <= 1; key++) {
-            count += map[key] % 2;
+        for (int num : arr) {
+            count += num % 2;
+            if (count > 1) break;
         }
         return count <= 1;
     }
@@ -1143,7 +1177,7 @@ public class LC201_300 {
      Input: "abc"
      Output: []
      * */
-    public List<String> generatePalindromes(String s) {
+    public List<String> generatePalindromes1(String s) {
         int odd = 0;
         String mid = "";
         List<String> res = new ArrayList<>();
@@ -1187,6 +1221,58 @@ public class LC201_300 {
                 used[i] = false; sb.deleteCharAt(sb.length() - 1);
             }
         }
+    }
+
+    public List < String > generatePalindromes(String s) {
+        Set < String > set = new HashSet <>();
+        int[] arr = new int[128];
+        char[] chars = new char[s.length() / 2];
+        if (!canPermutePalindrome(s, arr)) return new ArrayList <>();
+        char c = 0;
+        int k = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] % 2 == 1) c = (char) i;
+            for (int j = 0; j < arr[i] / 2; j++) {
+                chars[k ++] = (char) i;
+            }
+        }
+        permute(set, chars, c, 0);
+        return new ArrayList <> (set);
+    }
+    private boolean canPermutePalindrome(String s, int[] arr) {
+        int count = 0;
+        for(char c : s.toCharArray()){
+            arr[c] ++;
+            if(arr[c] % 2 == 0) {
+                count --;
+            } else {
+                count ++;
+            }
+        }
+        return count <= 1;
+    }
+    private void permute(Set<String> set, char[] chars, char c, int idx) {
+        if (idx == chars.length) {
+            set.add(new String(chars) + (c == 0 ? "" : c) + new StringBuffer(new String(chars)).reverse());
+        } else {
+            for (int i = idx; i < chars.length; i++) {
+                if (chars[idx] != chars[i] || idx == i) {
+                    swap(chars, idx, i);
+                    permute(set, chars, c, idx + 1);
+                    swap(chars, idx, i);
+                }
+            }
+        }
+    }
+    public void swap(char[] s, int i, int j) {
+        char temp = s[i];
+        s[i] = s[j];
+        s[j] = temp;
+    }
+    @Test
+    public void test1(){
+        char c = 0;
+        System.out.println(c == ' ');
     }
     /**
      * LC268 missing number
@@ -1238,15 +1324,15 @@ public class LC201_300 {
         int len = arr.length;
         int left = 0, right = len - 1;
         while (left <= right) {
-            int med = left + (right - left) / 2;
-            if (arr[med] == len - med) {
-                return len - med;
-            } else if (arr[med] < len - med) {
-                left = med + 1;
+            int mid = left + (right - left) / 2;
+            if (arr[mid] == len - mid) {
+                return len - mid;
+            } else if (arr[mid] < len - mid) {
+                left = mid + 1;
             } else {
                 //(citations[med] > len-med), med qualified as a hIndex,
                 // but we have to continue to search for a higher one.
-                right = med - 1;
+                right = mid - 1;
             }
         }
         return len - left;
@@ -1368,6 +1454,11 @@ public class LC201_300 {
         for (int i = 1; i < nums.length - 1; i += 2) {
             swap(nums, i, i + 1);
         }
+    }
+    private void swap(int[] arr, int i, int j){
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
     }
     public void wiggleSort1(int[] nums) {
         boolean less = true;
@@ -1745,72 +1836,64 @@ public class LC201_300 {
  *  Implement a trie with insert, search, and startsWith methods.
  * */
 class Trie {
-    private TrieNode root;
-
+    TrieNode root;
+    /** Initialize your data structure here. */
     public Trie() {
         root = new TrieNode();
     }
 
-    // Inserts a word into the trie. time O(m) m is the key length, space O(m) worst case no prefix of the the word exists, need to add new nodes
+    /** Inserts a word into the trie. */
     public void insert(String word) {
         TrieNode node = root;
-        for (int i = 0; i < word.length(); i++) {
-            char currentChar = word.charAt(i);
-            if (!node.containsKey(currentChar)) {
-                node.put(currentChar, new TrieNode());
+        for(char c : word.toCharArray()){
+            if(node.arr[c - 'a'] == null){
+                node.arr[c - 'a'] = new TrieNode();
             }
-            node = node.get(currentChar);
+            node = node.arr[c - 'a'];
         }
-        node.setEnd();
+        node.isEnd = true;
     }
-
-    // search a prefix or whole key in trie and
-    // returns the node where search ends, time O(m), space O(1)
-    private TrieNode searchPrefix(String word) {
+    private TrieNode searchPrefix(String s){
         TrieNode node = root;
-        for (int i = 0; i < word.length(); i++) {
-            char curLetter = word.charAt(i);
-            if (node.containsKey(curLetter)) {
-                node = node.get(curLetter);
-            } else {
+        for(char c : s.toCharArray()){
+            if(node.arr[c - 'a'] == null){
                 return null;
+            } else {
+                node = node.arr[c - 'a'];
             }
         }
         return node;
     }
 
-    // Returns if the word is in the trie.
+    /** Returns if the word is in the trie. */
     public boolean search(String word) {
         TrieNode node = searchPrefix(word);
-        return node != null && node.isEnd();
+        return node != null && node.isEnd;
     }
 
-    // Returns if there is any word in the trie
-    // that starts with the given prefix.
-    public boolean startsWith(String prefix) {  // time O(m), space O(1)
+    /** Returns if there is any word in the trie that starts with the given prefix. */
+    public boolean startsWith(String prefix) {
         TrieNode node = searchPrefix(prefix);
         return node != null;
     }
 }
 class TrieNode {
-
-    // R links to node children
-    private TrieNode[] links;
-
-    private boolean isEnd;
-
+    TrieNode[] arr;
+    boolean isEnd;
     public TrieNode() {
-        links = new TrieNode[26];
+        isEnd = false;
+        arr = new TrieNode[26];
     }
+/*
 
     public boolean containsKey(char ch) {
-        return links[ch -'a'] != null;
+        return arr[ch -'a'] != null;
     }
     public TrieNode get(char ch) {
-        return links[ch -'a'];
+        return arr[ch -'a'];
     }
     public void put(char ch, TrieNode node) {
-        links[ch -'a'] = node;
+        arr[ch -'a'] = node;
     }
     public void setEnd() {
         isEnd = true;
@@ -1818,20 +1901,14 @@ class TrieNode {
     public boolean isEnd() {
         return isEnd;
     }
-}/**
+*/
+}
+
+/**
  * LC211 Add and Search Word - Data structure design
  * 设计一个word dictionary支持search和add
  */
 class WordDictionary {
-
-    private static class TrieNode{
-        boolean isWord;
-        TrieNode[] children;
-        TrieNode(){
-            isWord = false;
-            children = new TrieNode[26];
-        }
-    }
     TrieNode root;
     /** Initialize your data structure here. */
     public WordDictionary() {
@@ -1841,34 +1918,29 @@ class WordDictionary {
     /** Adds a word into the data structure. */
     public void addWord(String word) {
         TrieNode node = root;
-        for (int i = 0; i < word.length(); i ++){
-            int j = word.charAt(i) - 'a';
-            if (node.children[j] == null){
-                node.children[j] = new TrieNode();
+        for(char c : word.toCharArray()){
+            if(node.arr[c - 'a'] == null) {
+                node.arr[c - 'a'] = new TrieNode();
             }
-            node = node.children[j];
+            node = node.arr[c - 'a'];
         }
-        node.isWord = true;
+        node.isEnd = true;
     }
 
     /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
     public boolean search(String word) {
-        return dfs(word, root, 0);
+        return helper(word, root, 0);
     }
-
-    private boolean dfs(String word, TrieNode node, int index){
-        if (index == word.length()){
-            return node.isWord;
-        }
-        if (word.charAt(index) == '.'){
-            for (TrieNode temp : node.children){
-                if (temp != null && dfs(word, temp, index + 1)) return true;
+    private boolean helper(String s, TrieNode root, int idx){
+        if(idx == s.length()) return root.isEnd;
+        if(s.charAt(idx) == '.'){
+            for(TrieNode node : root.arr){
+                if(node != null && helper(s, node, idx + 1)) return true;
             }
             return false;
         } else {
-            int i = word.charAt(index) - 'a';
-            TrieNode temp = node.children[i];
-            return temp != null && dfs(word, temp, index + 1);
+            TrieNode node = root.arr[s.charAt(idx) - 'a'];
+            return node != null && helper(s, node, idx + 1);
         }
     }
 }

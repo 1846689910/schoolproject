@@ -101,6 +101,21 @@ public class LC1_100 {
 
         return ret.toString();
     }
+    public String convert(String s, int rows) {
+        if(rows == 1) return s;
+        StringBuilder sb = new StringBuilder();
+        int len = s.length();
+        int cycle = 2 * rows - 2;
+
+        for(int i = 0; i < rows; i++){ //first traverse all lines
+            for(int j = 0; j + i < len; j += cycle){
+                sb.append(s.charAt(j+i));
+                if(i != 0 && i != rows - 1 && j + cycle -i < len)
+                    sb.append(s.charAt(j+cycle-i));
+            }
+        }
+        return sb.toString();
+    }
 
     /** LC7 Reverse Integer
      * 123 -> 321
@@ -236,11 +251,12 @@ public class LC1_100 {
     public String longestCommonPrefix(String[] strs) {
         if (strs.length == 0) return "";
         String prefix = strs[0];
-        for (int i = 1; i < strs.length; i++)
+        for (int i = 1; i < strs.length; i++){
             while (strs[i].indexOf(prefix) != 0) {
                 prefix = prefix.substring(0, prefix.length() - 1);
                 if (prefix.isEmpty()) return "";
             }
+        }
         return prefix;
     }
     /**
@@ -345,6 +361,82 @@ public class LC1_100 {
             s = s.replaceAll("\\(\\)","");}
         return s.equals("");
     }
+    /**
+     * LC25 reverse nodes in k group
+     * */
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if(head == null || head.next == null) return head;
+        ListNode newHead = head;
+        int count = 0;
+        while (newHead != null && count < k) { // find the k+1 node
+            newHead = newHead.next;
+            count ++;
+        }
+        if (count == k) { // if k+1 node is found
+            newHead = reverseKGroup(newHead, k); // reverse list with k+1 node as head
+            // head - head-pointer to direct part,
+            // curr - head-pointer to reversed part;
+            while (count -- > 0) { // reverse current k-group:
+                ListNode next = head.next; // tmp - next head in direct part
+                head.next = newHead; // preappending "direct" head to the reversed list
+                newHead = head; // move head of reversed part to a new node
+                head = next; // move "direct" head to the next node in direct part
+            }
+            return newHead;
+        } else {
+            return head;
+        }
+    }
+    public ListNode reverseKGroup1(ListNode head, int k) {
+        ListNode begin;
+        if (head==null || head.next ==null || k==1)
+            return head;
+        ListNode dummyhead = new ListNode(-1);
+        dummyhead.next = head;
+        begin = dummyhead;
+        int i=0;
+        while (head != null){
+            i++;
+            if (i%k == 0){
+                begin = reverse(begin, head.next);
+                head = begin.next;
+            } else {
+                head = head.next;
+            }
+        }
+        return dummyhead.next;
+
+    }
+    public ListNode reverse(ListNode start, ListNode end){
+        ListNode cur = start.next;
+        ListNode next, first;
+        ListNode prev = start;
+        first = cur;
+        while (cur!=end){
+            next = cur.next;
+            cur.next = prev;
+            prev = cur;
+            cur = next;
+        }
+        start.next = prev;
+        first.next = cur;
+        return first;
+    }
+    public static ListNode reversePartition (ListNode head, ListNode end) {
+        if (head == end || head.next == end) {
+            return head;
+        }
+        ListNode newHead = reversePartition (head.next, end);
+        head.next.next = head;
+        head.next = null;
+        return newHead;
+    }
+    @Test
+    public void reverseKGroupTest(){
+        ListNode head = ListNode.getAscList(0, 10, 1);
+//        reverse(head, head.next.next.next.next).print();
+//        reverseKGroup1(head, 2).print();
+    }
     /** LC29 divide two integers
      * 被除数dividend与除数divisor都可为32bit 有符号整数
      * 除数肯定不为0
@@ -428,6 +520,7 @@ public class LC1_100 {
         while (i >= 0 && arr[i + 1] <= arr[i]) {
             i--;
         }
+        System.out.println(i);
         if (i >= 0) {
             int j = arr.length - 1;
             while (j >= 0 && arr[j] <= arr[i]) {
@@ -450,6 +543,13 @@ public class LC1_100 {
         nums[i] = nums[j];
         nums[j] = temp;
     }
+    @Test
+    public void nextPermutationTest(){
+        int[] arr = new int[]{1, 3, 2};
+        nextPermutation(arr);
+        System.out.println(Arrays.toString(arr));
+    }
+
 
     /**
      * LC32 Longest Valid Parentheses
@@ -589,7 +689,7 @@ public class LC1_100 {
      * ...依次读下去，每次都读出上一次的数字
      * */
     public String countAndSay(int n) {
-        if(n <= 1)return "1";
+        if(n == 1)return "1";
         String str = countAndSay(n - 1);
         StringBuilder sb = new StringBuilder();
         int idx = 0;
@@ -874,6 +974,26 @@ public class LC1_100 {
         }
         return merged;
     }
+    public List<Interval> merge1(List<Interval> intervals) {
+        int n = intervals.size();
+        int[] starts = new int[n];
+        int[] ends = new int[n];
+        for (int i = 0; i < n; i++) {
+            starts[i] = intervals.get(i).start;
+            ends[i] = intervals.get(i).end;
+        }
+        Arrays.sort(starts);
+        Arrays.sort(ends);
+        // loop through
+        List<Interval> res = new ArrayList<Interval>();
+        for (int i = 0, j = 0; i < n; i++) { // j is start of interval.
+            if (i == n - 1 || starts[i + 1] > ends[i]) {
+                res.add(new Interval(starts[j], ends[i]));
+                j = i + 1;
+            }
+        }
+        return res;
+    }
     /**
      * LC58 Length of Last Word in String
      * */
@@ -921,6 +1041,27 @@ public class LC1_100 {
         }
         return sb.toString();
     }
+    public String getPermutation1(int n, int k) {
+        List<Integer> list = new ArrayList<>();
+        int[] factorial = new int[n+1];
+        factorial[0] = 1;
+        StringBuilder sb = new StringBuilder();
+        // populate factorials
+        for (int i=1; i<=n; i++) {
+            list.add(i);
+            factorial[i] = factorial[i-1]*i;
+        }
+        k--; //because of 0-indexing
+
+        for (int i=n-1; i>=0; i--) {
+            int index = k / factorial[i]; // e.g. index = 2, num = 3;
+            sb.append(Integer.toString(list.get(index)));
+            list.remove(index); // repetitive uses are not allowed
+            k -= index*factorial[i]; // becasue eliminated any permunations starting at "before-num", e.g. eliminated all possibilities with "1..", "2..".
+        }
+
+        return String.valueOf(sb);
+    }
     /**
      * LC61 Rotate List
      * 翻转一个list 的右边k位，如果k很大就不停的翻转直到k小于list长度
@@ -949,10 +1090,41 @@ public class LC1_100 {
         left.next = rightHead;
         return C3.reverseLinkedListRe(leftHead);
     }
+    public ListNode rotateRight1(ListNode head, int k) {
+        if(head == null || head.next == null) return head;
+        int len = 1;
+        ListNode cur = head;
+        while (cur.next != null) {
+            cur = cur.next;
+            len ++;
+        }
+        ListNode end = cur;
+        k %= len;
+        int leftK = len - k;
+        if(leftK == 0) return head;
+        ListNode leftTail = head;
+        while(leftK > 1){
+            leftTail = leftTail.next;
+            leftK --;
+        }
+        ListNode newHead = leftTail.next;
+        leftTail.next = null;
+        end.next = head;
+        return newHead;
+    }
+    @Test
+    public void rotateRightTest() {
+        System.out.println(-2 % 2);
+        int[] arr = new int[]{1, 2, 3};
+        System.out.println(Arrays.asList(arr));
+    }
     /**
      * LC62 Unique Path
      * 排列组合问题，总共需要横着走m-1, 竖着走n-1, 那么结果就是一个组合数
-     * C(m + n - 2)_(m - 1)
+     * C(m + n - 2)_(either(m - 1, n - 1))
+     *
+     * An_m = n! / (n-m)!
+     * Cn_m = n! / (m! * (n - m)!)
      * */
     public int uniquePaths(int m, int n) {
         long result = 1;
@@ -960,6 +1132,27 @@ public class LC1_100 {
             result = result * (m + n - 2 - i) / (i + 1);
         }
         return (int) result;
+    }
+    public long A (int n, int m){  // 计算排列数An_m, n为底，m在上
+        long ret = 1;
+        for (int i = 0; i < m; i ++){
+            ret = ret * (n - i);
+        }
+        return ret;
+    }
+    public long C (int n, int m) {
+        long ret = 1;
+        for (int i = 0; i < Math.min(m, n - m); i ++){
+            ret = ret * (n - i) / (i + 1);
+        }
+        return ret;
+    }
+    @Test
+    public void comTest(){
+        System.out.println(A(18, 9));
+
+        System.out.println((int)C(62, 4));
+        System.out.println(uniquePaths(59, 5));
     }
     /**
      * LC63 Unique Path2, 有障碍物(1)的矩阵中，找出左上角到右下角的通路(0表示)有几条
@@ -1166,7 +1359,26 @@ public class LC1_100 {
         }
         return s.substring(soluStart, soluEnd);
     }
-
+    public String minWindow1(String s, String t) {
+        int[] count = new int[128];
+        for(char c : t.toCharArray()){
+            count[c]++;
+        }
+        int len = t.length();
+        char[] chars = s.toCharArray();
+        int start=0,end=0,n = chars.length,max = Integer.MAX_VALUE,soluStart=0;
+        while(end < chars.length){
+            if(count[chars[end ++]] -- > 0)len --;
+            while(len == 0){
+                if(end-start < max){
+                    soluStart=start;
+                    max=end-start;
+                }
+                if(++count[chars[start++]]>0)len++;
+            }
+        }
+        return max==Integer.MAX_VALUE?"": new String(chars, soluStart, max);
+    }
     @Test
     public void LC76Test(){
         System.out.println(minWindow("ADOBECODEBANC", "ABC"));
@@ -1275,15 +1487,15 @@ public class LC1_100 {
      * at most save two same numbers
      * do in-place no new memory
      * */
-    public int removeDuplicates2_1(int[] arr) {
-        int slow = 0, fast = 0;
-        while (fast < arr.length) {
-            if (slow < 2 || arr[fast] > arr[slow - 2]) {
-                arr[slow ++] = arr[fast];
+    public int removeDuplicates_2(int[] arr) {
+        int slow = 1, fast = 2;
+        while (fast < arr.length){
+            if(arr[fast] != arr[slow - 1]){
+                arr[++ slow] = arr[fast];
             }
             fast ++;
         }
-        return slow;
+        return slow + 1;
     }
     /**
      * remove duplicates from sorted array, no duplicates
@@ -1410,6 +1622,24 @@ public class LC1_100 {
         }
         return arr[0];
     }
+    public int numDecodings1(String s) {
+        if (s == null || s.length() == 0) return 0;
+        if (s.charAt(0) == '0') return 0;
+        int n = s.length();
+        int[] dp = new int[n + 1];
+        dp[0] = 1;
+        dp[1] = 1;
+        for (int i = 1; i < n; i++) {
+            if (s.charAt(i) != '0') {
+                dp[i + 1] += dp[i];
+            }
+            if (s.charAt(i - 1) == '1' || s.charAt(i - 1) == '2' && s.charAt(i) <= '6') {
+                dp[i + 1] += dp[i - 1];
+            }
+        }
+        return dp[n];
+    }
+
     /**
      * LC92 reverse LinkedList 2
      * from position m to n
@@ -1497,35 +1727,30 @@ public class LC1_100 {
      *
      * */
     public static List<TreeNode> generateTrees(int n) {
-        List<TreeNode>[] result = new ArrayList[n + 1];
-        result[0] = new ArrayList<>();
-        if (n == 0) {
-            return result[0];
-        }
-
-        result[0].add(null);
+        List<TreeNode>[] arr = new List[n + 1];
+        arr[0] = new ArrayList<>();
+        if (n == 0) return arr[0];
+        arr[0].add(null);
         for (int i = 1; i <= n; i ++) {
-            result[i] = new ArrayList<>();
+            arr[i] = new ArrayList<>();
             for (int j = 0; j < i; j ++) {
-                for (TreeNode nodeL : result[j]) {
-                    for (TreeNode nodeR : result[i - j - 1]) {
+                for (TreeNode left : arr[j]) {
+                    for (TreeNode right : arr[i - j - 1]) {
                         TreeNode node = new TreeNode(j + 1);
-                        node.left = nodeL;
-                        node.right = clone(nodeR, j + 1);
-                        result[i].add(node);
+                        node.left = left;
+                        node.right = clone(right, j + 1);
+                        arr[i].add(node);
                     }
                 }
             }
         }
-        return result[n];
+        return arr[n];
     }
-    private static TreeNode clone(TreeNode n, int offset) {
-        if (n == null) {
-            return null;
-        }
-        TreeNode node = new TreeNode(n.value + offset);
-        node.left = clone(n.left, offset);
-        node.right = clone(n.right, offset);
+    private static TreeNode clone(TreeNode root, int offset) {
+        if (root == null) return null;
+        TreeNode node = new TreeNode(root.value + offset);
+        node.left = clone(root.left, offset);
+        node.right = clone(root.right, offset);
         return node;
     }
     /**

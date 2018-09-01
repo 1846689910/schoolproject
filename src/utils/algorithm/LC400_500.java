@@ -3,6 +3,7 @@ package utils.algorithm;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.*;
 
 public class LC400_500 {
     /**
@@ -37,7 +38,87 @@ public class LC400_500 {
         }
         return sb.reverse().toString();
     }
+    /**
+     * LC445 add two numbers 2
+     * */
+    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
+        Stack<Integer> s1 = new Stack<>();
+        Stack<Integer> s2 = new Stack<>();
+
+        while(l1 != null) {
+            s1.push(l1.value);
+            l1 = l1.next;
+        }
+        while(l2 != null) {
+            s2.push(l2.value);
+            l2 = l2.next;
+        }
+
+        int sum = 0;
+        ListNode list = new ListNode(0);
+        while (!s1.empty() || !s2.empty()) {
+            if (!s1.empty()) sum += s1.pop();
+            if (!s2.empty()) sum += s2.pop();
+            list.value = sum % 10;
+            ListNode next = new ListNode(sum /= 10);
+            next.next = list;
+            list = next;
+        }
+
+        return list.value == 0 ? list.next : list;
+    }
+    /**
+     * LC457 circular array loop
+     * */
+    public boolean circularArrayLoop(int[] arr) {
+        if(arr == null || arr.length == 0) return false;
+        for(int i = 0, len = arr.length; i < len; i ++){
+            if(arr[i] == 0) continue;
+            int slow = i, fast = i, count = 0;
+            boolean forward = arr[slow] > 0;
+            do {
+                int tempSlow = slow;
+                slow = (slow + arr[slow] + len) % len;
+
+                if(forward && arr[fast] < 0 || !forward && arr[fast] > 0) return false;
+                fast = (fast + arr[fast] + len) % len;
+
+                if(forward && arr[fast] < 0 || !forward && arr[fast] > 0) return false;
+                fast = (fast + arr[fast] + len) % len;
+
+                arr[tempSlow] = 0;
+                count ++;
+
+            } while(slow != fast);
+            if(count > 1) return true;
+        }
+        return false;
+    }
+    /*
+public:
+    bool circularArrayLoop(vector<int>& nums) {
+        unordered_map<int, int> m;
+        int n = nums.size();
+        vector<bool> visited(n, false);
+        for (int i = 0; i < n; ++i) {
+            if (visited[i]) continue;
+            int cur = i;
+            while (true) {
+                visited[cur] = true;
+                int next = (cur + nums[cur]) % n;
+                if (next < 0) next += n;
+                if (next == cur || nums[next] * nums[cur] < 0) break;
+                if (m.count(next)) return true;
+                m[cur] = next;
+                cur = next;
+            }
+        }
+        return false;
+    }
+    * */
 }
+
+
 /**
  * LC460
  * */

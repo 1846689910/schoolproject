@@ -357,6 +357,26 @@ public class LC101_200 {
         }
         return result;
     }
+    public List<Integer> getRow(int rowIndex) {
+
+        Integer[] arr = new Integer[rowIndex + 1];
+        Arrays.fill(arr,0);
+        arr[0] = 1;
+
+        for(int i=1; i<=rowIndex; i++){
+            for(int j=i;j>0;j--){
+                arr[j] = arr[j] + arr[j-1];
+            }
+        }
+        return Arrays.asList(arr);
+    }
+    @Test
+    public void asListTest(){
+        Integer[] arr = new Integer[]{1, 2, 3};
+        List<Integer> list = new ArrayList<>(Arrays.asList(arr));
+        list.add(5);
+        System.out.println(list);
+    }
     /**
      * LC120 triangle
      * 给定一个List[List[Int]]的三角形, 找到顶到底的通路使得和最小
@@ -472,6 +492,28 @@ public class LC101_200 {
             }
         }
         return res;
+    }
+    public int maxProfit4_1(int k, int[] prices) {
+        if(prices == null || prices.length == 0) return 0;
+        if(k >= prices.length/2){
+            int result = 0;
+            for(int i = 1; i < prices.length; i++){
+                if(prices[i] > prices[i-1]){
+                    result += prices[i] - prices[i-1];
+                }
+            }
+            return result;
+        }
+        int[] buy = new int[k+1];
+        int[] sell = new int[k+1];
+        for(int i = 1; i < prices.length; i++){
+            int diff = prices[i] - prices[i-1];
+            for(int j = k; j >= 1; j--){
+                buy[j] = Math.max(sell[j-1] + diff,buy[j] + diff);
+                sell[j] = Math.max(sell[j],buy[j]);
+            }
+        }
+        return sell[k];
     }
     /**
      * LC125 valid palindrome
@@ -829,8 +871,28 @@ public class LC101_200 {
         }
         return dummy.next;
     }
+    public ListNode insertionSortList1(ListNode head) {
+        ListNode cur = head, next = null;
+        // l is a fake head
+        ListNode dummy = new ListNode(0);
+
+        while (cur != null) {
+            next = cur.next;
+
+            ListNode p = dummy;
+            while (p.next != null && p.next.value < cur.value)
+                p = p.next;
+
+            // insert curr between p and p.next
+            cur.next = p.next;
+            p.next = cur;
+            cur = next;
+        }
+
+        return dummy.next;
+    }
     /**
-     * LC148 merge sort list
+     * LC148 mergeSort list
      * */
     public ListNode mergeSort(ListNode head) {
         if (head == null || head.next == null) return head;
@@ -1099,6 +1161,18 @@ public class LC101_200 {
         return Math.abs(s.length() - t.length()) == 1;
     }
 
+    public boolean canConvert(String s, String t){
+        if (s == null && t == null) return true;
+        if (s == null || t == null || s.length() != t.length()) return false;
+        Map<Character, Character> map = new HashMap<>();
+        for (int i = 0, len = s.length(); i < len; i ++) {
+            char si = s.charAt(i), ti = t.charAt(i);
+            if (map.containsKey(si) && ! map.get(si).equals(ti)) return false;
+            map.put(si, ti);
+        }
+        return true;
+    }
+
     /**
      * LC162 find peak element
      * Example 1:
@@ -1237,6 +1311,38 @@ public class LC101_200 {
         }
         return sb.toString();
     }
+    public String fractionToDecimal1(int numerator, int denominator) {
+        if (numerator == 0) {
+            return "0";
+        }
+        StringBuilder sb = new StringBuilder();
+        // If either one is negative (not both)
+        if (numerator < 0 ^ denominator < 0) {
+            sb.append("-");
+        }
+        // Convert to Long or else abs(-2147483648) overflows
+        long dividend = Math.abs(Long.valueOf(numerator));
+        long divisor = Math.abs(Long.valueOf(denominator));
+        sb.append(String.valueOf(dividend / divisor));
+        long remainder = dividend % divisor;
+        if (remainder == 0) {
+            return sb.toString();
+        }
+        sb.append(".");
+        Map<Long, Integer> map = new HashMap<>();
+        while (remainder != 0) {
+            if (map.containsKey(remainder)) {
+                sb.insert(map.get(remainder), "(");
+                sb.append(")");
+                break;
+            }
+            map.put(remainder, sb.length());
+            remainder *= 10;
+            sb.append(String.valueOf(remainder / divisor));
+            remainder %= divisor;
+        }
+        return sb.toString();
+    }
     /**
      * LC168 Excel Sheet column number to letter
      * */
@@ -1310,6 +1416,17 @@ public class LC101_200 {
           return sb.toString();
         * */
     }
+    public String largestNumber1(int[] nums) {
+        String[] strs = new String[nums.length];
+        for (int i = 0; i < nums.length; i ++) strs[i] = String.valueOf(nums[i]);
+        Arrays.sort(strs, (a, b) -> (b + a).compareTo(a + b));
+        if (strs[0].equals("0")) return "0";
+        StringBuilder sb = new StringBuilder();
+        for (String s : strs){
+            sb.append(s);
+        }
+        return sb.toString();
+    }
     /**
      * LC187 repeated DNA sequence
      * 找到所有10个字符长度的重复DNA片段
@@ -1336,8 +1453,8 @@ public class LC101_200 {
     public int rob(int[] arr) {
         int rob = 0; //max monney can get if rob current house
         int notRob = 0; //max money can get if not rob current house
-        for(int i = 0; i < arr.length; i ++) {
-            int currob = notRob + arr[i]; //if rob current value, previous house must not be robbed
+        for(int n : arr) {
+            int currob = notRob + n; //if rob current value, previous house must not be robbed
             notRob = Math.max(notRob, rob); //if not rob ith house, take the max value of robbed (i-1)th house and not rob (i-1)th house
             rob = currob;
         }
