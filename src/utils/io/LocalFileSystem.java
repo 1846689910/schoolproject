@@ -1,10 +1,13 @@
 package utils.io;
 
+import org.junit.Test;
+
 import java.io.*;
 import java.lang.reflect.Field;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
+import java.util.function.Function;
 
 /**
  * used to read, write files in multiple ways and write object and properties files
@@ -195,6 +198,30 @@ final public class LocalFileSystem {
             }
             fos.close();  // 关闭了FileOutputStream也同时关闭了BufferedOutputStream
             fis.close();  // 关闭了FileInputStream也同时关闭了BufferedInputStream
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    /** 加密和解密文件
+     * used to encode a file or decode a file by using a function as a coder
+     * the function will encode each byte in the file with the given algorithm in the coder.apply() method
+     *
+     * */
+    public boolean codeFile2File(String from, String to, Function<Integer, Integer> coder){
+        File readFile = new File(from);
+        File writeFile = new File(to);
+        int len;
+        try {
+            BufferedInputStream bis = new BufferedInputStream(new FileInputStream(readFile));
+            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(writeFile));
+            while ((len = bis.read()) != -1) {  // read()方法  返回读取的字符，末尾返回-1，bis是把内容读到自己的肚子里了
+                bos.write(coder.apply(len));  // 针对每一个byte进行加密操作
+                bos.flush();  // 一定要刷上去，非常关键
+            }
+            bos.close();  // 关闭了FileOutputStream也同时关闭了BufferedOutputStream
+            bis.close();  // 关闭了FileInputStream也同时关闭了BufferedInputStream
             return true;
         } catch (IOException e) {
             e.printStackTrace();

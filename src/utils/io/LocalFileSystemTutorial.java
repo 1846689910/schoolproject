@@ -1,10 +1,13 @@
 package utils.io;
 
 import org.junit.Assert;
+import org.junit.Test;
+import utils.common.MD5;
 
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Objects;
 
 public class LocalFileSystemTutorial {
     public static void main(String[] args) {
@@ -43,7 +46,6 @@ public class LocalFileSystemTutorial {
         System.out.println(u);
         System.out.println(finished);
     }
-
 }
 class U implements Serializable {
     private final static long serialVersionUID = 1L;

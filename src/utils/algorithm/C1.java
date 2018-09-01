@@ -74,7 +74,7 @@ public class C1 {
         swap(arr, lp, right);
         return lp;
     }
-    public static void swap(int[] arr, int i, int j) {
+    protected static void swap(int[] arr, int i, int j) {
         int tmp = arr[i];
         arr[i] = arr[j];
         arr[j] = tmp;
@@ -420,18 +420,73 @@ public class C1 {
         }
         return dummy.next;
     }
+
     @Test
     public void mergeKSortedList(){
         ListNode h1 = new ListNode(2);
         h1.setNext(4).setNext(6);
-        ListNode.print(h1);
+        h1.print();
 
         ListNode h2 = new ListNode(1);
         h2.setNext(3).setNext(5);
-        ListNode.print(h2);
+        h2.print();
 
         List<ListNode> list = Arrays.asList(h1, h2);
-        ListNode.print(mergeKSortedList(list));
+        mergeKSortedList(list).print();
+    }
+    public static void setZeroes (int[][] matrix) {
+        if (matrix == null) return;
+        int rows = matrix.length;
+        int cols = matrix[0].length;
+        boolean firstRowHas0 = false;
+        boolean firstColHas0 = false;
+        // 先看看第0行和第0列有没有为0的项，因为之后我们凡是在内部找到0值，都要映射到0行和0列，那么原来有没有0就不好说了
+        for (int i = 0; i < cols; i ++) {
+            if (matrix[0][i] == 0) {
+                firstRowHas0 = true;
+                break;
+            }
+        }
+        for (int i = 0; i < rows; i ++) {
+            if (matrix[i][0] == 0) {
+                firstColHas0 = true;
+                break;
+            }
+        }
+        for (int i = 1; i < rows; i ++) {
+            for (int j = 1; j < cols; j ++) {
+                if (matrix[i][j] == 0) {
+                    matrix[i][0] = 0;
+                    matrix[0][j] = 0;
+                }
+            }
+        }
+        // 先处理内部有0的情况
+        for (int i = 1; i < cols; i ++) {
+            if (matrix[0][i] == 0) {
+                for (int j = 1; j < rows; j ++) {
+                    matrix[j][i] = 0;
+                }
+            }
+        }
+        for (int i = 1; i < rows; i ++) {
+            if (matrix[i][0] == 0) {
+                for (int j = 1; j < cols; j ++) {
+                    matrix[i][j] = 0;
+                }
+            }
+        }
+        // 再处理0行0列如果本来就有0，那么整行整列都为0
+        if (firstRowHas0) {
+            for (int i = 0; i < cols; i ++) {
+                matrix[0][i] = 0;
+            }
+        }
+        if (firstColHas0) {
+            for (int i = 0; i < rows; i ++) {
+                matrix[i][0] = 0;
+            }
+        }
     }
 }
 class ElementWithList{
@@ -455,19 +510,49 @@ class Entry{
 class ListNode {
     int value;
     ListNode next;
+    private int size = 0;
     public ListNode(int value){
         this.value = value;
     }
     public ListNode setNext(int value){
         this.next = new ListNode(value);
+        size ++;
         return this.next;
     }
-    public static void print(ListNode node){
+    /** print out all the nodes behinds itself (including itself) */
+    public void print(){
+        ListNode node = this;
         while (node != null) {
             System.out.print(node.value);
             if (node.next != null) System.out.print(" -> ");
             node = node.next;
         }
         System.out.println();
+    }
+    public int size(){
+        return size;
+    }
+    public boolean isEmpty(){
+        return size == 0;
+    }
+    public static ListNode getAscList(int beg, int size, int step){
+        ListNode head = new ListNode(beg);
+        ListNode dummy = head;
+        int count = 0;
+        while (count < size - 1) {
+            dummy = dummy.setNext(beg += step);
+            count ++;
+        }
+        return head;
+    }
+    public static ListNode getList(List<Integer> list){
+        if (list == null || list.size() == 0) return null;
+        ListNode head = new ListNode(list.get(0));
+        ListNode dummy = head;
+        int size = list.size();
+        for (int i = 1; i < size; i ++) {
+            dummy = dummy.setNext(list.get(i));
+        }
+        return head;
     }
 }

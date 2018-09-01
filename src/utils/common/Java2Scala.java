@@ -3,7 +3,7 @@ package utils.common;
 import java.util.*;
 import scala.collection.JavaConverters;
 import scala.collection.Seq;
-import scala.collection.Set;
+import scala.collection.immutable.Set;
 
 public class Java2Scala {
 
@@ -18,8 +18,8 @@ public class Java2Scala {
          * */
     }
 
-    public static <E> scala.collection.Set<E> set2Set (java.util.Set<E> set) {
-        return JavaConverters.asScalaSetConverter(set).asScala().toSet();
+    public static <E> scala.collection.mutable.Set<E> set2Set (java.util.Set<E> set) {
+        return JavaConverters.asScalaSetConverter(set).asScala();
         /*
          * then in scala
          * val set1 = Java2Seq.set2Set(javaSet)
