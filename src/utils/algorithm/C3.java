@@ -71,10 +71,12 @@ public class C3 {
     public static ListNode reverseLinkedListPair(ListNode head){
         if (head == null || head.next == null)return head;
         ListNode newHead = head.next;
-        head.next = reverseLinkedListPair(head.next.next);
+        ListNode nnext = reverseLinkedListPair(head.next.next);
         newHead.next = head;
+        head.next = nnext;
         return newHead;
     }
+
     /**reverse LinkedList each three elements
      * 	N1 → N2 → N4 → N3 → N6 → N5 …
      *  head next nnext nnnext
@@ -83,9 +85,10 @@ public class C3 {
         if (head == null || head.next == null)return head;
         ListNode next = head.next;
         ListNode nnext = head.next.next;
-        head.next = reverseLinkedListTri(head.next.next.next);
-        next.next = head;
+        ListNode nnnext = reverseLinkedListTri(head.next.next.next);
         nnext.next = next;
+        next.next = head;
+        head.next = nnnext;
         return nnext;
     }
 

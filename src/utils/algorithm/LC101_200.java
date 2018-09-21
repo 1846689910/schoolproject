@@ -62,7 +62,7 @@ public class LC101_200 {
         return Math.max(leftHeight, rightHeight) + 1;  // 根节点也算一层，也要加上
     }
     /**
-     * LC 106 Construct Binary Tree from Inorder and Postorder Traversal 中后重构
+     * LC106 Construct Binary Tree from Inorder and Postorder Traversal 中后重构
      * */
     public TreeNode inPostBuildTree (int[] in, int[] post) {
         return inPostBuildTreeHelper(in, post, 0, 0, in.length);
@@ -216,10 +216,10 @@ public class LC101_200 {
     }
     /**
      * LC114 Flatten a binary tree to LinkedList
-     *1
-     / \
-     2   5
-     / \   \
+     *   1
+        / \
+       2   5
+      / \   \
      3   4   6
      The flattened tree should look like:
     1-2-3-4-5-6

@@ -1,6 +1,7 @@
 package utils.algorithm;
 
 import org.junit.Test;
+import scala.Char;
 
 import java.util.*;
 
@@ -88,9 +89,31 @@ public class LC201_300 {
         }
         return true;
     }
+    public boolean isIsomorphic1(String s, String t) {
+        if (s == null && t == null) {
+            return true;
+        }
+        if (s == null || t == null || s.length() != t.length()) {
+            return false;
+        }
+        char[] arr = new char[256];
+//        System.out.println(Arrays.toString(arr));
+        boolean[] ocp = new boolean[256];
+        for (int i = 0, len = s.length(); i < len; i ++) {
+            char si = s.charAt(i);
+            char ti = t.charAt(i);
+            if (arr[si] == 0) {
+                if (ocp[ti]) return false;
+                arr[si] = ti;
+                ocp[ti] = true;
+            }
+            if (arr[si] != ti) return false;
+        }
+        return true;
+    }
     @Test
     public void isIsomorphicTest(){
-        System.out.println(isIsomorphic("att", "egg"));
+        System.out.println(isIsomorphic1("ab", "aa"));
     }
     /**
      * LC207 course schedule
@@ -458,6 +481,54 @@ public class LC201_300 {
         if(right > left && top > bottom)
             overlap = (right - left) * (top - bottom);
         return areaOfSqrA + areaOfSqrB - overlap;
+    }
+    /**
+     * LC227 Basic Calculator2
+     * Example 1:
+
+     Input: "3+2*2"
+     Output: 7
+     Example 2:
+
+     Input: " 3/2 "
+     Output: 1
+     Example 3:
+
+     Input: " 3+5 / 2 "
+     Output: 5
+     * */
+    public int calculate(String s) {
+        if(s == null || s.length() == 0) return 0;
+        Stack<Integer> stack = new Stack<>();
+        int num = 0;
+        char sign = '+';
+        char[] chars = s.toCharArray();
+        for(int i = 0; i < chars.length; i ++){
+            if(Character.isDigit(chars[i])){
+                num = num * 10 + chars[i] - '0';
+            }
+            if((!Character.isDigit(chars[i]) && ' ' != chars[i]) || i == chars.length - 1){
+                if(sign=='-'){
+                    stack.push(-num);
+                }
+                if(sign=='+'){
+                    stack.push(num);
+                }
+                if(sign=='*'){
+                    stack.push(stack.pop()*num);
+                }
+                if(sign=='/'){
+                    stack.push(stack.pop()/num);
+                }
+                sign = chars[i];
+                num = 0;
+            }
+        }
+        int result = 0;
+        for(int i : stack){
+            result += i;
+        }
+        return result;
     }
     /**
      * LC228 Summary Ranges
@@ -1884,6 +1955,7 @@ class TrieNode {
         isEnd = false;
         arr = new TrieNode[26];
     }
+
 /*
 
     public boolean containsKey(char ch) {

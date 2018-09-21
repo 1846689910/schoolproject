@@ -142,4 +142,11 @@ public class LC601_700 {
         for(int score : stack) ret += score;
         return ret;
     }
+    public int gcd(int a, int b){
+        if (a == 0) return b;
+        return gcd(b % a, a);
+    }
+    public int lcm(int a, int b){
+        return a * b / gcd(a, b);
+    }
 }

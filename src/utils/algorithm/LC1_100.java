@@ -23,24 +23,22 @@ public class LC1_100 {
      Output: 7 -> 0 -> 8
      Explanation: 342 + 465 = 807.
      */
-    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
-        ListNode dummyHead = new ListNode(0);
-        ListNode a = l1, b = l2, cur = dummyHead;
+    public ListNode addTwoNumbers(ListNode a, ListNode b) {
+        ListNode dummy = new ListNode(0);
+        ListNode cur = dummy;
         int carry = 0;
         while (a != null || b != null) {
-            int x = (a != null) ? a.value : 0;
-            int y = (b != null) ? b.value : 0;
+            int x = a != null ? a.value : 0;
+            int y = b != null ? b.value : 0;
             int sum = carry + x + y;
             carry = sum / 10;
             cur.next = new ListNode(sum % 10);
             cur = cur.next;
-            if (a != null) a = a.next;
-            if (b != null) b = b.next;
+            if(a != null) a = a.next;
+            if(b != null) b = b.next;
         }
-        if (carry > 0) {
-            cur.next = new ListNode(carry);
-        }
-        return dummyHead.next;
+        if(carry > 0) cur.next = new ListNode(carry);
+        return dummy.next;
     }
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
         ListNode dummy = new ListNode(0);
@@ -182,6 +180,15 @@ public class LC1_100 {
             if (s.charAt(left ++) != s.charAt(right --)) return false;
         }
         return true;
+    }
+    public boolean isPalindrome1(int x) {
+        if(x < 0 || (x != 0 && x % 10 == 0)) return false;
+        int rev = 0;
+        while (x > rev) {
+            rev = rev * 10 + x % 10;
+            x /= 10;
+        }
+        return rev == x || rev/10 == x;
     }
     /**
      * LC11 Container with most water
@@ -595,6 +602,13 @@ public class LC1_100 {
      * 找到就返回位置，找不到就返回它应该插入的位置
      * 使用C2的findLargestSmaller(arr, target), 但是后处理要先右后左，确保拿到小于target的最大数
      * */
+    public int searchInsert1(int[] arr, int target){
+        if (arr == null || arr.length == 0) return 0;
+        for (int i = 0; i < arr.length; i ++) {
+            if (target <= arr[i]) return i;
+        }
+        return arr.length;
+    }
     public int searchInsert(int[] arr, int target) {
         if (arr == null || arr.length == 0) return -1;
         int idx = findLargestSmaller(arr, target);
@@ -1514,6 +1528,25 @@ public class LC1_100 {
      * LC82 remove duplicates from sorted linkedlist
      * 凡是有重复出现的节点都不要，只要unique的节点
      * */
+    public ListNode deleteDuplicates22(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode dummy = new ListNode(0);
+        ListNode prev = dummy;
+        prev.next = head;
+        ListNode cur = head;
+        while (cur != null) {
+            while (cur.next != null && cur.value == cur.next.value){
+                cur = cur.next;
+            }
+            if (prev.next == cur) {
+                prev = prev.next;
+            } else {
+                prev.next = cur.next;
+            }
+            cur = cur.next;
+        }
+        return dummy.next;
+    }
     public ListNode deleteDuplicates2(ListNode head) {
         if(head == null || head.next == null) return head;
         ListNode dummy = new ListNode(0);
