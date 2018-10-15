@@ -23,24 +23,22 @@ public class LC1_100 {
      Output: 7 -> 0 -> 8
      Explanation: 342 + 465 = 807.
      */
-    public ListNode addTwoNumbers(ListNode l1, ListNode l2) {
-        ListNode dummyHead = new ListNode(0);
-        ListNode a = l1, b = l2, cur = dummyHead;
+    public ListNode addTwoNumbers(ListNode a, ListNode b) {
+        ListNode dummy = new ListNode(0);
+        ListNode cur = dummy;
         int carry = 0;
         while (a != null || b != null) {
-            int x = (a != null) ? a.value : 0;
-            int y = (b != null) ? b.value : 0;
+            int x = a != null ? a.value : 0;
+            int y = b != null ? b.value : 0;
             int sum = carry + x + y;
             carry = sum / 10;
             cur.next = new ListNode(sum % 10);
             cur = cur.next;
-            if (a != null) a = a.next;
-            if (b != null) b = b.next;
+            if(a != null) a = a.next;
+            if(b != null) b = b.next;
         }
-        if (carry > 0) {
-            cur.next = new ListNode(carry);
-        }
-        return dummyHead.next;
+        if(carry > 0) cur.next = new ListNode(carry);
+        return dummy.next;
     }
     public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
         ListNode dummy = new ListNode(0);
@@ -183,6 +181,15 @@ public class LC1_100 {
         }
         return true;
     }
+    public boolean isPalindrome1(int x) {
+        if(x < 0 || (x != 0 && x % 10 == 0)) return false;
+        int rev = 0;
+        while (x > rev) {
+            rev = rev * 10 + x % 10;
+            x /= 10;
+        }
+        return rev == x || rev/10 == x;
+    }
     /**
      * LC11 Container with most water
      * 实际是找垂直线图中最大矩形的问题 (不是直方图, 垂线自身没有宽度)
@@ -285,6 +292,8 @@ public class LC1_100 {
     /**
      * LC17 Letter combination of a phone number
      * 手机拨号键盘上每个数字基本关联3个字母，他们的组合，给定两个数字求他们的所有组合
+     * Input: "23"
+     Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
      * */
     public List<String> letterCombinations(String digits) {
         List<String> result = new ArrayList<>();
@@ -595,6 +604,13 @@ public class LC1_100 {
      * 找到就返回位置，找不到就返回它应该插入的位置
      * 使用C2的findLargestSmaller(arr, target), 但是后处理要先右后左，确保拿到小于target的最大数
      * */
+    public int searchInsert1(int[] arr, int target){
+        if (arr == null || arr.length == 0) return 0;
+        for (int i = 0; i < arr.length; i ++) {
+            if (target <= arr[i]) return i;
+        }
+        return arr.length;
+    }
     public int searchInsert(int[] arr, int target) {
         if (arr == null || arr.length == 0) return -1;
         int idx = findLargestSmaller(arr, target);
@@ -741,6 +757,24 @@ public class LC1_100 {
             cur.remove(cur.size() - 1);
         }
     }
+    /**LC40 combination sum 2
+     * Example 1:
+     Input: candidates = [10,1,2,7,6,1,5], target = 8,
+     A solution set is:
+     [
+     [1, 7],
+     [1, 2, 5],
+     [2, 6],
+     [1, 1, 6]
+     ]
+     Example 2:
+     Input: candidates = [2,5,2,1,2], target = 5,
+     A solution set is:
+     [
+     [1,2,2],
+     [5]
+     ]
+     * */
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
         List<List<Integer>> result = new ArrayList<>();
         List<Integer> cur = new ArrayList<>();
@@ -1514,6 +1548,25 @@ public class LC1_100 {
      * LC82 remove duplicates from sorted linkedlist
      * 凡是有重复出现的节点都不要，只要unique的节点
      * */
+    public ListNode deleteDuplicates22(ListNode head) {
+        if (head == null || head.next == null) return head;
+        ListNode dummy = new ListNode(0);
+        ListNode prev = dummy;
+        prev.next = head;
+        ListNode cur = head;
+        while (cur != null) {
+            while (cur.next != null && cur.value == cur.next.value){
+                cur = cur.next;
+            }
+            if (prev.next == cur) {
+                prev = prev.next;
+            } else {
+                prev.next = cur.next;
+            }
+            cur = cur.next;
+        }
+        return dummy.next;
+    }
     public ListNode deleteDuplicates2(ListNode head) {
         if(head == null || head.next == null) return head;
         ListNode dummy = new ListNode(0);

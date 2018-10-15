@@ -1,11 +1,8 @@
 package utils.algorithm;
 
 import org.junit.Test;
-
 import java.util.*;
-
-import static utils.algorithm.C1.swap;
-import static utils.algorithm.C8.reverse;
+import utils.algorithm.LC1_100.Interval;
 
 public class LC201_300 {
     /**
@@ -50,6 +47,17 @@ public class LC201_300 {
     public void isHappyTest(){
         System.out.println(isHappy(19));
     }
+    @Test
+    public void test11(){
+        String s = "Hello World";
+
+        String s1 = new String(Base64.getEncoder().encode(s.getBytes()));
+        StringBuilder sb = new StringBuilder();
+        
+        String s2 = new String(Base64.getDecoder().decode(s1));
+        System.out.println(s2);
+    }
+
     /**
      * LC204 Count Primes
      * 计算小于某个非负数n得所有质数的数量
@@ -76,6 +84,22 @@ public class LC201_300 {
      * Input: s = "egg", t = "add"
      Output: true
      * */
+    public boolean isIsomorphic11(String s, String t) {
+        if (s == null && t == null) return true;
+        if (s == null || t == null || s.length() != t.length()) return false;
+        Map<Character, Character> map = new HashMap<>();
+        for (int i = 0, len = s.length(); i < len; i ++) {
+            char si = s.charAt(i);
+            char ti = t.charAt(i);
+            if (map.containsKey(ti)){
+                if (map.get(ti) != si) return false;
+            } else {
+                if (map.containsValue(si)) return false;
+                map.put(ti, si);
+            }
+        }
+        return true;
+    }
     public boolean isIsomorphic(String s, String t) {
         if (s == null || t == null || s.length() != t.length()) return false;
         int[] arr1 = new int[256];
@@ -88,9 +112,31 @@ public class LC201_300 {
         }
         return true;
     }
+    public boolean isIsomorphic1(String s, String t) {
+        if (s == null && t == null) {
+            return true;
+        }
+        if (s == null || t == null || s.length() != t.length()) {
+            return false;
+        }
+        char[] arr = new char[256];
+//        System.out.println(Arrays.toString(arr));
+        boolean[] ocp = new boolean[256];
+        for (int i = 0, len = s.length(); i < len; i ++) {
+            char si = s.charAt(i);
+            char ti = t.charAt(i);
+            if (arr[si] == 0) {
+                if (ocp[ti]) return false;
+                arr[si] = ti;
+                ocp[ti] = true;
+            }
+            if (arr[si] != ti) return false;
+        }
+        return true;
+    }
     @Test
     public void isIsomorphicTest(){
-        System.out.println(isIsomorphic("att", "egg"));
+        System.out.println(isIsomorphic1("ab", "aa"));
     }
     /**
      * LC207 course schedule
@@ -460,6 +506,54 @@ public class LC201_300 {
         return areaOfSqrA + areaOfSqrB - overlap;
     }
     /**
+     * LC227 Basic Calculator2
+     * Example 1:
+
+     Input: "3+2*2"
+     Output: 7
+     Example 2:
+
+     Input: " 3/2 "
+     Output: 1
+     Example 3:
+
+     Input: " 3+5 / 2 "
+     Output: 5
+     * */
+    public int calculate(String s) {
+        if(s == null || s.length() == 0) return 0;
+        Stack<Integer> stack = new Stack<>();
+        int num = 0;
+        char sign = '+';
+        char[] chars = s.toCharArray();
+        for(int i = 0; i < chars.length; i ++){
+            if(Character.isDigit(chars[i])){
+                num = num * 10 + chars[i] - '0';
+            }
+            if((!Character.isDigit(chars[i]) && ' ' != chars[i]) || i == chars.length - 1){
+                if(sign=='-'){
+                    stack.push(-num);
+                }
+                if(sign=='+'){
+                    stack.push(num);
+                }
+                if(sign=='*'){
+                    stack.push(stack.pop()*num);
+                }
+                if(sign=='/'){
+                    stack.push(stack.pop()/num);
+                }
+                sign = chars[i];
+                num = 0;
+            }
+        }
+        int result = 0;
+        for(int i : stack){
+            result += i;
+        }
+        return result;
+    }
+    /**
      * LC228 Summary Ranges
      * 给定一个无dup的数组，找出它的元素的范围
      * Example 1:
@@ -663,24 +757,24 @@ public class LC201_300 {
      Input:  "962"
      Output: false
      * */
-    public boolean isStrobogrammatic(String num) {
-        int[] map = new int[10];
-        map[6] = 9;
-        map[9] = 6;
-        map[1] = 1;
-        map[0] = 0;
-        map[8] = 8;
+    public boolean isStrobogrammatic(String s) {
+        int[] arr = new int[10];
+        arr[6] = 9;
+        arr[9] = 6;
+        arr[1] = 1;
+        arr[0] = 0;
+        arr[8] = 8;
 
-        char[] ca = num.toCharArray();
-        int i = 0, j = ca.length - 1;
-        while(i <= j) {
-            int begin = ca[i] - '0';
-            int end = ca[j] - '0';
-            if((begin != 0 && map[begin] == 0) || map[begin] != end) {
+        char[] chars = s.toCharArray();
+        int left = 0, right = chars.length - 1;
+        while(left <= right) {
+            int begin = chars[left] - '0';
+            int end = chars[right] - '0';
+            if((begin != 0 && arr[begin] == 0) || arr[begin] != end) {
                 return false;
             }
-            i++;
-            j--;
+            left++;
+            right--;
         }
         return true;
     }
@@ -748,6 +842,27 @@ public class LC201_300 {
         for(String key:map.keySet())
             Collections.sort(map.get(key));
         return new ArrayList<List<String>>(map.values());
+    }
+    public List<List<String>> groupStrings1(String[] strs) {
+        //Create a hashmap. key is a number (the offset compared to its first char),
+        //value is a list of strings which have the same offset.
+        //For each string, convert it to char array
+        //Then subtract its first character for every character
+        //eg. "abc" -> "0,1,2,"        "am"->"0,12,"
+        Map<String,List<String>> map = new HashMap<>();
+        for(String str : strs) {
+            StringBuilder sb = new StringBuilder();
+            char first = str.charAt(0);
+            for(char c:str.toCharArray())
+                sb.append(c-first<0?c-first+26:c-first).append(",");
+            String key = sb.toString();
+            if(!map.containsKey(key))
+                map.put(key, new ArrayList<>());
+            map.get(key).add(str);
+        }
+        for(String key:map.keySet())
+            Collections.sort(map.get(key));
+        return new ArrayList<>(map.values());
     }
     /**
      * LC250 count univalue subtrees
@@ -841,6 +956,44 @@ public class LC201_300 {
     }
     /**
      * LC254 Factor Combinations
+     * Numbers can be regarded as product of its factors. For example,
+     8 = 2 x 2 x 2;
+     = 2 x 4.
+     Write a function that takes an integer n and return all possible combinations of its factors.
+
+     Note:
+
+     You may assume that n is always positive.
+     Factors should be greater than 1 and less than n.
+     Example 1:
+
+     Input: 1
+     Output: []
+     Example 2:
+
+     Input: 37
+     Output:[]
+     Example 3:
+
+     Input: 12
+     Output:
+     [
+     [2, 6],
+     [2, 2, 3],
+     [3, 4]
+     ]
+     Example 4:
+
+     Input: 32
+     Output:
+     [
+     [2, 16],
+     [2, 2, 8],
+     [2, 2, 2, 4],
+     [2, 2, 2, 2, 2],
+     [2, 4, 4],
+     [4, 8]
+     ]
      * */
     public List<List<Integer>> getFactors(int n) {
         List<List<Integer>> result = new ArrayList<>();
@@ -932,6 +1085,16 @@ public class LC201_300 {
         }
         // No unsorted pair found
         return true;
+    }
+
+    public boolean verifyPreorder2(int[] preorder) {
+        return verifyHelper(preorder, Integer.MIN_VALUE, Integer.MAX_VALUE, new int[]{0});
+    }
+    private boolean verifyHelper(int[] preorder,int min, int max, int[] idx) {
+        if (idx[0] == preorder.length || preorder[idx[0]] > max) return true;
+        if (preorder[idx[0]] < min) return false;
+        int root = preorder[idx[0] ++];
+        return verifyHelper(preorder,min, root, idx) && verifyHelper(preorder, root, max, idx);
     }
     @Test
     public void testVerifyPreorder(){

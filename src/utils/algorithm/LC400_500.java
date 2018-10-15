@@ -1,5 +1,6 @@
 package utils.algorithm;
 
+import org.junit.Test;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -67,6 +68,34 @@ public class LC400_500 {
 
         return list.value == 0 ? list.next : list;
     }
+    public ListNode addTwoNumbers1(ListNode one, ListNode two) {
+        Deque<Integer> s1 = new LinkedList<>();
+        Deque<Integer> s2 = new LinkedList<>();
+        while(one != null) {
+            s1.offerFirst(one.value);
+            one = one.next;
+        }
+        while(two != null) {
+            s2.offerFirst(two.value);
+            two = two.next;
+        }
+        int sum = 0;
+        ListNode dummy = new ListNode(0);
+        ListNode cur = dummy;
+        while (! s1.isEmpty() && ! s2.isEmpty()){
+            if (!s1.isEmpty()) sum += s1.pollFirst();
+            if (!s2.isEmpty()) sum += s2.pollFirst();
+            cur.next = new ListNode(sum % 10);
+            sum /= 10;
+            cur = cur.next;
+        }
+        cur.next = new ListNode(sum);
+        return dummy.next;
+    }
+    @Test
+    public void addTest(){
+
+    }
     /**
      * LC457 circular array loop
      * */
@@ -76,7 +105,7 @@ public class LC400_500 {
             if(arr[i] == 0) continue;
             int slow = i, fast = i, count = 0;
             boolean forward = arr[slow] > 0;
-            do {
+            while (slow != fast || count == 0) {
                 int tempSlow = slow;
                 slow = (slow + arr[slow] + len) % len;
 
@@ -89,7 +118,7 @@ public class LC400_500 {
                 arr[tempSlow] = 0;
                 count ++;
 
-            } while(slow != fast);
+            }
             if(count > 1) return true;
         }
         return false;

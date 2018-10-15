@@ -3,17 +3,6 @@ package utils.algorithm;
 import org.junit.Test;
 
 import java.util.*;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-
 import static utils.algorithm.C3.findMidListNode;
 
 public class LC101_200 {
@@ -62,6 +51,7 @@ public class LC101_200 {
         return Math.max(leftHeight, rightHeight) + 1;  // 根节点也算一层，也要加上
     }
     /**
+     * LC106 Construct Binary Tree from Inorder and Postorder Traversal 中后重构
      * LC 106 Construct Binary Tree from Inorder and Postorder Traversal 中后重构
      * */
     public TreeNode inPostBuildTree (int[] in, int[] post) {
@@ -78,6 +68,23 @@ public class LC101_200 {
         }
         root.left = inPostBuildTreeHelper(in, post, idx1, idx2, leftLen);
         root.right = inPostBuildTreeHelper(in, post,idx1 + leftLen + 1,idx2 + leftLen,inLen - leftLen - 1);
+        return root;
+    }
+    public TreeNode buildTreeHelper(int[] in, int[] post) {
+        return buildTreeHelper(in, post, in.length-1, 0, post.length-1);
+    }
+    private TreeNode buildTreeHelper(int[] in, int[] post, int inStart, int inEnd, int postStart) {
+        if (postStart<0 || inStart<inEnd) return null;
+        TreeNode root = new TreeNode(post[postStart]);
+        int idx = 0;
+        for (int i=inStart; i>=inEnd; i--) {
+            if (in[i] == post[postStart]) {
+                idx = i;
+                break;
+            }
+        }
+        root.left = buildTreeHelper(in, post, idx-1, inEnd, postStart-(inStart-idx)-1);
+        root.right = buildTreeHelper(in, post, inStart, idx+1, postStart-1);
         return root;
     }
     /**
@@ -216,10 +223,10 @@ public class LC101_200 {
     }
     /**
      * LC114 Flatten a binary tree to LinkedList
-     *1
-     / \
-     2   5
-     / \   \
+     *   1
+        / \
+       2   5
+      / \   \
      3   4   6
      The flattened tree should look like:
     1-2-3-4-5-6
@@ -372,6 +379,8 @@ public class LC101_200 {
     }
     @Test
     public void asListTest(){
+        Integer[] arr1 = new Integer[3];
+        System.out.println(Arrays.toString(arr1));
         Integer[] arr = new Integer[]{1, 2, 3};
         List<Integer> list = new ArrayList<>(Arrays.asList(arr));
         list.add(5);
@@ -407,11 +416,11 @@ public class LC101_200 {
     public int maxProfit(int prices[]) {
         int minprice = Integer.MAX_VALUE;
         int maxprofit = 0;
-        for (int i = 0; i < prices.length; i++) {
-            if (prices[i] < minprice)
-                minprice = prices[i];
-            else if (prices[i] - minprice > maxprofit)
-                maxprofit = prices[i] - minprice;
+        for (int price : prices) {
+            if (price < minprice)
+                minprice = price;
+            else if (price - minprice > maxprofit)
+                maxprofit = price - minprice;
         }
         return maxprofit;
     }
@@ -1445,6 +1454,15 @@ public class LC101_200 {
             if (!seen.add(s1)) repeated.add(s1);
         }
         return new ArrayList<>(repeated);
+    }
+    /**LC191*/
+    public int hammingWeight(int n) {
+        int count = 0;
+        while (n != 0) {
+            count += (n & 1);
+            n >>>= 1;
+        }
+        return count;
     }
     /**
      * LC198 House Robber
