@@ -292,6 +292,8 @@ public class LC1_100 {
     /**
      * LC17 Letter combination of a phone number
      * 手机拨号键盘上每个数字基本关联3个字母，他们的组合，给定两个数字求他们的所有组合
+     * Input: "23"
+     Output: ["ad", "ae", "af", "bd", "be", "bf", "cd", "ce", "cf"].
      * */
     public List<String> letterCombinations(String digits) {
         List<String> result = new ArrayList<>();
@@ -755,6 +757,24 @@ public class LC1_100 {
             cur.remove(cur.size() - 1);
         }
     }
+    /**LC40 combination sum 2
+     * Example 1:
+     Input: candidates = [10,1,2,7,6,1,5], target = 8,
+     A solution set is:
+     [
+     [1, 7],
+     [1, 2, 5],
+     [2, 6],
+     [1, 1, 6]
+     ]
+     Example 2:
+     Input: candidates = [2,5,2,1,2], target = 5,
+     A solution set is:
+     [
+     [1,2,2],
+     [5]
+     ]
+     * */
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
         List<List<Integer>> result = new ArrayList<>();
         List<Integer> cur = new ArrayList<>();
