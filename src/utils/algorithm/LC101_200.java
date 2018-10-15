@@ -2,17 +2,7 @@ package utils.algorithm;
 
 import org.junit.Test;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Set;
-
+import java.util.*;
 import static utils.algorithm.C3.findMidListNode;
 
 public class LC101_200 {
@@ -62,6 +52,7 @@ public class LC101_200 {
     }
     /**
      * LC106 Construct Binary Tree from Inorder and Postorder Traversal 中后重构
+     * LC 106 Construct Binary Tree from Inorder and Postorder Traversal 中后重构
      * */
     public TreeNode inPostBuildTree (int[] in, int[] post) {
         return inPostBuildTreeHelper(in, post, 0, 0, in.length);

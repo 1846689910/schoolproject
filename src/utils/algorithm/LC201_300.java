@@ -1,12 +1,8 @@
 package utils.algorithm;
 
 import org.junit.Test;
-import scala.Char;
-
 import java.util.*;
-
-import static utils.algorithm.C1.swap;
-import static utils.algorithm.C8.reverse;
+import utils.algorithm.LC1_100.Interval;
 
 public class LC201_300 {
     /**
@@ -2051,7 +2047,6 @@ class TrieNode {
         isEnd = false;
         arr = new TrieNode[26];
     }
-
 /*
 
     public boolean containsKey(char ch) {
