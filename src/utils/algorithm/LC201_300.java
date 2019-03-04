@@ -2,7 +2,7 @@ package utils.algorithm;
 
 import org.junit.Test;
 import java.util.*;
-//import utils.algorithm.LC1_100.Interval;
+import utils.algorithm.LC1_100.Interval;
 
 public class LC201_300 {
     /**
@@ -53,7 +53,7 @@ public class LC201_300 {
 
         String s1 = new String(Base64.getEncoder().encode(s.getBytes()));
         StringBuilder sb = new StringBuilder();
-        
+
         String s2 = new String(Base64.getDecoder().decode(s1));
         System.out.println(s2);
     }
