@@ -1,0 +1,150 @@
+#!/bin/bash
+# use `which bash > hello.sh` to generate a file
+greeting="welcom" # variable, do not include space around `=`
+user=$(whoami) # `whoami` will give the local username, bash command as variable will use $(CMD)
+day=$(date +%A) # use self defined variable as $var or ${var}
+hello=hello_${day}_123
+myDir=${user}_tmp
+txtFile=${myDir}/tmp.txt
+# colors:
+# Reset
+Reset='\033[0m'       # no color
+# Regular Colors
+Black='\033[0;30m'        # Black
+Red='\033[0;31m'          # Red
+Green='\033[0;32m'        # Green
+Yellow='\033[0;33m'       # Yellow
+Blue='\033[0;34m'         # Blue
+Purple='\033[0;35m'       # Purple
+Cyan='\033[0;36m'         # Cyan
+White='\033[0;37m'        # White
+
+# The function total_files reports a total number of files for a given directory.
+function total_files {
+        find $1 -type f | wc -l
+}
+# The function total_directories reports a total number of directories
+# for a given directory.
+function total_directories {
+        find $1 -type d | wc -l
+}
+
+echo "$greeting back $user! Today is $day, which is the best day of the entire week!"
+echo "Your Bash shell version is: $BASH_VERSION. Enjoy!"
+rm -rf ${user}_tmp
+
+echo "we are in $(pwd)"
+mkdir $myDir
+mkdir ${myDir}/tar_tmp
+
+touch $txtFile # create tmp.txt
+chmod 777 $txtFile # user group other all able to read/write/execute
+echo "write some data to $txtFile via bash echo" >> $txtFile
+
+# tar -zcf A B # compress B to A in gzip format
+tar -zcf ${myDir}/tar_tmp/tmp.tar.gz $txtFile
+rm -rf $txtFile
+# tar -zxf A B # decompress A to B
+tar -zxf ${myDir}/tar_tmp/tmp.tar.gz ${myDir}
+
+# tar -jcf A B # compress B to A in bzip2 format
+tar -zcf ${myDir}/tar_tmp/tmp.tar.gz $txtFile
+rm -rf $txtFile
+# tar -jxf A B # decompress A to B
+tar -zxf ${myDir}/tar_tmp/tmp.tar.gz ${myDir}
+
+echo -n "Files to be included:"
+total_files ./
+echo -n "Directories to be included:"
+total_directories ./
+
+echo "numeric comparison:"
+num1=100
+num2=30
+[ $num1 -gt $num2 ]
+echo $? # 0 true, 1 false
+[ 100 -gt 30 ]
+echo $?
+
+# conditional statment
+function conditions {
+    local num_a=100
+    local num_b=200
+    if [ $num_a -lt $num_b ]; then # if [...]; then
+        echo "$num_a is less than $num_b!"
+        echo "I am also a part of result"
+        ls ./
+    elif [ $num_a -gt $num_b ]; then
+        echo "$num_a is greater than $num_b"
+    else
+        echo "$num_a is equal to $num_b!"
+    fi
+}
+
+result=$(conditions)
+echo $result
+echo $(conditions)
+
+# positional arguments
+function args_test {
+    echo "$1, $2, $3"
+    echo "you passed in $# arguments"
+    echo "alternative way to print all arguments $*"
+}
+echo $(args_test hello world good)
+
+# loops
+function for_loops {
+    echo -e "$Green for loops: $Reset"
+    for i in 1 2 3; do
+        echo $i
+    done
+    for i in $(ls); do
+        echo $i
+    done
+}
+for_loops
+
+function while_loops {
+    echo -e "$Green while loops: $Reset"
+    local counter=0
+    while [ $counter -lt 3 ]; do
+        let counter+=1
+        echo $counter
+    done
+}
+while_loops
+
+function until_loops {
+    echo -e "$Green until loops: $Reset"
+    local counter=6
+    until [ $counter -lt 3 ]; do
+        let counter-=1
+        echo $counter
+    done
+}
+until_loops
+
+# expr command
+echo -e "$Green expr command: $Reset"
+echo $(expr 1 + 1)
+echo $(expr 3 \* 2) # should escape * for multiply
+
+# let command: evaluates a mathematical expression and stores its result into a variable
+function let_command {
+    echo -e "$Green let command: $Reset"
+    local c=0
+    let a=c++
+    echo a
+}
+let_command
+
+# bc command
+function bc_command {
+    echo -e "$Green bc command: $Reset"
+    echo "8.5/2.3"|bc
+    echo "scale=2;8.5/2.3"|bc # 2 digits kept
+}
+bc_command
+
+rm -rf ${myDir}
