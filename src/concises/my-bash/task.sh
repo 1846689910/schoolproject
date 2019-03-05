@@ -156,7 +156,11 @@ function bc_command {
 bc_command
 echo $(bc_command)
 
-cp -r ${myDir}/tar_tmp ${myDir}/tar_tmp1 # make a copy of the dir containing zip
+# src: src/a and src/b
+# cp -R src target  # will make target/src/...
+# cp -R src/ target  # will make target/a + target/b
+cp -R ${myDir}/tar_tmp ${myDir}/tar_tmp1
+cp -R ${myDir}/tar_tmp/ ${myDir}/tar_tmp1
 
 echo -e "$Green get dir size: $Reset"
 echo $(du -h ${myDir}/tar_tmp1) # get dir size
