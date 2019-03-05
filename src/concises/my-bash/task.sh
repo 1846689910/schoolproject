@@ -158,4 +158,11 @@ echo $(bc_command)
 
 cp -r ${myDir}/tar_tmp ${myDir}/tar_tmp1 # make a copy of the dir containing zip
 
+echo -e "$Green get dir size: $Reset"
+echo $(du -h ${myDir}/tar_tmp1) # get dir size
+echo $(du -hcs ${myDir}/tar_tmp1) # get dir size
+
+echo -e "$Green get file size: $Reset"
+echo $(wc -c $txtFile) # get file size/Byte
+
 rm -rf ${myDir}
