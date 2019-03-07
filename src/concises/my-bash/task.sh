@@ -169,4 +169,15 @@ echo $(du -hcs ${myDir}/tar_tmp1) # get dir size
 echo -e "$Green get file size: $Reset"
 echo $(wc -c $txtFile) # get file size/Byte
 
+# find dir and file that match the name pattern
+echo -e "$Green ls -d ~/D* $Reset"
+echo $(ls -d ~/D*) # find all dir starts with src
+echo -e "$Green ls ~/Downloads/*.zip $Reset"
+echo $(ls ~/Downloads/*.zip)
+
+echo -e "$Green find ~/Downloads -name *.zip $Reset"
+echo $(find ~/Downloads -name *.zip)
+echo -e "$Green find ~/Downloads -type d -name ccm* $Reset"
+echo $(find ~/Downloads -type d -name ccm*)
+
 rm -rf ${myDir}
