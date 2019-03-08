@@ -1,23 +1,31 @@
 #!/bin/bash
+
+# Define colors:
+# Reset
+Reset="\033[0m"       # no color
+# Regular Colors
+Black="\033[0;30m"        # Black
+Red="\033[0;31m"          # Red
+Green="\033[0;32m"        # Green
+Yellow="\033[0;33m"       # Yellow
+Blue="\033[0;34m"         # Blue
+Purple="\033[0;35m"       # Purple
+Cyan="\033[0;36m"         # Cyan
+White="\033[0;37m"        # White
+
+
 # use `which bash > hello.sh` to generate a file
-greeting="welcom" # variable, do not include space around `=`
-user=$(whoami) # `whoami` will give the local username, bash command as variable will use $(CMD)
+greeting="welcome" # variable, do not include space around `=`
+greeting1=welcome
+user=$(whoami) # `whoami` will give the local username,
+# execute bash command or bash function: $(whoami), $(fn),
+# refer to bash variable: $VAR or ${VAR}
+    echo -e ${Green}I am $(whoami), I am ${user}, I am $user
+    echo -e "I am $(whoami), I am ${user}, I am $user $Reset" # equal to above
 day=$(date +%A) # use self defined variable as $var or ${var}
 hello=hello_${day}_123
 myDir=${user}_tmp
 txtFile=${myDir}/tmp.txt
-# colors:
-# Reset
-Reset='\033[0m'       # no color
-# Regular Colors
-Black='\033[0;30m'        # Black
-Red='\033[0;31m'          # Red
-Green='\033[0;32m'        # Green
-Yellow='\033[0;33m'       # Yellow
-Blue='\033[0;34m'         # Blue
-Purple='\033[0;35m'       # Purple
-Cyan='\033[0;36m'         # Cyan
-White='\033[0;37m'        # White
 
 # The function total_files reports a total number of files for a given directory.
 function total_files {
@@ -146,5 +154,30 @@ function bc_command {
     echo "scale=2;8.5/2.3"|bc # 2 digits kept
 }
 bc_command
+echo $(bc_command)
+
+# src: src/a and src/b
+# cp -R src target  # will make target/src/...
+# cp -R src/ target  # will make target/a + target/b
+cp -R ${myDir}/tar_tmp ${myDir}/tar_tmp1
+cp -R ${myDir}/tar_tmp/ ${myDir}/tar_tmp1
+
+echo -e "$Green get dir size: $Reset"
+echo $(du -h ${myDir}/tar_tmp1) # get dir size
+echo $(du -hcs ${myDir}/tar_tmp1) # get dir size
+
+echo -e "$Green get file size: $Reset"
+echo $(wc -c $txtFile) # get file size/Byte
+
+# find dir and file that match the name pattern
+echo -e "$Green ls -d ~/D* $Reset"
+echo $(ls -d ~/D*) # find all dir starts with src
+echo -e "$Green ls ~/Downloads/*.zip $Reset"
+echo $(ls ~/Downloads/*.zip)
+
+echo -e "$Green find ~/Downloads -name *.zip $Reset"
+echo $(find ~/Downloads -name *.zip)
+echo -e "$Green find ~/Downloads -type d -name ccm* $Reset"
+echo $(find ~/Downloads -type d -name ccm*)
 
 rm -rf ${myDir}
