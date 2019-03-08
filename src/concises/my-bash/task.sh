@@ -176,8 +176,14 @@ echo -e "$Green ls ~/Downloads/*.zip $Reset"
 echo $(ls ~/Downloads/*.zip)
 
 echo -e "$Green find ~/Downloads -name *.zip $Reset"
-echo $(find ~/Downloads -name *.zip)
+echo $(find ~/Downloads -type f -name "*.zip")
 echo -e "$Green find ~/Downloads -type d -name ccm* $Reset"
-echo $(find ~/Downloads -type d -name ccm*)
+echo $(find ~/Downloads -type d -name "ccm*")
+
+# find file by content
+# r recursive, n: line number, w: whole word, --include=filename*.ext, --exclude=*.java, --exclude-dir
+echo -e "$Green grep -rnw . --exclude-dir={node_modules} --include=*.sh -e 'hello world' $Reset"
+echo $(grep -rnw . --exclude-dir={node_modules} --include=*.sh -e "hello world")
+echo $(grep -rnw .. --exclude-dir={node_modules} -e "hello world")
 
 rm -rf ${myDir}
