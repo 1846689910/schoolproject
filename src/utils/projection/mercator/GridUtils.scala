@@ -2,6 +2,7 @@ package utils.projection.mercator
 
 import com.vividsolutions.jts.geom.Coordinate
 import org.junit.Test
+import scala.collection.mutable
 
 class GridUtils {
     /**
@@ -14,21 +15,36 @@ class GridUtils {
       * get the coordinate of this square when z + n
       * */
     def nextNGrids(coord: Coordinate, n: Int): Array[Array[Coordinate]] ={
+        val Grid(leftTopX, leftTopY, rightBottomX, rightBottomY, z, width) = getGrid(coord, n)
+        var coords: mutable.ArrayBuffer[Array[Coordinate]] = mutable.ArrayBuffer()
+        for (i <- leftTopY to rightBottomY) {
+            var row: mutable.ArrayBuffer[Coordinate] = mutable.ArrayBuffer()
+            for (j <- leftTopX to rightBottomX) {
+                row += new Coordinate(j, i, z)
+            }
+            coords += row.toArray
+        }
+        coords.toArray
+    }
+    /**
+      * Given mercator tile coordinate(X: Int, Y: Int, Z: Int) and zoom in depth n
+      * to find a sub tile, after zoom in n level, this sub tile should be xi th tile in x direction and yi th tile in y direction
+      * @return partial function to get one specific tile of the tile grids(xi: Int, yi: Int)
+      * */
+    def nextNGrid(coord: Coordinate, n: Int): (Int, Int) => Coordinate ={
+        val Grid(leftTopX, leftTopY, rightBottomX, rightBottomY, z, width) = getGrid(coord, n)
+        (xi: Int, yi: Int) => new Coordinate(leftTopX + xi % width, leftTopY + yi % width, z)
+    }
+    def nextGrid(coord: Coordinate): (Int, Int) => Coordinate =nextNGrid(coord, 1)
+
+    def getGrid(coord: Coordinate, n: Int): Grid ={
         val width = 1 << n  // num of squares in x or y direction
         val rightBottomX = (coord.x.toInt + 1) * width - 1  // x of right bottom square
         val rightBottomY = (coord.y.toInt + 1) * width - 1  // y of right bottom square
         val leftTopX = rightBottomX - width + 1
         val leftTopY = rightBottomY - width + 1
-        val z = coord.z + n
-        var coords: Array[Array[Coordinate]] = Array()
-        for (i <- leftTopY to rightBottomY) {
-            var row: Array[Coordinate] = Array()
-            for (j <- leftTopX to rightBottomX) {
-                row = row :+ new Coordinate(j, i, z)
-            }
-            coords = coords :+ row
-        }
-        coords
+        val z = coord.z.toInt + n
+        Grid(leftTopX, leftTopY, rightBottomX, rightBottomY, z, width)
     }
     /**
       * the count of grids in x(lng) or y(lat) direction
@@ -61,13 +77,13 @@ class GridUtils {
     def test(): Unit ={
         nextNGrids(new Coordinate(21, 15, 5), 2).foreach(arr => println(arr.mkString(",")))
         val parentGrid = toParentGridPercentage(new Coordinate(85, 60, 7), 2)
-
+        println(nextNGrid(new Coordinate(21, 15, 5), 2)(0, 0))
         println(parentGrid.getPositionPercentage)
         println(parentGrid.getCoordinate)
         println(parentGrid.getXYBorder(4096).mkString(","))
     }
 }
-//case class Coordinate(x: Int, y: Int, z: Int)
+case class Grid(leftTopX: Int, leftTopY: Int, rightBottomX: Int, rightBottomY: Int, z: Int, width: Int)
 case class ParentGridCoordinate(minX: Double, maxX: Double, minY: Double, maxY: Double, z: Int){
     def getCoordinate: Coordinate = new Coordinate(minX.toInt, minY.toInt, z)
     def getPositionPercentage: PositionPercentage = {
