@@ -27,6 +27,14 @@ object CRSConverter {
         coordinateToTileCoords(coord, zoom, 4096, tileX, tileY)
     }
 
+    /**
+      * convert mercator projection coord (X, Y, Z) in Double to coordinate (lng, lat, zoom) in Double
+      * */
+    def tileCoordsToCoordinate(coord: Coordinate): Coordinate ={
+        val (minLng, minLat, maxLng, maxLat) = tileToBBox(coord)
+        new Coordinate(minLng, maxLat, coord.z)
+    }
+
     def pointToTileFraction(lat: Double, lng: Double, zoom: Int): (Double, Double, Int)={
         val lng1 = longitude(lng)
         val lat1 = latitude(lat)
@@ -128,6 +136,35 @@ object CRSConverter {
             if (lat1 == 0) lat1 = 0
         }
         lat1
+    }
+    /**
+      * Converts TMS Tile to bbox in Meters coordinates.
+      *
+      * @param tileCoord tile Tile [x, y, zoom]
+      * @param tileSize [tileSize=256] Tile size
+      * @param validate [validate=true] validates Tile
+      * @return BBox bbox extent in [minX, minY, maxX, maxY] order
+      * @example
+      * var bbox = globalMercator.tileToBBoxMeters([6963, 5003, 13])
+      * //=[ 14025277.4, 4437016.6, 14030169.4, 4441908.5 ]
+      */
+    def tileToBBoxMeters(tileCoord: Coordinate, tileSize: Int = 256, validate: Boolean = true): (Double, Double, Double, Double) ={
+        validateTile(tileCoord.x, tileCoord.y, tileCoord.z.toInt)
+        val (minX, minY) = pixelToMeters(Pixel(tileCoord.x * tileSize, tileCoord.y * tileSize, tileCoord.z.toInt))
+        val (maxX, maxY) = pixelToMeters(Pixel((tileCoord.x + 1) * tileSize, (tileCoord.y + 1) * tileSize, tileCoord.z.toInt))
+        (minX, minY, maxX, maxY)
+    }
+
+    def tileToBBox(tileCoord: Coordinate, validate: Boolean = true): (Double, Double, Double, Double) ={
+        validateTile(tileCoord.x, tileCoord.y, tileCoord.z.toInt)
+        if (tileCoord.z.toInt == 0) {
+            (-180, -85.051129, 180, 85.051129)
+        } else {
+            val (minX, minY, maxX, maxY) = tileToBBoxMeters(tileCoord)
+            val (minLng, minLat) = metersToLatLng(minX, minY, tileCoord.z.toInt)
+            val (maxLng, maxLat) = metersToLatLng(maxX, maxY, tileCoord.z.toInt)
+            (minLng, minLat, maxLng, maxLat)
+        }
     }
 }
 case class Pixel(px: Double, py: Double, z: Int)
