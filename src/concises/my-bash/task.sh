@@ -1,15 +1,8 @@
 #!/bin/bash
 
 # refer to: https://github.com/LeCoupa/awesome-cheatsheets/blob/master/languages/bash.sh
-##############################################################################
-# SHORTCUTS
-##############################################################################
 # CTRL+C  # halts the current command
 # exit    # logs out of current session
-
-##############################################################################
-# BASH BASICS
-##############################################################################
 
 env                 # displays all environment variables
 echo $SHELL         # displays the shell you're using
