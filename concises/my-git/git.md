@@ -37,17 +37,27 @@
 ## **Git Basics**
 
 
-| command                   | description                                                                                                                                 |
-| :------------------------ | :------------------------------------------------------------------------------------------------------------------------------------------ |
-| git init DIR              | Create empty Git repo in specified directory. Run with no arguments to initialize the current directory as a git repository.                |
-| git clone REPO            | Clone repo located at REPO onto local machine. Original repo can be located on the local filesystem or on a remote machine via HTTP or SSH. |
-| git config user.name NAME | Define author name to be used for all commits in current repo. Devs commonly use --global flag to set config options for current user.      |
-| git add DIR               | Stage all changes in directory for the next commit. Replace directory with a file to change a specific file.                                |
-| git commit -m "message"   | Commit the staged snapshot, but instead of launching a text editor, use message as the commit message.                                      |
-| git status                | List which files are staged, unstaged, and untracked.                                                                                       |
-| git log                   | Display the entire commit history using the default format. For customization see additional options.                                       |
-| git diff                  | Show unstaged changes between your index and working directory                                                                              |
+| command                     | description                                                                                                                                 |
+| :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
+| `git init DIR`              | Create empty Git repo in specified directory. Run with no arguments to initialize the current directory as a git repository.                |
+| `git clone REPO`            | Clone repo located at REPO onto local machine. Original repo can be located on the local filesystem or on a remote machine via HTTP or SSH. |
+| `git config user.name NAME` | Define author name to be used for all commits in current repo. Devs commonly use --global flag to set config options for current user.      |
+| `git add DIR`               | Stage all changes in directory for the next commit. Replace directory with a file to change a specific file.                                |
+| `git commit -m "message"`   | Commit the staged snapshot, but instead of launching a text editor, use message as the commit message.                                      |
+| `git status`                | List which files are staged, unstaged, and untracked.                                                                                       |
+| `git log`                   | Display the entire commit history using the default format. For customization see additional options.                                       |
+| `git diff`                  | Show unstaged changes between your index and working directory                                                                              |
 
+[back to top](#top)
 
+<a id="2"></a>
+
+## **Undoing Changes**
+
+| command             | description                                                                                                                         |
+| :------------------ | :---------------------------------------------------------------------------------------------------------------------------------- |
+| `git revert COMMIT` | Create new commit that undoes all of the changes made in commit, then apply it to the current branch.                               |
+| `git reset FILE`    | Remove file from the staging area, but leave the working directory unchanged. This unstages a file without overwriting any changes. |
+| `git clean -n`      | Shows which files would be removed from working directory. Use the -f flag in place of the -n flag to execute the clean.            |
 
 [back to top](#top)
