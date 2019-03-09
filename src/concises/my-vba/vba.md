@@ -10,7 +10,6 @@
 
 [**OCR Find**](#3)
 
----
 
 <a id="1"></a>
 
@@ -47,7 +46,6 @@ End Sub
 ```
 [back to top](#top)
 
----
 
 <a id="2"></a>
 
@@ -59,7 +57,6 @@ wb.Sheets(1).Columns.AutoFit  ‘ 将所有用到的列展开自适应
 ```
 [back to top](#top)
 
----
 
 <a id="3"></a>
 
@@ -89,5 +86,3 @@ Function ocrFind(ByRef ws As Worksheet, ByVal col As String, ByVal fr As Integer
 End Function
 ```
 [back to top](#top)
-
----
