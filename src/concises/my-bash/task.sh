@@ -66,17 +66,17 @@ touch $txtFile # create tmp.txt
 chmod 777 $txtFile # user group other all able to read/write/execute
 echo "write some data to $txtFile via bash echo" >> $txtFile
 
-# tar -zcf A B # compress B to A in gzip format
-tar -zcf ${myDir}/tar_tmp/tmp.tar.gz $txtFile
+# tar -fcz A B # compress B to A in gzip format
+tar -fcz ${myDir}/tar_tmp/tmp.tar.gz $txtFile
 rm -rf $txtFile
-# tar -zxf A B # decompress A to B
-tar -zxf ${myDir}/tar_tmp/tmp.tar.gz ${myDir}
+# tar -fxz A B # decompress A to B
+tar -fxz ${myDir}/tar_tmp/tmp.tar.gz ${myDir}
 
-# tar -jcf A B # compress B to A in bzip2 format
-tar -zcf ${myDir}/tar_tmp/tmp.tar.gz $txtFile
+# tar -fcj A B # compress B to A in bzip2 format
+tar -fcj ${myDir}/tar_tmp/tmp.tar.gz $txtFile
 rm -rf $txtFile
-# tar -jxf A B # decompress A to B
-tar -zxf ${myDir}/tar_tmp/tmp.tar.gz ${myDir}
+# tar -fxj A B # decompress A to B
+tar -fxj ${myDir}/tar_tmp/tmp.tar.gz ${myDir}
 
 echo -n "Files to be included:"
 total_files ./
@@ -216,5 +216,9 @@ echo $(grep -rn .. --exclude-dir={node_modules} -e "hello world")
 # find content in a specific file
 echo -e "$Green grep hello <PATH> $Reset"
 echo $(grep "hello" ./task.sh)
+
+ps aux # list info lines of running shell in `USER PID %CPU %MEM ... COMMAND`
+# kill -9 PID  # kill the process with PID
+lsof -i :3000 # list of open files whose Internet address matches the address specified in i
 
 rm -rf ${myDir}
