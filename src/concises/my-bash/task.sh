@@ -1,5 +1,29 @@
 #!/bin/bash
 
+# refer to: https://github.com/LeCoupa/awesome-cheatsheets/blob/master/languages/bash.sh
+##############################################################################
+# SHORTCUTS
+##############################################################################
+# CTRL+C  # halts the current command
+# exit    # logs out of current session
+
+##############################################################################
+# BASH BASICS
+##############################################################################
+
+env                 # displays all environment variables
+echo $SHELL         # displays the shell you're using
+echo $BASH_VERSION  # displays bash version
+
+#bash                # if you want to use bash (type exit to go back to your previously opened shell)
+whereis bash        # finds out where bash is on your system
+which bash          # finds out which program is executed as 'bash' (default: /bin/bash, can change across environments)
+clear               # clears content on window (hide displayed lines)
+# MAC: command + K  # completely clear terminal
+
+echo $PATH          # displays shell
+$(PATH=$PATH:/Users) # Temporarily append add another path to shell path. valid for current terminal session
+
 # Define colors:
 # Reset
 Reset="\033[0m"       # no color
@@ -87,6 +111,12 @@ function conditions {
     else
         echo "$num_a is equal to $num_b!"
     fi
+
+    if [ -e ${txtFile} ]; then
+        echo "$txtFile exists"
+    else
+        echo "$txtFile does not exists"
+    fi
 }
 
 result=$(conditions)
@@ -162,6 +192,10 @@ echo $(bc_command)
 cp -R ${myDir}/tar_tmp ${myDir}/tar_tmp1
 cp -R ${myDir}/tar_tmp/ ${myDir}/tar_tmp1
 
+cp $txtFile ${myDir}/tmp1.txt
+mv ${myDir}/tmp1.txt ${myDir}/tmp2.txt  # move or rename file
+diff $txtFile ${myDir}/tmp2.txt  # check two files difference
+
 echo -e "$Green get dir size: $Reset"
 echo $(du -h ${myDir}/tar_tmp1) # get dir size
 echo $(du -hcs ${myDir}/tar_tmp1) # get dir size
@@ -185,5 +219,9 @@ echo $(find ~/Downloads -type d -name "ccm*")
 echo -e "$Green grep -rn . --exclude-dir={node_modules} --include=*.sh -e 'hello world' $Reset"
 echo $(grep -rn . --exclude-dir={node_modules} --include=*.sh -e "hello world")
 echo $(grep -rn .. --exclude-dir={node_modules} -e "hello world")
+
+# find content in a specific file
+echo -e "$Green grep hello <PATH> $Reset"
+echo $(grep "hello" ./task.sh)
 
 rm -rf ${myDir}
