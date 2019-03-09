@@ -217,4 +217,8 @@ echo $(grep -rn .. --exclude-dir={node_modules} -e "hello world")
 echo -e "$Green grep hello <PATH> $Reset"
 echo $(grep "hello" ./task.sh)
 
+ps aux # list info lines of running shell in `USER PID %CPU %MEM ... COMMAND`
+# kill -9 PID  # kill the process with PID
+lsof -i :3000 # list of open files whose Internet address matches the address specified in i
+
 rm -rf ${myDir}
