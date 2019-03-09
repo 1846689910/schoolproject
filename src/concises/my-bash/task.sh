@@ -182,8 +182,8 @@ echo $(find ~/Downloads -type d -name "ccm*")
 
 # find file by content
 # r recursive, n: line number, w: whole word, --include=filename*.ext, --exclude=*.java, --exclude-dir
-echo -e "$Green grep -rnw . --exclude-dir={node_modules} --include=*.sh -e 'hello world' $Reset"
-echo $(grep -rnw . --exclude-dir={node_modules} --include=*.sh -e "hello world")
-echo $(grep -rnw .. --exclude-dir={node_modules} -e "hello world")
+echo -e "$Green grep -rn . --exclude-dir={node_modules} --include=*.sh -e 'hello world' $Reset"
+echo $(grep -rn . --exclude-dir={node_modules} --include=*.sh -e "hello world")
+echo $(grep -rn .. --exclude-dir={node_modules} -e "hello world")
 
 rm -rf ${myDir}
