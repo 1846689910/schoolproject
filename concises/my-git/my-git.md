@@ -162,6 +162,7 @@ if you want to merge **`16fc2d`**, **`57d8ba`** and **`acd13f`** together, use
 ```bash
 git rebase -i 7710bs # one commit before the ones you want to merge together
 # or `git rebase -i HEAD~[3]`
+# git rebase --abort  # abort rebasing
 ```
 then, a tip will show how to do with these commits(**from `oldest` to `latest`**), change them to `s` or `squash` **except for the first one**, because you want to merge all the rest to the first one.
 ```
