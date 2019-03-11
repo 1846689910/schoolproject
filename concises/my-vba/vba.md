@@ -10,6 +10,11 @@
 
 [**OCR Find**](#3)
 
+[**remove duplicates去重**](#4)
+
+[**Create Folder**](#5)
+
+[**Create directory: create all directory according to the given path**](#6)
 
 <a id="1"></a>
 
@@ -84,5 +89,58 @@ Function ocrFind(ByRef ws As Worksheet, ByVal col As String, ByVal fr As Integer
     Next i
     ocrFind = row
 End Function
+```
+[back to top](#top)
+
+<a id="4"></a>
+
+## **remove duplicates去重**
+
+对前两列去重
+```vb
+ActiveSheet.Range("A1:C100").RemoveDuplicates Columns:=Array(1,2), Header:=xlYes
+```
+
+[back to top](#top)
+
+<a id="5"></a>
+
+## **Create Folder**
+
+If the path has already existed, return the path; if the path does not exist, create the folder and return the path
+```vb
+Function CreateFolder(strPath As String, strFolderName As String) As String
+    ' create a separate folder to save all the region reports
+    Dim path As String
+    path = strPath & "\" & Replace(Date, "/", "-") & " " & strFolderName
+    If Dir(path, vbDirectory) = "" Then
+        MkDir path
+        CreateFolder = path
+    Else
+        CreateFolder = path
+    End If
+End Function
+```
+
+[back to top](#top)
+
+<a id="6"></a>
+
+## **Create directory: create all directory according to the given path**
+
+```vb
+Sub mkDirs(ByVal path As String)
+    Dim arr() As String
+    Dim midPath As String
+    Dim i As Integer, j As Integer
+    arr = Split(path, "\")
+    For i = LBound(arr) To UBound(arr)
+        midPath = ""
+        For j = LBound(arr) To i
+            midPath = midPath & arr(j) & "\"
+        Next j
+        If Dir(midPath, vbDirectory) = "" Then MkDir midPath
+    Next i
+End Sub
 ```
 [back to top](#top)
