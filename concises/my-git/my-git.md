@@ -112,13 +112,14 @@ git push origin eric-debug
 Abort Changes
 1. 放弃本地的修改
 ```bash
-git stash # 可以之后被恢复的
+git stash # 可以之后被恢复的, 等同于git stash push
+# git stash pop  # recover the changes in last `git stash`
 git checkout FILE  # 放弃某个指定文件的修改
 git reset --hard  # 强制放弃当前的所有修改
 ```
 2. 回退到之前的commit
 ```bash
-git reset --hard COMMIT_HASH # 回退到该commit，并清除中间的commits
+git reset --hard COMMIT_HASH # 回退到该commit，并清除中间的commits
 # git push origin BRANCH --force  # 并将该状态提交到origin。注意:这样将强行将origin的代码替换，谨慎使用
 ```
 [back to top](#top)
