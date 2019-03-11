@@ -173,5 +173,14 @@ Then, replace the remote by forcely push
 ```bash
 git push origin BRANCH --force
 ```
+Failure fix:
+1. `Cannot 'squash' without a previous commit`
+```bash
+git rebase --edit-todo
+# change the first one from squash to `r`
+git reset --soft HEAD^
+git commit --amend
+git rebase --continue
+```
 
 [back to top](#top)
