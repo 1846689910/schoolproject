@@ -10,6 +10,13 @@
 
 [**OCR Find**](#3)
 
+[**remove duplicates去重**](#4)
+
+[**Create Folder**](#5)
+
+[**Create directory: create all directory according to the given path**](#6)
+
+[**Open Workbook(优先)**](#7)
 
 <a id="1"></a>
 
@@ -85,4 +92,105 @@ Function ocrFind(ByRef ws As Worksheet, ByVal col As String, ByVal fr As Integer
     ocrFind = row
 End Function
 ```
+[back to top](#top)
+
+<a id="4"></a>
+
+## **remove duplicates去重**
+
+对前两列去重
+```vb
+ActiveSheet.Range("A1:C100").RemoveDuplicates Columns:=Array(1,2), Header:=xlYes
+```
+
+[back to top](#top)
+
+<a id="5"></a>
+
+## **Create Folder**
+
+If the path has already existed, return the path; if the path does not exist, create the folder and return the path
+```vb
+Function CreateFolder(strPath As String, strFolderName As String) As String
+    ' create a separate folder to save all the region reports
+    Dim path As String
+    path = strPath & "\" & Replace(Date, "/", "-") & " " & strFolderName
+    If Dir(path, vbDirectory) = "" Then
+        MkDir path
+        CreateFolder = path
+    Else
+        CreateFolder = path
+    End If
+End Function
+```
+
+[back to top](#top)
+
+<a id="6"></a>
+
+## **Create directory: create all directory according to the given path**
+
+```vb
+Sub mkDirs(ByVal path As String)
+    Dim arr() As String
+    Dim midPath As String
+    Dim i As Integer, j As Integer
+    arr = Split(path, "\")
+    For i = LBound(arr) To UBound(arr)
+        midPath = ""
+        For j = LBound(arr) To i
+            midPath = midPath & arr(j) & "\"
+        Next j
+        If Dir(midPath, vbDirectory) = "" Then MkDir midPath
+    Next i
+End Sub
+```
+[back to top](#top)
+
+<a id="7"></a>
+
+## **Open Workbook(优先)**
+
+如果path 不存在就会创建，如果workbook存在就直接打开，如果不存在，先创建后打开. 如果传入一个template_path的文件路径，会以这个文件为模板创建相同的文件再操作
+```vb
+' directory \ filename(including extension)
+Function openWb(ByVal directory As String, ByVal filename As String, Optional ByVal TEMPLATE_PATH As String) As Workbook
+    ' open a workbook, if not existing then create and open, if existing then open
+    ' wb.close savechanges:=TRUE
+    Dim wbNewBook As Workbook
+    Dim path As String
+    Dim directoryExists As Boolean, fileExists As Boolean
+    path = directory & "\" & filename
+    If Len(Dir(path)) > 0 Then
+        Set wbNewBook = Workbooks.Open(filename:=path)
+    Else
+        If Len(Dir(directory, vbDirectory)) = 0 Then mkDirs directory
+        If IsMissing(TEMPLATE_PATH) Then
+            Set wbNewBook = Workbooks.Add(xlWBATWorksheet)
+        Else
+            Set wbNewBook = Workbooks.Add(TEMPLATE_PATH)
+        End If
+        With wbNewBook
+            .Title = filename
+            .Subject = filename
+            .SaveAs filename:=path
+        End With
+    End If
+    Set openWb = wbNewBook
+End Function
+Sub mkDirs(ByVal path As String)
+    Dim arr() As String
+    Dim midPath As String
+    Dim i As Integer, j As Integer
+    arr = Split(path, "\")
+    For i = LBound(arr) To UBound(arr)
+        midPath = ""
+        For j = LBound(arr) To i
+            midPath = midPath & arr(j) & "\"
+        Next j
+        If Dir(midPath, vbDirectory) = "" Then MkDir midPath
+    Next i
+End Sub
+```
+
 [back to top](#top)
