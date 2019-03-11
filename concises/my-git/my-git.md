@@ -16,6 +16,9 @@
 
 [**Pull From a PR**](#6)
 
+[**Rebase**](#7)
+
+
 <a id="1"></a>
 
 ## **创建git repository**
@@ -135,6 +138,40 @@ git checkout <BRANCHNAME>
 5. 如果PR有更新，需要pull来与PR同步
 ```bash
 git pull upstream pull/<ID>/head
+```
+
+[back to top](#top)
+
+<a id="7"></a>
+
+## **Rebase**
+
++ merge serveral history commits
+```bash
+git log
+```
+then you will get the recent commits history from `latest` to `oldest`:
+```
+    acd13f  --- latest
+    57d8ba
+    16fc2d
+    77q0bs  --- oldest
+```
+if you want to merge **`16fc2d`**, **`57d8ba`** and **`acd13f`** together, use
+```bash
+git rebase -i 7710bs # one commit before the ones you want to merge together
+# or `git rebase -i HEAD~[3]`
+```
+then, a tip will show how to do with these commits(from `oldest` to `latest`), change them to `s` or `squash` except for the first one, because you want to merge all the rest to the first one.
+```
+    pick 16fc2d
+    s 57d8ba
+    s acd13f
+```
+then `ESC` followed by `:wq`. your squash finished.
+Then, replace the remote by forcely push
+```bash
+git push origin BRANCH --force
 ```
 
 [back to top](#top)
