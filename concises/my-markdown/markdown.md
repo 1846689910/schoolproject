@@ -6,4 +6,27 @@
 | <div>水平线</div><pre>---<br/>___<br/>***<br/></pre>                                                             |                                                                                                                                         <hr style="margin: 0;padding:0;"/>                                                                                                                                         |
 | <pre>`**This is bold text**`<br/>`__This is bold text__`<br/>`*This is italic text*`<br/>`_This is italic text_`<br/>`***This is bold and italic***`<br/>`~~Strikethrough~~`</pre> | <b>This is bold text</b><br/><b>This is bold text</b><br/><b>This is italic text</b><br/><b>This is italic text</b><br/><b><i>This is bold and italic text</i></b><br/><del>This is delete/strikethrough</del> |
 | <div>列表</div><div>无序</div><div><pre>`+ Create a list by starting a line with +, -, or *`<br/>`+ Sub-lists are made by indenting 2 spaces:`<br/><br/>&nbsp;&nbsp;`- Marker character change forces new list start:`<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;`* Ac tristique libero volutpat at`<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;`+ Facilisis in pretium nisl aliquet`<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;`- Nulla volutpat aliquam velit`<br/>`+ Very easy!`</pre></div><div>有序</div><div><pre>`1. Lorem ipsum dolor sit amet`<br/>`2. Consectetur adipiscing elit`<br/>`3. Integer molestie lorem at massa`<br/>`1. You can use sequential numbers...`<br/>`1. ...or keep all the numbers as 1.`<br/>Start numbering with offset:<br/>`57. foo`<br/>`1. bar`<br/></pre></div> | <ul><li>Create a list by starting a line with +, -, or *</li><li>Sub-lists are made by indenting 2 spaces:<ul><li>Marker character change forces new list start:<ul><li>Ac tristique libero volutpat at</li><li>Facilisis in pretium nisl aliquet</li><li>Nulla volutpat aliquam velit</li></ul></li></ul></li><li>Very easy!</li></ul><ol><li>Lorem ipsum dolor sit amet</li><li>Consectetur adipiscing elit</li><li>Integer molestie lorem at massa</li><li>You can use sequential numbers...</li><li>...or keep all the numbers as 1.</li></ol><ol start="57"><li>foo</li><li>bar</li></ol> |
-| <div>代码</div><pre>Inline \`code\`</pre><pre>Indented code<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;// some comments<br/>&nbsp;&nbsp;&nbsp;&nbsp;line 1 of code<br/>&nbsp;&nbsp;&nbsp;&nbsp;line 2 of code<br/>&nbsp;&nbsp;&nbsp;&nbsp;line 3 of code</pre><pre>Block code "fences"<br/>\`\`\`<br/>Sample text here...<br/>\`\`\`</pre><pre>Syntax highlighting<br/>\`\`\`js<br/>var foo = function (bar) {<br/>&nbsp;&nbsp;return bar++;<br/>};<br/><br/>console.log(foo(5));<br/>\`\`\`</pre> | <br/>Inline `code`<br/><br/>Indented code<br/><pre>&nbsp;&nbsp;&nbsp;&nbsp;// some comments<br/>&nbsp;&nbsp;&nbsp;&nbsp;line 1 of code<br/>&nbsp;&nbsp;&nbsp;&nbsp;line 2 of code<br/>&nbsp;&nbsp;&nbsp;&nbsp;line 3 of code</pre><br/><br/>Block code "fences"<br/><pre>var foo = function (bar) { <br/>return bar++;<br/>};<br/>console.log(foo(5));<br/></pre> |
+| 代码<pre>Inline \`code\`</pre><pre>Indented code<br/><br/>&nbsp;&nbsp;&nbsp;&nbsp;// some comments<br/>&nbsp;&nbsp;&nbsp;&nbsp;line 1 of code<br/>&nbsp;&nbsp;&nbsp;&nbsp;line 2 of code<br/>&nbsp;&nbsp;&nbsp;&nbsp;line 3 of code</pre><pre>Block code "fences"<br/>\`\`\`<br/>Sample text here...<br/>\`\`\`</pre><pre>Syntax highlighting<br/>\`\`\`js<br/>var foo = function (bar) {<br/>&nbsp;&nbsp;return bar++;<br/>};<br/><br/>console.log(foo(5));<br/>\`\`\`</pre> | <br/>Inline `code`<br/><br/>Indented code<br/><pre>&nbsp;&nbsp;&nbsp;&nbsp;// some comments<br/>&nbsp;&nbsp;&nbsp;&nbsp;line 1 of code<br/>&nbsp;&nbsp;&nbsp;&nbsp;line 2 of code<br/>&nbsp;&nbsp;&nbsp;&nbsp;line 3 of code</pre><br/><br/>[**Block code "fences"**](#block-code)<br/><br/><br/>[**Syntax highlighting**](#syntax-highlighting)<br/> |
+
+
+### **Preview:**
+
+<a id="block-code"></a>
+
+**Block code "fences"**
+
+```
+Sample text here...
+```
+
+<a id="syntax-highlighting"></a>
+
+**Syntax highlighting**
+
+```js
+var foo = function (bar) {
+  return bar++;
+};
+
+console.log(foo(5));
+```
