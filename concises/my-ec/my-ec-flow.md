@@ -111,7 +111,23 @@ The method `ReactWebapp.resolveContent` will &rarr; `require("src/server/views/i
 
 ### hapi server start flow
 
-......
+`src/server/index.js` {
+  ```js
+  require("electrode-confippet"); // somehow import config/default.js and register plugin “electrode-react-webapp/lib/hapi”
+  ```
+} &rarr; `electrode-server/lib/electrode-server.js` {
+
+  return promise chain, new Hapi.server, register listener, server starts
+
+} &rarr; `electrode-react-webapp/lib/hapi/index.js` {
+  ```js
+  exports = {register, registerRoutes: register}
+  ```
+} &rarr; `electrode-react-webapp/lib/hapi/hpai17.js` {
+  ```js
+  registerRoutes = require("./register-routes");
+  ```
+}
 
 [back to top](#top)
 
@@ -119,6 +135,42 @@ The method `ReactWebapp.resolveContent` will &rarr; `require("src/server/views/i
 
 ### hapi server start flow
 
-......
+`electrode-react-webapp/lib/hapi/register-routes.js` {
+  ```js
+	server.route({method: …, handler(){
+    return handleRoute(..., routeHandler)}
+  })
+	// routeHandler refer to electrode-react-webapp/lib/react-webapp.js makeRouteHandler
+  ```
+} &rarr; `electrode-react-webapp/lib/hapi/plugin17.js` {
+
+	handler above is DefaultHandleRoute,
+	DefaultHandleRoute return routeHandler({...}) in before step
+
+} &rarr; `electrode-react-webapp/renderer.js` {
+  ```js
+  render(context);
+  ```
+} &rarr; `electrode-react-webapp/lib/react/content.js` {
+  ```js
+  userContent = userContent(......);
+  ```
+} &rarr; `server/views/index-view.jsx` {
+  ```js
+routesEngine.render(req);
+  ```
+} &rarr; `electrode-redux-router-engine/lib/redux-router-engine.js` {
+  ```js
+  class class ReduxRouterEngine {
+    async render(){
+      // call `startMatch`, `checkMatch`, `prepReduxStore`
+    }
+  }
+  ```
+} &rarr; `electrode-react-webapp/lib/hapi/plugin17.js` {
+
+respond back data with status
+
+}
 
 [back to top](#top)
