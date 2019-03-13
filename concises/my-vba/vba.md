@@ -18,6 +18,16 @@
 
 [**Open Workbook(优先)**](#7)
 
+[**遍历directory下的所有workbook**](#8)
+
+[**遍历directory下的所有subDirectory and file**](#9)
+
+[**保存workbook, 并给出名字**](#10)
+
+[**退出workbook不保存**](#11)
+
+[**hasWorksheet 判断该workbook有无该worksheets(可选择创建)**](#12)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -191,6 +201,101 @@ Sub mkDirs(ByVal path As String)
         If Dir(midPath, vbDirectory) = "" Then MkDir midPath
     Next i
 End Sub
+```
+
+[back to top](#top)
+
+
+<a id="8"></a>
+
+## **遍历directory下的所有workbook**
+
+```vb
+Sub LoopThroughFiles(directory As String)
+    Dim fileName As String
+    Dim fileDir As String
+    Dim wb As Workbook
+    Dim ws As Worksheet
+    fileName = dir(directory & "\*.xlsx") ' loop through all the .xlsx files
+    Do While Len(fileName) > 0
+        Set wb = Workbooks.Open(fileName:=directory & "\" & fileName)
+        Set ws = wb.Sheets(1)
+        Debug.Print ws.Name
+        wb.Close savechanges:=False
+        fileName = dir
+    Loop
+End Sub
+```
+[back to top](#top)
+
+<a id="9"></a>
+
+## **遍历directory下的所有subDirectory and file**
+
+```vb
+Sub loopDir(sDir As String)
+    Dim FileSystem As Object
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    DoFolder FileSystem.GetFolder(sDir)
+End Sub
+Private Sub DoFolder(Folder)
+    Dim SubFolder
+    For Each SubFolder In Folder.SubFolders
+        DoFolder SubFolder
+    Next
+    Dim File
+    For Each File In Folder.Files
+        ' Operate on each file
+        Debug.Print File.Name ' also File.path, Folder.Name, Folder.Path
+    Next
+End Sub
+```
+
+[back to top](#top)
+
+<a id="10"></a>
+
+## **保存workbook, 并给出名字**
+
+```vb
+wb.SaveAs 路径&文件名
+wb.SaveAs strPath & "\TB_Upload " & Replace(Date, "/", "_")
+
+'也可以直接保存成.csv文件
+wb.SaveAs 路径 & 文件名 & ”.csv”
+```
+
+[back to top](#top)
+
+<a id="11"></a>
+
+## **退出workbook不保存**
+
+```vb
+Workbooks("BOOK1.XLS").Close SaveChanges:=False
+```
+
+[back to top](#top)
+
+<a id="12"></a>
+
+## **hasWorksheet 判断该workbook有无该worksheets(可选择创建)**
+
+```vb
+Function hasWorksheet(ByRef wb As Workbook, ByVal name As String, Optional ByVal toBuild As Boolean = False) As Boolean
+    Dim found As Boolean
+    found = False
+    Dim i As Integer
+    For i = 1 To wb.Worksheets.count
+        If wb.Worksheets(i).name = name Then
+            found = True
+        End If
+    Next i
+    If (Not found) And toBuild Then
+        wb.Sheets.Add(After:=wb.Sheets(wb.Sheets.count)).name = name
+    End If
+    hasWorksheet = found
+End Function
 ```
 
 [back to top](#top)
