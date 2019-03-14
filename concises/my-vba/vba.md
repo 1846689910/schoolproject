@@ -28,6 +28,10 @@
 
 [**hasWorksheet 判断该workbook有无该worksheets(可选择创建)**](#12)
 
+[**查找列号getColsList / getFirstCol**](#13)
+
+[**查找行号getRowList / getFirstRow**](#14)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -295,6 +299,99 @@ Function hasWorksheet(ByRef wb As Workbook, ByVal name As String, Optional ByVal
         wb.Sheets.Add(After:=wb.Sheets(wb.Sheets.count)).name = name
     End If
     hasWorksheet = found
+End Function
+```
+
+[back to top](#top)
+
+<a id="13"></a>
+
+## **查找列号getColsList / getFirstCol**
+
+在ws的row行找target字符串,可以完全匹配或者模糊包含，将所有的列号返回到一个ArrayList中,可以用list.count获取size以及list.item(idx)来获取某个元素
+
+```vb
+Function getColsList(ByRef ws As Worksheet, ByVal row As Integer, ByVal target As String, Optional ByVal mustEqual As Boolean = True) As Object
+    Dim list As Object
+    Dim i As Integer, iLastCol As Integer
+    Set list = CreateObject("System.Collections.ArrayList")
+    iLastCol = ws.Cells(row, ws.Columns.Count).End(xlToLeft).Column
+    For i = 1 To iLastCol
+        If mustEqual Then
+            If ws.Cells(row, i).Value = target Then list.Add i
+        Else
+            If InStr(ws.Cells(row, i).Value, target) > 0 Then list.Add i
+        End If
+    Next i
+    Set getColsList = list
+End Function
+```
+```vb
+'找到返回列号，找不到返回-1, 默认从第一列开始找，可以设置开始列
+Function getFirstCol(ByRef ws As Worksheet, ByVal row As Integer, ByVal target As String, Optional ByVal start As Integer = 1, Optional ByVal mustEqual As Boolean = True) As Integer
+    Dim i As Integer, iLastCol As Integer, col As Integer
+    iLastCol = ws.Cells(row, ws.Columns.Count).End(xlToLeft).Column
+    col = -1
+    For i = start To iLastCol
+        If mustEqual Then
+            If ws.Cells(row, i).Value = target Then
+                col = i
+                Exit For
+            End If
+        Else
+            If InStr(ws.Cells(row, i).Value, target) > 0 Then
+                col = i
+                Exit For
+            End If
+        End If
+    Next i
+    getFirstCol = col
+End Function
+```
+
+[back to top](#top)
+
+
+<a id="14"></a>
+
+## **查找行号getRowList / getFirstRow**
+
+```vb
+Function getRowsList(ByRef ws As Worksheet, ByVal col As Integer, ByVal target As String, Optional ByVal mustEqual As Boolean = True) As Object
+    Dim list As Object
+    Dim i As Integer, iLastRow As Integer
+    Set list = CreateObject("System.Collections.ArrayList")
+    iLastRow = ws.Cells(ws.Rows.Count, col).End(xlUp).row
+    For i = 1 To iLastRow
+        If mustEqual Then
+            If ws.Cells(i, col).Value = target Then list.Add i
+        Else
+            If InStr(ws.Cells(i, col).Value, target) > 0 Then list.Add i
+        End If
+    Next i
+    Set getRowsList = list
+End Function
+```
+```vb
+'找到返回行号，找不到返回-1, 默认从第一行开始找，可以设置开始行
+Function getFirstRow(ByRef ws As Worksheet, ByVal col As Integer, ByVal target As String, Optional ByVal start As Integer = 1, Optional ByVal mustEqual As Boolean = True) As Integer
+    Dim i As Integer, iLastRow As Integer, row As Integer
+    iLastRow = ws.Cells(ws.Rows.Count, col).End(xlUp).row
+    row = -1
+    For i = start To iLastRow
+        If mustEqual Then
+            If ws.Cells(i, col).Value = target Then
+                row = i
+                Exit For
+            End If
+        Else
+            If InStr(ws.Cells(i, col).Value, target) > 0 Then
+                row = i
+                Exit For
+            End If
+        End If
+    Next i
+    getFirstRow = row
 End Function
 ```
 
