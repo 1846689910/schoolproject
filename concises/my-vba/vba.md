@@ -32,6 +32,10 @@
 
 [**查找行号getRowList / getFirstRow**](#14)
 
+[**字母列号转数字 ColLetterToNum**](#15)
+
+[**数字列号转字母 ColNumToLetter**](#16)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -392,6 +396,32 @@ Function getFirstRow(ByRef ws As Worksheet, ByVal col As Integer, ByVal target A
         End If
     Next i
     getFirstRow = row
+End Function
+```
+
+[back to top](#top)
+
+<a id="15"></a>
+
+## **字母列号转数字 ColLetterToNum**
+
+```vb
+Function ColLetterToNum(ByVal sColLetter As String) As Integer
+' Convert column letter to numeric
+    ColLetterToNum = ActiveWorkbook.Worksheets(1).Columns(sColLetter).column
+End Function
+```
+
+[back to top](#top)
+
+<a id="16"></a>
+
+## **数字列号转字母 ColNumToLetter**
+
+```vb
+Function ColNumToLetter(lColNum As Integer) As String
+' Convert numeric to column letter
+    ColNumToLetter = Split(Cells(1, lColNum).Address, "$")(1)
 End Function
 ```
 
