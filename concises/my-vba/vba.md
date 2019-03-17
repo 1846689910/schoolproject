@@ -40,6 +40,8 @@
 
 [**Find Last Column**](#18)
 
+[**插入行/列**](#19)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -475,6 +477,27 @@ End Function
 
 'Ctrl + Shift + Right (Range should be first cell in data set)
   LastColumn = sht.Range("A1").CurrentRegion.Columns.Count
+```
+
+[back to top](#top)
+
+<a id="19"></a>
+
+## **插入行/列**
+
+```vb
+'以下ActiveCell可以是ws.cells(行, 列)形式
+'Insert row above active cell
+ActiveCell.EntireRow.Insert
+
+'Insert row below active cell
+ActiveCell.Offset(1).EntireRow.Insert
+
+'Insert column to the left of the active cell
+ActiveCell.EntireColumn.Insert
+
+'Insert column to the right of the active cell
+ActiveCell.EntireColumn.Offset(0, 1).Insert
 ```
 
 [back to top](#top)
