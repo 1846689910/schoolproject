@@ -36,6 +36,8 @@
 
 [**数字列号转字母 ColNumToLetter**](#16)
 
+[**Find Last Row**](#17)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -423,6 +425,30 @@ Function ColNumToLetter(lColNum As Integer) As String
 ' Convert numeric to column letter
     ColNumToLetter = Split(Cells(1, lColNum).Address, "$")(1)
 End Function
+```
+
+[back to top](#top)
+
+<a id="17"></a>
+
+## **Find Last Row**
+
+```vb
+'Ctrl + Shift + End
+  LastRow = sht.Cells(sht.Rows.Count, "A").End(xlUp).Row
+
+'Using UsedRange
+  sht.UsedRange 'Refresh UsedRange
+  LastRow = sht.UsedRange.Rows(sht.UsedRange.Rows.Count).Row
+
+'Using Table Range
+  LastRow = sht.ListObjects("Table1").Range.Rows.Count
+
+'Using Named Range
+  LastRow = sht.Range("MyNamedRange").Rows.Count
+
+'Ctrl + Shift + Down (Range should be first cell in data set)
+  LastRow = sht.Range("A1").CurrentRegion.Rows.Count
 ```
 
 [back to top](#top)
