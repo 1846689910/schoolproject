@@ -42,6 +42,8 @@
 
 [**插入行/列**](#19)
 
+[**循环查找，找到worksheet里第一个内容为...或者内容不空的cell**](#20)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -498,6 +500,35 @@ ActiveCell.EntireColumn.Insert
 
 'Insert column to the right of the active cell
 ActiveCell.EntireColumn.Offset(0, 1).Insert
+```
+
+[back to top](#top)
+
+<a id="20"></a>
+
+## **循环查找，找到worksheet里第一个内容为...或者内容不空的cell**
+
+sheet1为要查找的worksheet，text为查找内容，blurredMatch模糊匹配：True表示内容含有text就算找到，False表示内容完全相等才算找到
+
+```vb
+Public Function getPos(sheet1 As Worksheet, text As String, blurredMatch As Boolean) As Variant
+    Dim i As Integer
+    Dim j As Integer
+    Dim found As Boolean
+    Dim arr As Variant
+    arr = Array(-1, -1)
+    For i = 1 To sheet1.UsedRange.Rows(sheet1.UsedRange.Rows.Count).Row
+        For j = 1 To sheet1.UsedRange.Columns(sheet1.UsedRange.Columns.Count).Column
+            If (blurredMatch And InStr(sheet1.Cells(i, j).Value, text) <> 0) Or ((Not blurredMatch) And sheet1.Cells(i, j).Value = text) Then
+                found = True
+                arr = Array(i, j)
+                Exit For
+            End If
+        Next j
+        If found Then Exit For
+    Next i
+    getPos = arr
+End Function
 ```
 
 [back to top](#top)
