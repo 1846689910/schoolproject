@@ -44,6 +44,8 @@
 
 [**循环查找，找到worksheet里第一个内容为...或者内容不空的cell**](#20)
 
+[**下拉列表框**](#21)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -529,6 +531,33 @@ Public Function getPos(sheet1 As Worksheet, text As String, blurredMatch As Bool
     Next i
     getPos = arr
 End Function
+```
+
+[back to top](#top)
+
+<a id="21"></a>
+
+## **下拉列表框**
+
+Set the drop down list: strCellName represents the position you need to put a drop down list. formula1 := “=sht!A1:A6”  represents that the content in drop down list are in A1 : A6
+
+```vb
+Sub setList(strCellName As String, val As String)
+    ' set the drop down list for the blanks in wsUserInput
+    With Range(strCellName).Validation
+        .Delete
+        .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, _
+            Operator:=xlEqual, Formula1:=val
+        .IgnoreBlank = True
+        .InCellDropdown = True
+        .InputTitle = ""
+        .ErrorTitle = ""
+        .InputMessage = ""
+        .ErrorMessage = ""
+        .ShowInput = True
+        .ShowError = True
+    End With
+End Sub
 ```
 
 [back to top](#top)
