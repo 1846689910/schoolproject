@@ -38,6 +38,8 @@
 
 [**Find Last Row**](#17)
 
+[**Find Last Column**](#18)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -449,6 +451,30 @@ End Function
 
 'Ctrl + Shift + Down (Range should be first cell in data set)
   LastRow = sht.Range("A1").CurrentRegion.Rows.Count
+```
+
+[back to top](#top)
+
+<a id="18"></a>
+
+## **Find Last Column**
+
+```vb
+'Ctrl + Shift + End
+  LastColumn = sht.Cells(7, sht.Columns.Count).End(xlToLeft).Column
+
+'Using UsedRange
+  sht.UsedRange 'Refresh UsedRange
+  LastColumn = sht.UsedRange.Columns(sht.UsedRange.Columns.Count).Column
+
+'Using Table Range
+  LastColumn = sht.ListObjects("Table1").Range.Columns.Count
+
+'Using Named Range
+  LastColumn = sht.Range("MyNamedRange").Columns.Count
+
+'Ctrl + Shift + Right (Range should be first cell in data set)
+  LastColumn = sht.Range("A1").CurrentRegion.Columns.Count
 ```
 
 [back to top](#top)
