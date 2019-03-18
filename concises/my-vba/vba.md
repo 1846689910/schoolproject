@@ -50,6 +50,8 @@
 
 [**Get Next Non-Empty Row in Column intCol, start search from intStartRow**](#23)
 
+[**Copy a file and rename**](#24)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -601,3 +603,14 @@ End Function
 ```
 
 [back to top](#top)
+
+<a id="24"></a>
+
+## **Copy a file and rename**
+
+```vb
+FileCopy(ToolFilePath,DestFilePath)
+FileCopy "C:\local files\tester.xlsx", "C:\local files\__TMP\tester_copy.xlsx"
+```
+
+[back to top](#24)
