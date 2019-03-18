@@ -46,6 +46,12 @@
 
 [**下拉列表框**](#21)
 
+[**format Number: format data of worksheet ws**](#22)
+
+[**Get Next Non-Empty Row in Column intCol, start search from intStartRow**](#23)
+
+[**Copy a file and rename**](#24)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -561,3 +567,50 @@ End Sub
 ```
 
 [back to top](#top)
+
+<a id="22"></a>
+
+## **format Number: format data of worksheet ws**
+
+```vb
+Private Sub formatNumber(wsTar As Worksheet, i As Integer)
+    ' format digits of some number and date in wsTarget(tax pipeline report)
+    wsTar.Range("AU" & i).NumberFormat = "00000"  ‘ 精确数字到5位
+    wsTar.Range("AV" & i).NumberFormat = "00000"
+    wsTar.Range("AW" & i).NumberFormat = "0000000"
+    wsTar.Range("BO" & i).NumberFormat = "dd-mmm-yyyy"  ‘ 格式化日期
+    wsTar.Range("AW" & i).NumberFormat = "$#,###"
+    ws.Range("B" & i).NumberFormat = "_(* #,##0_);_(* (#,##0);_(* "" - ""_);_(@_)"转换成字符形式
+End Sub
+```
+
+[back to top](#top)
+
+<a id="23"></a>
+
+## **Get Next Non-Empty Row in Column intCol, start search from intStartRow**
+
+```vb
+Private Function getNENextRow(ws As Worksheet, intCol As Integer, intStartRow As Integer, intFileLastRow As Integer) As Integer
+    ' get the next non empty row number. starting from the current cell and find the next cell whose value is nonempty
+    Dim idx As Integer
+    idx = intStartRow
+    While idx < intFileLastRow And IsEmpty(ws.Cells(idx, intCol).Value) = True
+        idx = idx + 1
+    Wend
+    getNENextRow = idx
+End Function
+```
+
+[back to top](#top)
+
+<a id="24"></a>
+
+## **Copy a file and rename**
+
+```vb
+FileCopy(ToolFilePath,DestFilePath)
+FileCopy "C:\local files\tester.xlsx", "C:\local files\__TMP\tester_copy.xlsx"
+```
+
+[back to top](#24)
