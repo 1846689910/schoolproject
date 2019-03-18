@@ -48,6 +48,8 @@
 
 [**format Number: format data of worksheet ws**](#22)
 
+[**Get Next Non-Empty Row in Column intCol, start search from intStartRow**](#23)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -578,6 +580,24 @@ Private Sub formatNumber(wsTar As Worksheet, i As Integer)
     wsTar.Range("AW" & i).NumberFormat = "$#,###"
     ws.Range("B" & i).NumberFormat = "_(* #,##0_);_(* (#,##0);_(* "" - ""_);_(@_)"转换成字符形式
 End Sub
+```
+
+[back to top](#top)
+
+<a id="23"></a>
+
+## **Get Next Non-Empty Row in Column intCol, start search from intStartRow**
+
+```vb
+Private Function getNENextRow(ws As Worksheet, intCol As Integer, intStartRow As Integer, intFileLastRow As Integer) As Integer
+    ' get the next non empty row number. starting from the current cell and find the next cell whose value is nonempty
+    Dim idx As Integer
+    idx = intStartRow
+    While idx < intFileLastRow And IsEmpty(ws.Cells(idx, intCol).Value) = True
+        idx = idx + 1
+    Wend
+    getNENextRow = idx
+End Function
 ```
 
 [back to top](#top)
