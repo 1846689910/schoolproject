@@ -6,6 +6,8 @@
 
 [**App Initialization**](#1)
 
+[**Electrode App API**](#2)
+
 <a id="1"></a>
 
 ## App Initialization
@@ -90,6 +92,69 @@ export default async () => ({
     username: await initUsername()
   }
 });
+```
+
+[back to top](#top)
+
+
+<a id="2"></a>
+
+## **Electrode App API**
+
+Electrode app encapsulate the `express`, `hapi` and `koa` well inside. To add self-defined api:
+
+create `src/server/plugins/my-api.js`:
+
+```js
+module.exports = {
+  name: "MyApi",
+  register: server =>
+    server.route([
+      {
+        method: "GET",
+        path: "/my-api1",
+        handler: (request, h) => h.response("this is my-api1").code(200)
+      },
+      {
+        method: "GET",
+        path: "/my-api2",
+        handler: (request, h) =>
+          h
+            .response(JSON.stringify({ foo: 123 }))
+            .header("Content-Type", "application/json")
+            .code(200)
+      }
+    ])
+};
+```
+
+Then, in `config/default.js`, add the above plugin to the plugins array in `module.exports = {..., plugins:[...], ...}`:
+
+```js
+module.exports = {
+  // ...
+  "server/plugins/my-api": {
+    module: "./{{env.APP_SRC_DIR}}/server/plugins/my-api"
+  }
+  // ...
+};
+```
+Then you could start the app with `clap dev` and visit your api at http://localhost:3000/my-api1
+
+As for `Express` app, it will be much easier to manipulate `src/server/views/index-view.jsx`, use `async` function and add a `req.path` check:
+
+```js
+module.exports = async req => {
+  if (!routesEngine) {
+    routesEngine = new ReduxRouterEngine({ routes });
+  }
+  if (req.path === "/my-api1") {
+    const { res } = req;
+    res.set("Content-Type", "application/json");
+    return JSON.stringify({ foo: 123, bar: 2 });
+  }
+  return routesEngine.render(req);
+};
 ```
 
 [back to top](#top)
