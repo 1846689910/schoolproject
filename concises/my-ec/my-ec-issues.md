@@ -8,6 +8,8 @@
 
 [**Electrode App API**](#2)
 
+[**Css Module Enabled and other Css Preprocessor Configuration**](#3)
+
 <a id="1"></a>
 
 ## App Initialization
@@ -24,6 +26,7 @@ If you want to do some initialization before the app starts, you could use `asyn
 For example, you wants to initialize the whole app and `Home` component.
 
 in `src\client\routes.jsx`:
+
 ```js
 const routes = [
   {
@@ -56,10 +59,10 @@ export { routes };
 
 **Note:**
 
-+ the `init` property refer to a node module that will do init for this component, the default path if you use `.` as beginning of the path will be `src/server/routes`, so if all your init functions are in `src/server/routes`, the path should be `./init-X`
-
+- the `init` property refer to a node module that will do init for this component, the default path if you use `.` as beginning of the path will be `src/server/routes`, so if all your init functions are in `src/server/routes`, the path should be `./init-X`
 
 Then, in `src/server/routes/init-top.jsx`, you could have some async calls to fetch resources then set the initialState:
+
 ```js
 import reducer from "../../client/reducers";
 const initNumber = async () => {
@@ -79,7 +82,9 @@ export default async function initTop() {
   };
 }
 ```
+
 and it is the same with `src\server\routes\init-home.jsx`
+
 ```js
 import reducer from "../../client/reducers";
 const initUsername = async () => {
@@ -95,7 +100,6 @@ export default async () => ({
 ```
 
 [back to top](#top)
-
 
 <a id="2"></a>
 
@@ -139,6 +143,7 @@ module.exports = {
   // ...
 };
 ```
+
 Then you could start the app with `clap dev` and visit your api at http://localhost:3000/my-api1
 
 As for `Express` app, it will be much easier to manipulate `src/server/views/index-view.jsx`, use `async` function and add a `req.path` check:
@@ -156,5 +161,93 @@ module.exports = async req => {
   return routesEngine.render(req);
 };
 ```
+
+[back to top](#top)
+
+<a id="3"></a>
+
+## **Css Module Enabled and other Css Preprocessor Configuration**
+
+`electrode/packages/electrode-archetype-react-app-dev/config/babel/babelrc-client.js` :
+
+set `babel-plugin-react-css-modules` and give special css preprocessors syntax configuration
+
+```js
+const plugins = basePlugins.concat(
+  ......
+  // css module support
+  enableCssModule && [
+    [
+      "babel-plugin-react-css-modules",
+      {
+        context: "./src",
+        generateScopedName: `${isProduction ? "" : "[name]__[local]___"}[hash:base64:5]`,
+        filetypes: {
+          ".scss": {
+            syntax: "postcss-scss",
+            plugins: ["postcss-nested"]
+          },
+          ".styl": {
+            syntax: "sugarss"
+          },
+          ".less": {
+            syntax: "postcss-less"
+          }
+        }
+      }
+    ]
+  ],
+......
+);
+```
+
+`electrode/packages/electrode-archetype-react-app-dev/config/webpack/partial/extract-style.js`:
+
+import the specific preprocessor loader, like less, needs
+
+```bash
+fyn a less less-loader postcss-less
+```
+
+```js
+const styleLoader = require.resolve("style-loader");
+const styleLoader = require.resolve("style-loader");
+const stylusLoader = require.resolve("stylus-relative-loader");
+const stylusLoader = require.resolve("stylus-relative-loader");
+const postcssLoader = require.resolve("postcss-loader");
+const postcssLoader = require.resolve("postcss-loader");
+const lessLoader = require.resolve("less-loader");
+
+const stylusRules = {
+  _name: `extract${cssModuleSupport ? "-css" : ""}-stylus`,
+  test: /\.styl$/,
+  use: ExtractTextPlugin.extract({
+    fallback: styleLoader,
+    use: cssModuleSupport
+      ? [cssModuleQuery, postcssQuery, stylusQuery]
+      : [cssQuery, postcssQuery, stylusQuery],
+    publicPath: ""
+  })
+};
+
+const lessQuery = {
+  loader: lessLoader
+};
+
+const lessRules = {
+  _name: `extract${cssModuleSupport ? "-css" : ""}-less`,
+  test: /\.less$/,
+  use: ExtractTextPlugin.extract({
+    fallback: styleLoader,
+    use: cssModuleSupport
+      ? [cssModuleQuery, postcssQuery, lessQuery]
+      : [cssQuery, postcssQuery, lessQuery],
+    publicPath: ""
+  })
+};
+```
+
+`packages/electrode-archetype-react-app-dev/config/webpack/util/detect-css-module.js`:
+
 
 [back to top](#top)
