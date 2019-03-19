@@ -61,7 +61,7 @@ git fetch upstream  # fetch 远端的所有分支和commit, git fetch upstream m
 ```bash
 git fetch upstream
 git reset --hard upstream/master # 放弃本地的修改，将branch与upstream/master的HEAD同步
-git pull upstream master # 从upstream/master里pull changes
+# git pull upstream master # 从upstream/master里pull changes
 git push origin master --force  # 强制将upstream/master的代码放入remote的repo
 ```
 
