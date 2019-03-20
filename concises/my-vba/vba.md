@@ -56,6 +56,8 @@
 
 [**Copy format**](#26)
 
+[**Clear Range**](#27)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -662,5 +664,15 @@ ws.Range("B1").Copy
 ws.Range("C1:D1").PasteSpecial (xlPasteFormats)  ‘ 将B1 copy之后，对C1:D1范围应用format
 ```
 
-[back to top](#26)
+[back to top](#top)
 
+<a id="27"></a>
+
+## **Clear Range**
+
+```vb
+ws.clearContents
+ws.clearFormat
+```
+
+[back to top](#top)
