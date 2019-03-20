@@ -10,6 +10,8 @@
 
 [**Css Module Enabled and other Css Preprocessor Configuration**](#3)
 
+[**Server Side Bundle Selection(user configurable env target)**](#4)
+
 <a id="1"></a>
 
 ## App Initialization
@@ -297,4 +299,203 @@ need to take caution on test case:
 ...
 ```
 
+To use a specific css preprocessor, set environment target `CSS_MODULE_SUPPORT` as true:
+
+- set `process.env.CSS_MODULE_SUPPORT = true` in `xclap.js`
+- use `CSS_MODULE_SUPPORT=true clap dev`
+
+Also review the [Doc support](https://github.com/electrode-io/electrode/blob/master/docs/chapter1/intermediate/app-archetype/extract-styles.md#flags)
+
 [back to top](#top)
+
+<a id="4"></a>
+
+## **Server Side Bundle Selection(user configurable env target)**
+
+`packages/electrode-archetype-react-app-dev/config/archetype.js`:
+
+```js
+const babelConfigSpec = {
+  ......
+  envTargets: {
+    env: "BABEL_ENV_TARGETS",
+    type: "json",
+    default: {
+      //`default` and `node` targets object is required
+      default: {
+        ie: "8"
+      },
+      node: process.versions.node.split(".")[0]
+    }
+  },
+  target: {
+    env: "ENV_TARGET",
+    type: "string",
+    default: "default"
+  }
+};
+```
+
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/output.js`:
+
+```js
+"use strict";
+
+const Path = require("path");
+const { AppMode, babel } = require("electrode-archetype-react-app/config/archetype");
+const inspectpack = process.env.INSPECTPACK_DEBUG === "true";
+const { target } = babel;
+
+module.exports = {
+  output: {
+    path: Path.resolve(target !== "default" ? `dist-${target}` : "dist", "js"),
+    pathinfo: inspectpack, // Enable path information for inspectpack
+    publicPath: "/js/",
+    chunkFilename: `${target}.[hash].[name].js`,
+    filename: AppMode.hasSubApps ? "[name].bundle.js" : `${target}-[name].bundle.js`
+  }
+};
+```
+
+`packages/electrode-archetype-react-app/arch-clap.js`:
+
+```js
+const babelEnvTargetsArr = Object.keys(archetype.babel.envTargets).filter(k => k !== "node");
+
+const buildDistDirs = babelEnvTargetsArr
+  .filter(name => name !== "default")
+  .map(name => `dist-${name}`);
+let tasks = {
+  //...,
+  "mv-to-dist": ["mv-to-dist:clean", "mv-to-dist:mv-dirs", "mv-to-dist:keep-targets"],
+  "build-dist-min": {
+    dep: [".production-env"],
+    desc: "build dist for production",
+    task: xclap.concurrent(
+      babelEnvTargetsArr.map((name, index) =>
+        xclap.exec(
+          [
+            `webpack --config`,
+            quote(webpackConfig("webpack.config.js")),
+            `--colors --display-error-details`
+          ],
+          {
+            xclap: { delayRunMs: index * 2000 },
+            execOptions: { env: { ENV_TARGET: name } }
+          }
+        )
+      )
+    )
+  },
+
+  "mv-to-dist:clean": {
+    desc: `clean static resources within ${buildDistDirs}`,
+    task: () => {
+      buildDistDirs.forEach(dir => {
+        // clean static resources within `dist-X` built by user specified env targets
+        // and leave [.js, .map, .json] files only
+        const removedFiles = scanDir.sync({
+          dir: Path.resolve(dir),
+          includeRoot: true,
+          ignoreExt: [".js", ".map", ".json"]
+        });
+        shell.rm("-rf", ...removedFiles);
+      });
+      return;
+    }
+  },
+
+  "mv-to-dist:mv-dirs": {
+    desc: `move ${buildDistDirs} to dist`,
+    task: () => {
+      buildDistDirs.forEach(dir => {
+        scanDir
+          .sync({
+            dir,
+            includeRoot: true,
+            filterExt: [".js", ".json", ".map"]
+            // the regex above matches all the sw-registration.js, sw-registration.js.map,
+            // main.bundle.js and main.bundle.js.map and stats.json
+          })
+          .forEach(file => {
+            if (file.endsWith(".js")) {
+              shell.cp("-r", file, "dist/js");
+            } else if (file.endsWith(".map")) {
+              shell.cp("-r", file, "dist/map");
+            } else {
+              shell.cp("-r", file, `dist/server/${dir.split("-")[1]}-${Path.basename(file)}`);
+            }
+          });
+      });
+      return;
+    }
+  },
+
+  "mv-to-dist:keep-targets": {
+    desc: `write each targets to respective isomorphic-assets.json`,
+    task: () => {
+      buildDistDirs.forEach(dir => {
+        const isomorphicPath = Path.resolve(dir, "isomorphic-assets.json"); // add `targets` field to `dist-X/isomorphic-assets.json`
+        if (Fs.existsSync(isomorphicPath)) {
+          Fs.readFile(isomorphicPath, { encoding: "utf8" }, (err, data) => {
+            if (err) throw err;
+            const assetsJson = JSON.parse(data);
+            const { envTargets } = archetype.babel;
+            assetsJson.targets = envTargets[dir.split("-")[1]];
+            Fs.writeFile(isomorphicPath, JSON.stringify(assetsJson, null, 2), err => {
+              if (err) throw err;
+            });
+          });
+        }
+      });
+      return;
+    }
+  },
+  ".clean.dist": () => shell.rm("-rf", "dist", ...buildDistDirs)
+  //...
+};
+```
+
+`packages/electrode-react-webapp/lib/react-webapp.js`:
+
+```js
+const Fs = require("fs");
+const otherStats = {};
+if (Fs.existsSync("dist/server")) {
+  Fs.readdirSync("dist/server")
+    .filter(x => x.endsWith("-stats.json"))
+    .reduce((prev, x) => {
+      const k = Path.basename(x).split("-")[0];
+      prev[k] = `dist/server/${x}`;
+      return prev;
+    }, otherStats);
+}
+
+const setupOptions = options => {
+  const pluginOptionsDefaults = {
+    // ...
+    otherStats
+    // ...
+  };
+  const otherAssets = Object.entries(pluginOptions.otherStats).reduce((prev, [k, v]) => {
+    prev[k] = loadAssetsFromStats(getStatsPath(v, pluginOptions.buildArtifacts));
+    return prev;
+  }, {});
+  pluginOptions.__internals = _.defaultsDeep({}, pluginOptions.__internals, {
+    //...
+    otherAssets
+    //...
+  });
+  // ...
+};
+```
+
+`packages/electrode-react-webapp/lib/react/token-handlers.js`:
+
+```js
+module.exports = function setup(handlerContext /*, asyncTemplate*/) {
+
+}
+```
+
+[back to top](#4)
