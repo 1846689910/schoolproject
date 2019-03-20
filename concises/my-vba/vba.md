@@ -54,6 +54,8 @@
 
 [**Copy with range: copy a range from ws to wsTarget, need range name**](#25)
 
+[**Copy format**](#26)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -650,3 +652,15 @@ wsSrc.Copy After:=wsPrev
 ```
 
 [back to top](#top)
+
+<a id="26"></a>
+
+## **Copy format**
+
+```vb
+ws.Range("B1").Copy
+ws.Range("C1:D1").PasteSpecial (xlPasteFormats)  ‘ 将B1 copy之后，对C1:D1范围应用format
+```
+
+[back to top](#26)
+
