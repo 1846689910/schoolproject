@@ -52,6 +52,12 @@
 
 [**Copy a file and rename**](#24)
 
+[**Copy with range: copy a range from ws to wsTarget, need range name**](#25)
+
+[**Copy format**](#26)
+
+[**Clear Range**](#27)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -613,4 +619,60 @@ FileCopy(ToolFilePath,DestFilePath)
 FileCopy "C:\local files\tester.xlsx", "C:\local files\__TMP\tester_copy.xlsx"
 ```
 
-[back to top](#24)
+[back to top](#top)
+
+<a id="25"></a>
+
+## **Copy with range: copy a range from ws to wsTarget, need range name**
+
+```vb
+Sub copy(ws As Worksheet, wsTarget As Worksheet, strOriginCellName As String, strTargetCellName As String, intColorIdx As Integer)
+    ' the helper function for copy and paste value and format
+    ws.Range(strOriginCellName).Copy
+    With ws.Range(strOriginCellName)
+        .Interior.ColorIndex = intColorIdx
+        .Copy
+    End With
+    With wsTarget.Range(strTargetCellName)
+        .Interior.ColorIndex = intColorIdx
+        .PasteSpecial xlPasteFormats
+        .PasteSpecial xlPasteValues
+    End With
+End Sub
+```
+or
+```vb
+wsSrc.Range("A2:A" & intSrcLastRow).Copy Destination:=wsTarget.Range("A" & intBegRow)
+```
+or copy the entire `wsSrc` to `wsTarget`
+```vb
+wsSrc.Cells.Copy Destination:=wsTarget.Cells
+```
+or copy the `wsSrc` and place it after `wsPrev`
+```vb
+wsSrc.Copy After:=wsPrev
+```
+
+[back to top](#top)
+
+<a id="26"></a>
+
+## **Copy format**
+
+```vb
+ws.Range("B1").Copy
+ws.Range("C1:D1").PasteSpecial (xlPasteFormats)  ‘ 将B1 copy之后，对C1:D1范围应用format
+```
+
+[back to top](#top)
+
+<a id="27"></a>
+
+## **Clear Range**
+
+```vb
+ws.clearContents
+ws.clearFormat
+```
+
+[back to top](#top)
