@@ -249,5 +249,52 @@ const lessRules = {
 
 `packages/electrode-archetype-react-app-dev/config/webpack/util/detect-css-module.js`:
 
+```js
+"use strict";
+
+const Path = require("path");
+const glob = require("glob");
+const archetype = require("electrode-archetype-react-app/config/archetype");
+const AppMode = archetype.AppMode;
+
+function detectCSSModule() {
+  const cssExists = glob.sync(Path.resolve(AppMode.src.client, "**", "*.css")).length > 0;
+  const stylusExists = glob.sync(Path.resolve(AppMode.src.client, "**", "*.styl")).length > 0;
+  const scssExists = glob.sync(Path.resolve(AppMode.src.client, "**", "*.scss")).length > 0;
+  const lessExists = glob.sync(Path.resolve(AppMode.src.client, "**", "*.less")).length > 0;
+
+  /*
+   * cssModuleSupport default to undefined
+   *
+   * when cssModuleSupport not specified:
+   * *only* *.css, cssModuleSupport sets to true
+   * *only* *.styl, cssModuleSupport sets to false
+   * *only* *.scss, cssModuleSupport sets to false
+   */
+
+  return cssExists && !stylusExists && !scssExists && !lessExists;
+}
+
+module.exports = detectCSSModule;
+```
+
+`packages/electrode-archetype-react-app-dev/test/spec/extract.style.spec.js`:
+
+need to take caution on test case:
+
+```js
+...
+    it("Should enable both stylus & css modules when cssModuleStylusSupport is true", () => {
+      archetype.webpack.cssModuleSupport = false;
+      archetype.webpack.cssModuleStylusSupport = true;
+      const moduleConfig = require(moduleName)().module;
+      expect(moduleConfig.rules[0]._name).to.equal("extract-css");
+      expect(moduleConfig.rules[1]._name).to.equal("extract-scss");
+      expect(moduleConfig.rules[2]._name).to.equal("extract-stylus");
+      expect(moduleConfig.rules[3]._name).to.equal("extract-css-stylus");
+      expect(moduleConfig.rules[4]._name).to.equal("extract-less");
+    });
+...
+```
 
 [back to top](#top)
