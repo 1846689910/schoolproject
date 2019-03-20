@@ -336,6 +336,71 @@ const babelConfigSpec = {
 };
 ```
 
+`packages/electrode-archetype-react-app-dev/config/babel/babelrc-client.js`:
+
+```js
+const basePlugins = [
+  "@babel/plugin-syntax-dynamic-import",
+  //
+  // allow class properties. loose option compile to assignment expression instead
+  // of Object.defineProperty.
+  // Note: This must go before @babel/plugin-transform-classes
+  //
+  (enableTypeScript || transformClassProps) && [
+    "@babel/plugin-proposal-class-properties",
+    { loose: looseClassProps }
+  ],
+  [
+    "babel-plugin-i18n-id-hashing",
+    {
+      varsContainingMessages: ["defaultMessages", "translations"]
+    }
+  ],
+  [
+    "babel-plugin-react-intl",
+    {
+      messagesDir: "./tmp/messages/",
+      enforceDescriptions: true
+    }
+  ],
+  "transform-node-env-inline",
+  "babel-plugin-lodash",
+  "@babel/plugin-transform-runtime",
+  enableFlow && [
+    "@babel/plugin-transform-flow-strip-types",
+    { requireDirective: flowRequireDirective }
+  ]
+];
+```
+
+`/packages/electrode-archetype-react-app-dev/config/babel/babelrc-server.js`:
+
+```js
+const {
+  enableTypeScript,
+  flowRequireDirective,
+  enableFlow,
+  transformClassProps,
+  looseClassProps,
+  envTargets
+} = archetype.babel;
+
+const { node } = envTargets;
+
+module.exports = {
+  presets: [
+    [
+      "@babel/preset-env",
+      {
+        targets: { node }
+      }
+    ],
+    enableTypeScript && "@babel/preset-typescript"
+  ].filter(x => x)
+  //...
+};
+```
+
 `packages/electrode-archetype-react-app-dev/config/webpack/partial/output.js`:
 
 ```js
@@ -459,17 +524,9 @@ let tasks = {
 `packages/electrode-react-webapp/lib/react-webapp.js`:
 
 ```js
-const Fs = require("fs");
-const otherStats = {};
-if (Fs.existsSync("dist/server")) {
-  Fs.readdirSync("dist/server")
-    .filter(x => x.endsWith("-stats.json"))
-    .reduce((prev, x) => {
-      const k = Path.basename(x).split("-")[0];
-      prev[k] = `dist/server/${x}`;
-      return prev;
-    }, otherStats);
-}
+const { getOtherStats, getOtherAssets } = require("./utils");
+
+const otherStats = getOtherStats();
 
 const setupOptions = options => {
   const pluginOptionsDefaults = {
@@ -477,10 +534,7 @@ const setupOptions = options => {
     otherStats
     // ...
   };
-  const otherAssets = Object.entries(pluginOptions.otherStats).reduce((prev, [k, v]) => {
-    prev[k] = loadAssetsFromStats(getStatsPath(v, pluginOptions.buildArtifacts));
-    return prev;
-  }, {});
+  const otherAssets = getOtherAssets(pluginOptions);
   pluginOptions.__internals = _.defaultsDeep({}, pluginOptions.__internals, {
     //...
     otherAssets
@@ -493,9 +547,76 @@ const setupOptions = options => {
 `packages/electrode-react-webapp/lib/react/token-handlers.js`:
 
 ```js
+const { getBundleJsNameByQuery } = require("../utils");
 module.exports = function setup(handlerContext /*, asyncTemplate*/) {
+  // ...
+  const otherAssets = routeOptions.__internals.otherAssets;
+  const routeData = {
+    otherAssets
+    // ...
+  };
+  const bundleJs = data => {
+    if (!data.renderJs) {
+      return "";
+    }
+    if (WEBPACK_DEV) {
+      return data.devJSBundle;
+    } else if (data.jsChunk) {
+      const bundleJsName = getBundleJsNameByQuery(data, otherAssets);
+      return `${prodBundleBase}${bundleJsName}`;
+    } else {
+      return "";
+    }
+  };
+  const tokenHandlers = {
+    [BODY_BUNDLE_MARKER]: context => {
+      context.user.query = context.user.request.query;
+      // ...
+    }
+  };
+  //...
+};
+```
 
+`packages/electrode-react-webapp/lib/utils.js`:
+
+```js
+function getOtherStats() {
+  const otherStats = {};
+  if (fs.existsSync("dist/server")) {
+    fs.readdirSync("dist/server")
+      .filter(x => x.endsWith("-stats.json"))
+      .reduce((prev, x) => {
+        const k = Path.basename(x).split("-")[0];
+        prev[k] = `dist/server/${x}`;
+        return prev;
+      }, otherStats);
+  }
+  return otherStats;
 }
+
+function getOtherAssets(pluginOptions) {
+  return Object.entries(pluginOptions.otherStats).reduce((prev, [k, v]) => {
+    prev[k] = loadAssetsFromStats(getStatsPath(v, pluginOptions.buildArtifacts));
+    return prev;
+  }, {});
+}
+
+function getBundleJsNameByQuery(data, otherAssets) {
+  let { name } = data.jsChunk;
+  const { __dist } = data.query;
+  if (__dist && otherAssets[__dist]) {
+    const _js = otherAssets[__dist].js.find(x => x.name.endsWith("main.bundle.js"));
+    if (_js) name = _js.name;
+  }
+  return name;
+}
+module.exports = {
+  //...
+  getOtherStats,
+  getOtherAssets,
+  getBundleJsNameByQuery
+};
 ```
 
 [back to top](#4)
