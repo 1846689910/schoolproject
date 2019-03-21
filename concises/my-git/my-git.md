@@ -86,6 +86,11 @@ git branch -r # 查看远端的分支，可以用git fetch <BRNACH>来获取远�
 git branch -d debug
 git branch -D debug # 强制删除debug分支，即使其还有uncommitted的内容
 ```
+修改分支名字
+```bash
+git branch -m old-name new-name
+git branch -m new-name # only for current branch
+```
 切换分支
 ```bash
 git checkout master
