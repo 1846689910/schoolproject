@@ -483,6 +483,10 @@ const buildDistDirs = babelEnvTargetsArr
   .filter(name => name !== "default")
   .map(name => `dist-${name}`);
 let tasks = {
+  build: {
+    // ...
+    task:[".build-lib", "build-dist", ".check.top.level.babelrc", "mv-to-dist"]
+  }
   //...,
   "mv-to-dist": ["mv-to-dist:clean", "mv-to-dist:mv-dirs", "mv-to-dist:keep-targets"],
   "build-dist-min": {
