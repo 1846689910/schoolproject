@@ -434,15 +434,27 @@ module.exports = {
 const Path = require("path");
 const { AppMode, babel } = require("electrode-archetype-react-app/config/archetype");
 const inspectpack = process.env.INSPECTPACK_DEBUG === "true";
-const { target } = babel;
+const { target, envTargets } = babel;
+const hasOtherTargets =
+  Object.keys(envTargets).filter(x => x !== "default" && x !== "node").length > 0;
+
+const filename = (() => {
+  let _filename = "[name].bundle.[hash].js";
+  if (AppMode.hasSubApps) {
+    _filename = "[name].bundle.js";
+  } else if (hasOtherTargets) {
+    _filename = `${target}.[name].bundle.js`;
+  }
+  return _filename;
+})();
 
 module.exports = {
   output: {
     path: Path.resolve(target !== "default" ? `dist-${target}` : "dist", "js"),
     pathinfo: inspectpack, // Enable path information for inspectpack
     publicPath: "/js/",
-    chunkFilename: `${target}.[hash].[name].js`,
-    filename: AppMode.hasSubApps ? "[name].bundle.js" : `${target}-[name].bundle.js`
+    chunkFilename: hasOtherTargets ? `${target}.[hash].[name].js` : "[hash].[name].js",
+    filename
   }
 };
 ```
@@ -631,8 +643,7 @@ function getBundleJsNameByQuery(data, otherAssets) {
   let { name } = data.jsChunk;
   const { __dist } = data.query;
   if (__dist && otherAssets[__dist]) {
-    const _js = otherAssets[__dist].js.find(x => x.name.endsWith("main.bundle.js"));
-    if (_js) name = _js.name;
+    name = `${__dist}.main.bundle.js`;
   }
   return name;
 }
@@ -643,12 +654,94 @@ module.exports = {
   getBundleJsNameByQuery
 };
 ```
+
+`packages/electrode-react-webapp/test/spec/utils.spec.js`:
+
+```js
+describe("getOtherStats", () => {
+  it("should require stats file if dist/server exists", () => {
+    const fakeExistsSync = sinon.stub(Fs, "existsSync").callsFake(() => true);
+    const fakeReaddirSync = sinon
+      .stub(Fs, "readdirSync")
+      .callsFake(() => [Path.resolve("es5-stats.json"), Path.resolve("es6-stats.json")]);
+    const otherStats = utils.getOtherStats();
+    fakeExistsSync.restore();
+    fakeReaddirSync.restore();
+    const keys = Object.keys(otherStats);
+    expect(keys.includes("es5")).be.true;
+    expect(keys.includes("es6")).be.true;
+  });
+});
+
+describe("getOtherAssets", () => {
+  it("should generate otherAssets if otherStats is not empty", () => {
+    const otherStats = {
+      es5: Path.resolve("es5-stats.json"),
+      es6: Path.resolve("es6-stats.json")
+    };
+    const buildArtifacts = ".build";
+    const pluginOptions = { otherStats, buildArtifacts };
+    const otherAssets = utils.getOtherAssets(pluginOptions, utils.loadAssetsFromStats);
+    const keys = Object.keys(otherAssets);
+    expect(keys.includes("es5")).be.true;
+    expect(keys.includes("es6")).be.true;
+  });
+});
+
+describe("getBundleJsNameByQuery", () => {
+  it("should get file name ends with main.bundle.js", () => {
+    const data = {
+      jsChunk: { name: "bundle" }
+    };
+    const otherAssets = {
+      es6: { js: [{ name: "es6.main.bundle.js" }] }
+    };
+    const es6 = utils.getBundleJsNameByQuery(
+      Object.assign(data, {
+        query: { __dist: "es6" }
+      }),
+      otherAssets
+    );
+    expect(es6).to.equal(otherAssets.es6.js[0].name);
+    const es5 = utils.getBundleJsNameByQuery(
+      Object.assign(data, {
+        query: { __dist: "es5" }
+      }),
+      otherAssets
+    );
+    expect(es5).to.equal(data.jsChunk.name);
+  });
+});
+```
+
 Build:
+
+3 ways to setup
+
+1. inline command
 ```bash
 BABEL_ENV_TARGETS='{"es6":{"chrome":65},"es3":{"chrome":30}}' clap build
 
 BABEL_ENV_TARGETS='{"hello":{"ie":6}}' clap build
 ```
+2. could set this in `xclap.js` at the project root:
+```js
+process.env.BABEL_ENV_TARGETS = `{"es6":{"chrome":65},"es3":{"chrome":30}}`
+```
+
+3. create `archetype/config.js` at the project root, and include the config object in, you can also overwrite other properties within `electrode-archetype-react-app-dev/config/archetype.js` and `electrode-archetype-react-app/config/archetype`:
+
+```js
+module.exports = {
+  webpack: {
+    cssModuleSupport: true
+  },
+  babel: {
+    envTargets: { es6: { chrome: 65 }, es3: { chrome: 30 } }
+  }
+};
+```
+
 After run by `node lib/server`:
 
 Temporarily visit: http://localhost:3000?__dist=es6
