@@ -396,6 +396,21 @@ const basePlugins = [
     { requireDirective: flowRequireDirective }
   ]
 ];
+//...
+const targets = archetype.babel.envTargets[archetype.babel.target];
+
+const presets = [
+  //
+  // webpack 4 can handle ES modules now so turn off babel module transformation
+  // in production mode to allow tree shaking.
+  // But keep transforming modules to commonjs when not in production mode so tests
+  // can continue to stub ES modules.
+  //
+  ["@babel/preset-env", { modules: isProduction ? "auto" : "commonjs", loose: true, targets }],
+  enableTypeScript && "@babel/preset-typescript",
+  "@babel/preset-react"
+];
+//...
 ```
 
 `/packages/electrode-archetype-react-app-dev/config/babel/babelrc-server.js`:
@@ -468,6 +483,10 @@ const buildDistDirs = babelEnvTargetsArr
   .filter(name => name !== "default")
   .map(name => `dist-${name}`);
 let tasks = {
+  build: {
+    // ...
+    task:[".build-lib", "build-dist", ".check.top.level.babelrc", "mv-to-dist"]
+  }
   //...,
   "mv-to-dist": ["mv-to-dist:clean", "mv-to-dist:mv-dirs", "mv-to-dist:keep-targets"],
   "build-dist-min": {
@@ -558,6 +577,46 @@ let tasks = {
 };
 ```
 
+`packages/electrode-react-webapp/lib/utils.js`:
+
+```js
+function getOtherStats() {
+  const otherStats = {};
+  if (fs.existsSync("dist/server")) {
+    fs.readdirSync("dist/server")
+      .filter(x => x.endsWith("-stats.json"))
+      .reduce((prev, x) => {
+        const k = Path.basename(x).split("-")[0];
+        prev[k] = `dist/server/${x}`;
+        return prev;
+      }, otherStats);
+  }
+  return otherStats;
+}
+
+function getOtherAssets(pluginOptions) {
+  return Object.entries(pluginOptions.otherStats).reduce((prev, [k, v]) => {
+    prev[k] = loadAssetsFromStats(getStatsPath(v, pluginOptions.buildArtifacts));
+    return prev;
+  }, {});
+}
+
+function getBundleJsNameByQuery(data, otherAssets) {
+  let { name } = data.jsChunk;
+  const { __dist } = data.query;
+  if (__dist && otherAssets[__dist]) {
+    name = `${__dist}.main.bundle.js`;
+  }
+  return name;
+}
+module.exports = {
+  //...
+  getOtherStats,
+  getOtherAssets,
+  getBundleJsNameByQuery
+};
+```
+
 `packages/electrode-react-webapp/lib/react-webapp.js`:
 
 ```js
@@ -612,46 +671,6 @@ module.exports = function setup(handlerContext /*, asyncTemplate*/) {
     }
   };
   //...
-};
-```
-
-`packages/electrode-react-webapp/lib/utils.js`:
-
-```js
-function getOtherStats() {
-  const otherStats = {};
-  if (fs.existsSync("dist/server")) {
-    fs.readdirSync("dist/server")
-      .filter(x => x.endsWith("-stats.json"))
-      .reduce((prev, x) => {
-        const k = Path.basename(x).split("-")[0];
-        prev[k] = `dist/server/${x}`;
-        return prev;
-      }, otherStats);
-  }
-  return otherStats;
-}
-
-function getOtherAssets(pluginOptions) {
-  return Object.entries(pluginOptions.otherStats).reduce((prev, [k, v]) => {
-    prev[k] = loadAssetsFromStats(getStatsPath(v, pluginOptions.buildArtifacts));
-    return prev;
-  }, {});
-}
-
-function getBundleJsNameByQuery(data, otherAssets) {
-  let { name } = data.jsChunk;
-  const { __dist } = data.query;
-  if (__dist && otherAssets[__dist]) {
-    name = `${__dist}.main.bundle.js`;
-  }
-  return name;
-}
-module.exports = {
-  //...
-  getOtherStats,
-  getOtherAssets,
-  getBundleJsNameByQuery
 };
 ```
 
@@ -719,14 +738,17 @@ Build:
 3 ways to setup
 
 1. inline command
+
 ```bash
 BABEL_ENV_TARGETS='{"es6":{"chrome":65},"es3":{"chrome":30}}' clap build
 
 BABEL_ENV_TARGETS='{"hello":{"ie":6}}' clap build
 ```
+
 2. could set this in `xclap.js` at the project root:
+
 ```js
-process.env.BABEL_ENV_TARGETS = `{"es6":{"chrome":65},"es3":{"chrome":30}}`
+process.env.BABEL_ENV_TARGETS = `{"es6":{"chrome":65},"es3":{"chrome":30}}`;
 ```
 
 3. create `archetype/config.js` at the project root, and include the config object in, you can also overwrite other properties within `electrode-archetype-react-app-dev/config/archetype.js` and `electrode-archetype-react-app/config/archetype`:
