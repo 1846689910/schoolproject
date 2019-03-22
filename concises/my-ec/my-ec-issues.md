@@ -12,7 +12,7 @@
 
 [**Server Side Bundle Selection(user configurable env target)**](#4)
 
-[**Dynamic Import Demo**]($5)
+[**Dynamic Import Demo**](#5)
 
 <a id="1"></a>
 
