@@ -12,6 +12,8 @@
 
 [**Server Side Bundle Selection(user configurable env target)**](#4)
 
+[**Dynamic Import Demo**]($5)
+
 <a id="1"></a>
 
 ## App Initialization
@@ -774,4 +776,167 @@ http://localhost:3000?__dist=hello
 
 ...
 
-[back to top](#4)
+[back to top](#top)
+
+<a id="5"></a>
+
+## **Dynamic Import Demo**
+
+`packages/electrode-archetype-react-app-dev/config/babel/babelrc-client.js`:
+
+```js
+const basePlugins = [
+  "@babel/plugin-syntax-dynamic-import"
+  // ...
+];
+```
+
+`packages/electrode-archetype-react-app-dev/package.json`:
+
+```js
+{
+  "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+  "acorn": "^6.0.5",
+}
+```
+
+`packages/generator-electrode/generators/app/templates/_package.js`:
+
+```js
+{
+  //...
+  "@loadable/component": "^5.7.0",
+  //...
+}
+```
+
+`src/client/actions/index.jsx`:
+
+```js
+export const setShowFakeComp = value => {
+  return {
+    type: "SHOW_FAKE_COMP",
+    value
+  };
+};
+```
+
+`src/client/components/demo-dynamic-import.jsx`:
+
+```js
+import React from "react";
+import loadable from "@loadable/component";
+import PropTypes from "prop-types";
+import { connect } from "react-redux";
+import { setShowFakeComp } from "../actions";
+import Promise from "bluebird";
+import demoStyle from "../styles/demo2.css"; // eslint-disable-line no-unused-vars
+import custom from "../styles/custom.css"; // eslint-disable-line no-unused-vars
+
+const Fallback = () => (
+  <div styleName={"custom.dynamic-demo-fallback"}>
+    <strong>Dynamic Imported Component is loading ...</strong>
+  </div>
+);
+
+let Demo = loadable(() => import(/* webpackChunkName: "fake" */ "./demo-fake"), {
+  fallback: <Fallback />
+});
+
+const timeout = 1000;
+const load = dispatch => {
+  dispatch(setShowFakeComp(false));
+  Promise.try(() => loadable(() => import("./demo-fake")))
+    .delay(timeout)
+    .then(x => (Demo = x))
+    .then(() => {
+      dispatch(setShowFakeComp(true));
+    });
+};
+
+const DynamicImportDemo = ({ showFakeComp, dispatch }) => {
+  return (
+    <div>
+      <h6 styleName={"custom.docs-header"}>
+        Demo Dynamic Import with&nbsp;
+        <a href="https://www.smooth-code.com/open-source/loadable-components/">
+          Loadable Components
+        </a>
+      </h6>
+      <div styleName={"custom.dynamic-demo-box"}>
+        {showFakeComp.value ? <Demo /> : <Fallback />}
+      </div>
+      <div>
+        <button onClick={() => load(dispatch)}>Refresh Comp</button>
+      </div>
+    </div>
+  );
+};
+DynamicImportDemo.propTypes = {
+  showFakeComp: PropTypes.object,
+  dispatch: PropTypes.func
+};
+export default connect(
+  state => state,
+  dispatch => ({ dispatch })
+)(DynamicImportDemo);
+```
+
+`src/client/components/demo-fake.jsx`:
+
+```js
+import React from "react";
+import custom from "../styles/custom.css"; // eslint-disable-line no-unused-vars
+import milligram from "milligram/dist/milligram.css"; // eslint-disable-line no-unused-vars
+export default () => (
+  <div>
+    <div styleName={"custom.docs-example"}>
+      <a styleName={"milligram.button"} href="#">
+        Anchor button
+      </a>
+      <button>Button element</button>
+      <input type="submit" value="submit input" />
+      <input type="button" value="button input" />
+    </div>
+    <div styleName={"custom.docs-example"}>
+      <a styleName={"milligram.button milligram.button-outline"} href="#">
+        Anchor button
+      </a>
+      <button styleName={"milligram.button-outline"}>Button element</button>
+      <input styleName={"milligram.button-outline"} type="submit" value="submit input" />
+      <input styleName={"milligram.button-outline"} type="button" value="button input" />
+    </div>
+  </div>
+);
+```
+`src/client/components/home.jsx`:
+```js
+import DemoDynamicImport from "./demo-dynamic-import";
+// ...
+        <div styleName={"custom.docs-section"}>
+          <DemoDynamicImport/>
+        </div>
+// ...
+const mapStateToProps = state => state;
+```
+`src/client/reducers/index.jsx`:
+```js
+const showFakeComp = (store, action) => {
+  if (action.type === "SHOW_FAKE_COMP") {
+    return {
+      value: action.value
+    };
+  }
+  return store || { value: false };
+};
+export default combineReducers({
+  //...
+  showFakeComp
+})
+```
+`src/server/routes/init-top.jsx`:
+```js
+showFakeComp: { value: true }
+```
+
+[back to top](#top)
