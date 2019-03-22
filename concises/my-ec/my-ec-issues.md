@@ -12,6 +12,8 @@
 
 [**Server Side Bundle Selection(user configurable env target)**](#4)
 
+[**Dynamic Import Demo**]($5)
+
 <a id="1"></a>
 
 ## App Initialization
@@ -774,4 +776,47 @@ http://localhost:3000?__dist=hello
 
 ...
 
-[back to top](#4)
+[back to top](#top)
+
+<a id="5"></a>
+
+## **Dynamic Import Demo**
+
+`packages/electrode-archetype-react-app-dev/config/babel/babelrc-client.js`:
+
+```js
+const basePlugins = [
+  "@babel/plugin-syntax-dynamic-import"
+  // ...
+];
+```
+
+`packages/electrode-archetype-react-app-dev/package.json`:
+
+```js
+{
+  "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+  "acorn": "^6.0.5",
+}
+```
+
+`packages/generator-electrode/generators/app/templates/_package.js`:
+
+```js
+{
+  //...
+  "@loadable/component": "^5.7.0",
+  //...
+}
+```
+`src/client/actions/index.jsx`:
+```js
+export const setShowFakeComp = value => {
+  return {
+    type: "SHOW_FAKE_COMP",
+    value
+  };
+};
+```
+
+[back to top](#top)
