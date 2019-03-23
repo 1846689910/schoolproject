@@ -734,8 +734,46 @@ describe("getBundleJsNameByQuery", () => {
   });
 });
 ```
++ Note:
+  `config/default.js` includes config of `electrode-react-webapp`:
 
-Build:
+```js
+    webapp: {
+    module: "electrode-react-webapp/lib/hapi",
+    options: {
+      pageTitle: "hapi-app",
+      insertTokenIds: false,
+      // bundleChunkSelector: "./{{env.APP_SRC_DIR}}/server/bundleChunkSelector",
+      paths: {
+        "/{args*}": {
+          content: {
+            module: "./{{env.APP_SRC_DIR}}/server/views/index-view"
+          }
+        }
+      }
+    }
+  },
+```
+
+`bundleChunkSelector` will be used to specific use a chunk in app, if the user defines their own `src/client/entry.config.js`:
+
+```js
+module.exports = {
+  foo: "./app.jsx"
+};
+```
+
+could create `src/server/bundleChunkSelector.js`:
+```js
+module.exports = () => ({
+  css: "foo",
+  js: "foo"
+})
+```
+This will enable the app use the `foo` chunks, like `es6.foo.bundle.js`
+
+
+**Build**:
 
 3 ways to setup
 
