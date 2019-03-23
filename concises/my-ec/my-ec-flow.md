@@ -5,13 +5,14 @@
 ## **Contents**
 
 [**Express**](#1)
-  + [express server start flow](#1-1)
-  + [express server coming request flow](#1-2)
+
+- [express server start flow](#1-1)
+- [express server coming request flow](#1-2)
 
 [**Hapi**](#2)
-  + [hapi server start flow](#2-1)
-  + [hapi server coming request flow](#2-2)
 
+- [hapi server start flow](#2-1)
+- [hapi server coming request flow](#2-2)
 
 <a id="1"></a>
 
@@ -22,39 +23,48 @@
 ### express server start flow
 
 `src/server/index.js:`
+
 ```js
 require(“electrode-confippet”); // confippet requires a lot of config and defines the .config will refer to electrode-confippet/config.js
 
 /** the config will load the `project/config/default.js`: { port: 3000, ui.demo: “Hello from ui config”, webapp.module: “electrode-react-webapp/lib/express”} */
 startServer = require(“express-server”);
 ```
+
 &rarr;
 `src/server/express-server.js:`
 {
 
-  `startServer(confippet.config)` &rarr; the config somehow will load the `project/config/default.js: `
+`startServer(confippet.config)` &rarr; the config somehow will load the `project/config/default.js:`
 
     {
       port: 3000,
       ui.demo: “Hello from ui config”,
       webapp.module: “electrode-react-webapp/lib/express”
     }
+
 } &rarr; `electrode-react-webapp/lib/express/index.js:` {
-  ```js
+
+```js
 registerRoutes(app, options{insertTokenIds: true, path: *, pageTitle: express-app}, next){
-  const registerOptions = ReactWebapp.setupOptions(options); // registerOptions.paths={[path]: {method,...},...}
-  const handleRoute = opitons.handleRoute || DefaultHandleRoute // generally will use DefaultHandleRoute
-  app[method.toLowerCase()](path, (req, res) => {/*register routes and methods*/});
+const registerOptions = ReactWebapp.setupOptions(options); // registerOptions.paths={[path]: {method,...},...}
+const handleRoute = opitons.handleRoute || DefaultHandleRoute // generally will use DefaultHandleRoute
+app[method.toLowerCase()](path, (req, res) => {/*register routes and methods*/});
 }
-  ```
-} &rarr; `electrode-archetype-react-app-dev/lib/webpack-dev-express: ` {
-  ```js
-  devSetup(app, “http”, config.port)
-  ```
-} &rarr; `src/server/express-server.js: ` {
-  ```js
-  logger.log(“App listening on port: 3000”);
-  ```
+```
+
+} &rarr; `electrode-archetype-react-app-dev/lib/webpack-dev-express:` {
+
+```js
+devSetup(app, “http”, config.port)
+```
+
+} &rarr; `src/server/express-server.js:` {
+
+```js
+logger.log(“App listening on port: 3000”);
+```
+
 }
 
 [back to top](#top)
@@ -64,7 +74,8 @@ registerRoutes(app, options{insertTokenIds: true, path: *, pageTitle: express-ap
 ### express server coming request flow
 
 send request / or visit http://localhost:3000
-`electrode-react-webapp/lib/express/index.js: ` {
+`electrode-react-webapp/lib/express/index.js:` {
+
 ```js
 /*middleware within `registerRoutes` get the request */
 app.METHOD(path, (req, res) => {
@@ -72,36 +83,43 @@ app.METHOD(path, (req, res) => {
   handleRoute(req, res, routeHandler, content, routeOptions); // generally `handleRoute` is `DefaultHandleRoute`
 })
 ```
-&rarr; `electrode-react-webapp/lib/react-webapp.js: ` {
-  ```js
-  ReactWebapp.resolveContent("src/server/views/index-views.jsx");
-  ```
-The method `ReactWebapp.resolveContent` will &rarr; `require("src/server/views/index-views.jsx"):` {
-  ```js
-  /*
-  require("src/server/routes/init-top.jsx");
-  require("electrode-redux-router-engine");
-  */
-  ```
-}
-}
-} &rarr; `electrode-react-webapp/lib/express/index.js: ` {
-  ```js
-  handleRoute(req, res, routeHandler, content, routeOptions);
-  ```
-} &rarr; `src/server/views/index-views.jsx: ` {
-  ```js
-  routesEngine = new ReduxRouterEngine({routes});
-  routesEngine.render(req);
-  // within `electrode-redux-router-engine/lib/redux-router-engine.js`, the `routesEngine.render` will check and match route, prepReduxStore and return built html content, _renderToString method will replace content in html template
-  ```
-} &rarr; `electrode-react-webapp/lib/express/index.js: ` {
-  `DefaultHandleRoute` respond back in `handler(...).then()`
-}
 
+&rarr; `electrode-react-webapp/lib/react-webapp.js:` {
+
+```js
+ReactWebapp.resolveContent("src/server/views/index-views.jsx");
+```
+
+The method `ReactWebapp.resolveContent` will &rarr; `require("src/server/views/index-views.jsx"):` {
+
+```js
+/*
+require("src/server/routes/init-top.jsx");
+require("electrode-redux-router-engine");
+*/
+```
+
+}
+}
+} &rarr; `electrode-react-webapp/lib/express/index.js:` {
+
+```js
+handleRoute(req, res, routeHandler, content, routeOptions);
+```
+
+} &rarr; `src/server/views/index-views.jsx:` {
+
+```js
+routesEngine = new ReduxRouterEngine({ routes });
+routesEngine.render(req);
+// within `electrode-redux-router-engine/lib/redux-router-engine.js`, the `routesEngine.render` will check and match route, prepReduxStore and return built html content, _renderToString method will replace content in html template
+```
+
+} &rarr; `electrode-react-webapp/lib/express/index.js:` {
+`DefaultHandleRoute` respond back in `handler(...).then()`
+}
 
 [back to top](#top)
-
 
 <a id="2"></a>
 
@@ -112,21 +130,27 @@ The method `ReactWebapp.resolveContent` will &rarr; `require("src/server/views/i
 ### hapi server start flow
 
 `src/server/index.js` {
-  ```js
-  require("electrode-confippet"); // somehow import config/default.js and register plugin “electrode-react-webapp/lib/hapi”
-  ```
+
+```js
+require("electrode-confippet"); // somehow import config/default.js and register plugin “electrode-react-webapp/lib/hapi”
+```
+
 } &rarr; `electrode-server/lib/electrode-server.js` {
 
-  return promise chain, new Hapi.server, register listener, server starts
+return promise chain, new Hapi.server, register listener, server starts
 
 } &rarr; `electrode-react-webapp/lib/hapi/index.js` {
-  ```js
-  exports = {register, registerRoutes: register}
-  ```
+
+```js
+exports = { register, registerRoutes: register };
+```
+
 } &rarr; `electrode-react-webapp/lib/hapi/hpai17.js` {
-  ```js
-  registerRoutes = require("./register-routes");
-  ```
+
+```js
+registerRoutes = require("./register-routes");
+```
+
 }
 
 [back to top](#top)
@@ -136,37 +160,47 @@ The method `ReactWebapp.resolveContent` will &rarr; `require("src/server/views/i
 ### hapi server start flow
 
 `electrode-react-webapp/lib/hapi/register-routes.js` {
-  ```js
-	server.route({method: …, handler(){
-    return handleRoute(..., routeHandler)}
-  })
-	// routeHandler refer to electrode-react-webapp/lib/react-webapp.js makeRouteHandler
-  ```
+
+```js
+server.route({method: …, handler(){
+  return handleRoute(..., routeHandler)}
+})
+// routeHandler refer to electrode-react-webapp/lib/react-webapp.js makeRouteHandler
+```
+
 } &rarr; `electrode-react-webapp/lib/hapi/plugin17.js` {
 
-	handler above is DefaultHandleRoute,
-	DefaultHandleRoute return routeHandler({...}) in before step
+    handler above is DefaultHandleRoute,
+    DefaultHandleRoute return routeHandler({...}) in before step
 
 } &rarr; `electrode-react-webapp/renderer.js` {
-  ```js
-  render(context);
-  ```
+
+```js
+render(context);
+```
+
 } &rarr; `electrode-react-webapp/lib/react/content.js` {
-  ```js
-  userContent = userContent(......);
-  ```
+
+```js
+userContent = userContent(......);
+```
+
 } &rarr; `server/views/index-view.jsx` {
-  ```js
+
+```js
 routesEngine.render(req);
-  ```
+```
+
 } &rarr; `electrode-redux-router-engine/lib/redux-router-engine.js` {
-  ```js
-  class class ReduxRouterEngine {
-    async render(){
-      // call `startMatch`, `checkMatch`, `prepReduxStore`
-    }
+
+```js
+class class ReduxRouterEngine {
+  async render(){
+    // call `startMatch`, `checkMatch`, `prepReduxStore`
   }
-  ```
+}
+```
+
 } &rarr; `electrode-react-webapp/lib/hapi/plugin17.js` {
 
 respond back data with status
