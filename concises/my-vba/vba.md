@@ -60,6 +60,8 @@
 
 [**select file with dialog (only see the excel type file) and return the complete path of the file**](#28)
 
+[**Delete Rows**](#29)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -693,6 +695,16 @@ Public Function SelectFile() As String
         SelectFile = vPath
     End If
 End Function
+```
+
+[back to top](#top)
+
+<a id="29"></a>
+
+## **Delete Rows**
+
+```vb
+ws.Rows("1 : 10").EntireRow.Delete
 ```
 
 [back to top](#top)
