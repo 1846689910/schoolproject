@@ -134,6 +134,25 @@ routesEngine.render(req);
 ```js
 require("electrode-confippet"); // somehow import config/default.js and register plugin “electrode-react-webapp/lib/hapi”
 ```
+within `config/defualt.js`, plugin for: `electrode-react-webapp/lib/hapi`
+```js
+    webapp: {
+    module: "electrode-react-webapp/lib/hapi",
+    options: {
+      pageTitle: "hapi-app",
+      insertTokenIds: false,
+      // bundleChunkSelector: "./{{env.APP_SRC_DIR}}/server/bundleChunkSelector",
+      paths: {
+        "/{args*}": {
+          content: {
+            module: "./{{env.APP_SRC_DIR}}/server/views/index-view"
+          }
+        }
+      }
+    }
+  },
+```
++ `bundleChunkSelector` will get a function that returns which chunk the app should use. a function return `{css: "foo", js: "foo"}`. Useful when user specify their own `src/client/entry.config.js`: `{foo: "./app.jsx"}`
 
 } &rarr; `electrode-server/lib/electrode-server.js` {
 

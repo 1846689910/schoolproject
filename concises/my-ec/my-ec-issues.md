@@ -607,7 +607,7 @@ function getBundleJsNameByQuery(data, otherAssets) {
   let { name } = data.jsChunk;
   const { __dist } = data.query;
   if (__dist && otherAssets[__dist]) {
-    name = `${__dist}.main.bundle.js`;
+    name = `${__dist}${name.substr(name.indexOf("."))}`;
   }
   return name;
 }
@@ -712,7 +712,7 @@ describe("getOtherAssets", () => {
 describe("getBundleJsNameByQuery", () => {
   it("should get file name ends with main.bundle.js", () => {
     const data = {
-      jsChunk: { name: "bundle" }
+      jsChunk: { name: "default.main.bundle.js" }
     };
     const otherAssets = {
       es6: { js: [{ name: "es6.main.bundle.js" }] }
@@ -734,6 +734,8 @@ describe("getBundleJsNameByQuery", () => {
   });
 });
 ```
+If the user app using `@walmart/electrode-index-page`, should refer [PR63](https://gecgithub01.walmart.com/electrode/electrode-index-page/pull/63) (**internal library, confidential code**)
+
 + Note:
   `config/default.js` includes config of `electrode-react-webapp`:
 
