@@ -58,6 +58,10 @@
 
 [**Clear Range**](#27)
 
+[**select file with dialog (only see the excel type file) and return the complete path of the file**](#28)
+
+[**Delete Rows**](#29)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -673,6 +677,34 @@ ws.Range("C1:D1").PasteSpecial (xlPasteFormats)  ‘ 将B1 copy之后，对C1:D1
 ```vb
 ws.clearContents
 ws.clearFormat
+```
+
+[back to top](#top)
+
+<a id="28"></a>
+
+##  **select file with dialog (only see the excel type file) and return the complete path of the file**
+
+```vb
+Public Function SelectFile() As String
+    Dim vPath As Variant
+    vPath = Application.GetOpenFilename(FileFilter:="Excel Workbooks (*.xlsx;*.xls;*.xlsm;*.xlsb), *.xlsx;*.xls;*.xlsm;*x.lsb", TITLE:="Please Select EYU Path report")
+    If vPath = False Then
+        SelectFile = ""
+    Else
+        SelectFile = vPath
+    End If
+End Function
+```
+
+[back to top](#top)
+
+<a id="29"></a>
+
+## **Delete Rows**
+
+```vb
+ws.Rows("1 : 10").EntireRow.Delete
 ```
 
 [back to top](#top)
