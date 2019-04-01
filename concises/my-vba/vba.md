@@ -62,6 +62,14 @@
 
 [**Delete Rows**](#29)
 
+[**Delete Rows in Specific Condition**](#30)
+
+[**Delete Columns**](#31)
+
+[**scroll to top of the worksheet**](#32)
+
+[**number of worksheets**](#33)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -705,6 +713,68 @@ End Function
 
 ```vb
 ws.Rows("1 : 10").EntireRow.Delete
+```
+
+[back to top](#top)
+
+<a id="30"></a>
+
+## **Delete Rows in Specific Condition**
+
+```vb
+ws.Select
+ws.UsedRange.Select
+For i = Selection.Rows.Count To 1 Step -1
+    If IsEmpty(ws.Range("A" & i).Value) Then
+        Selection.Rows(i).EntireRow.Delete
+    End If
+Next i
+```
+
+[back to top](#top)
+
+<a id="31"></a>
+
+## **Delete Columns**
+
+```vb
+ws.Columns(j).EntireColumn.Delete
+```
+
+删除这一列之后，后边的列会自动移过来，所以不能用for来遍历删除符合条件的列，可以用while循环
+
+```vb
+i = 1
+iLast = 100
+while i <= iLast
+      if 条件满足 then
+            ws.Columns(i).EntireColumn.Delete
+            iLast = 更新iLast为iLast - 1  ' 删掉一列，马上更新总列数，明确循环的边界
+            ' 不要在这里前移指针，因为删掉一列后，会有后边的列补到当前指针位置，所以应该接着判断
+      else
+            i = i + 1  ' 如果不符合那么指针前移
+      end if
+wend
+```
+
+[back to top](#top)
+
+<a id="32"></a>
+
+## **scroll to top of the worksheet**
+
+```vb
+Application.Goto Reference:=wsCurrent.Range("a1"), Scroll:=True
+```
+
+[back to top](#top)
+
+<a id="33"></a>
+
+## **number of worksheets**
+
+```vb
+ActiveWorkbook.Worksheets.Count
 ```
 
 [back to top](#top)
