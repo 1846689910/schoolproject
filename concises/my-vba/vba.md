@@ -68,6 +68,8 @@
 
 [**scroll to top of the worksheet**](#32)
 
+[**number of worksheets**](#33)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -763,6 +765,16 @@ wend
 
 ```vb
 Application.Goto Reference:=wsCurrent.Range("a1"), Scroll:=True
+```
+
+[back to top](#top)
+
+<a id="33"></a>
+
+## **number of worksheets**
+
+```vb
+ActiveWorkbook.Worksheets.Count
 ```
 
 [back to top](#top)
