@@ -62,6 +62,8 @@
 
 [**Delete Rows**](#29)
 
+[**Delete Rows in Specific Condition**](#30)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -705,6 +707,22 @@ End Function
 
 ```vb
 ws.Rows("1 : 10").EntireRow.Delete
+```
+
+[back to top](#top)
+
+<a id="30"></a>
+
+## **Delete Rows in Specific Condition**
+
+```vb
+ws.Select
+ws.UsedRange.Select
+For i = Selection.Rows.Count To 1 Step -1
+    If IsEmpty(ws.Range("A" & i).Value) Then
+        Selection.Rows(i).EntireRow.Delete
+    End If
+Next i
 ```
 
 [back to top](#top)
