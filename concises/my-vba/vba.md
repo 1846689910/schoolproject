@@ -66,6 +66,8 @@
 
 [**Delete Columns**](#31)
 
+[**scroll to top of the worksheet**](#32)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -751,6 +753,16 @@ while i <= iLast
             i = i + 1  ' 如果不符合那么指针前移
       end if
 wend
+```
+
+[back to top](#top)
+
+<a id="32"></a>
+
+## **scroll to top of the worksheet**
+
+```vb
+Application.Goto Reference:=wsCurrent.Range("a1"), Scroll:=True
 ```
 
 [back to top](#top)
