@@ -683,8 +683,8 @@ ws.Range("C1:D1").PasteSpecial (xlPasteFormats)  ‘ 将B1 copy之后，对C1:D1
 ## **Clear Range**
 
 ```vb
-ws.clearContents
-ws.clearFormat
+ws.cells.clearContents
+ws.cells.clearFormat
 ```
 
 [back to top](#top)
