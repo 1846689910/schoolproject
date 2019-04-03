@@ -72,6 +72,8 @@
 
 [**Define and use Array**](#34)
 
+[**Define and use ArrayList**](#35)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -794,6 +796,8 @@ ActiveWorkbook.Worksheets.Count
 
 [back to top](#top)
 
+<a id="34"></a>
+
 ## **Define and use Array**
 
 Define array:
@@ -836,5 +840,43 @@ For i = 0 to Ubound(arr)-Lbound(arr)+1
     Debug.print arr(i)
 Next i
 ```
+
+[back to top](#top)
+
+<a id="35"></a>
+
+## **Define and use ArrayList**
+
+Define:
+```vb
+    Dim list As Object
+    Set list = CreateObject("System.Collections.ArrayList")
+```
+get element in arraylist
+```vb
+list.item(0)
+'or
+list(0)
+```
+add element in arraylist
+```vb
+list.add("123")
+'or
+list.add "123"
+```
+get length of arraylist
+```vb
+list.count   ' the element from [0, list.count - 1]
+```
+store ArrayList in dictionary
+```vb
+dict.Add Key, CreateObject("System.Collections.ArrayList")
+```
+convert to array
+```vb
+    Dim arr As Variant
+    arr = list.toArray
+```
+
 
 [back to top](#top)
