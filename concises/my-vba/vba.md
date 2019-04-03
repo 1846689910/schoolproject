@@ -10,7 +10,7 @@
 
 [**OCR Find**](#3)
 
-[**remove duplicates去重**](#4)
+[**remove duplicates 去重**](#4)
 
 [**Create Folder**](#5)
 
@@ -18,19 +18,19 @@
 
 [**Open Workbook(优先)**](#7)
 
-[**遍历directory下的所有workbook**](#8)
+[**遍历 directory 下的所有 workbook**](#8)
 
-[**遍历directory下的所有subDirectory and file**](#9)
+[**遍历 directory 下的所有 subDirectory and file**](#9)
 
-[**保存workbook, 并给出名字**](#10)
+[**保存 workbook, 并给出名字**](#10)
 
-[**退出workbook不保存**](#11)
+[**退出 workbook 不保存**](#11)
 
-[**hasWorksheet 判断该workbook有无该worksheets(可选择创建)**](#12)
+[**hasWorksheet 判断该 workbook 有无该 worksheets(可选择创建)**](#12)
 
-[**查找列号getColsList / getFirstCol**](#13)
+[**查找列号 getColsList / getFirstCol**](#13)
 
-[**查找行号getRowList / getFirstRow**](#14)
+[**查找行号 getRowList / getFirstRow**](#14)
 
 [**字母列号转数字 ColLetterToNum**](#15)
 
@@ -42,7 +42,7 @@
 
 [**插入行/列**](#19)
 
-[**循环查找，找到worksheet里第一个内容为...或者内容不空的cell**](#20)
+[**循环查找，找到 worksheet 里第一个内容为...或者内容不空的 cell**](#20)
 
 [**下拉列表框**](#21)
 
@@ -70,6 +70,10 @@
 
 [**number of worksheets**](#33)
 
+[**Define and use Array**](#34)
+
+[**Define and use ArrayList**](#35)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -77,6 +81,7 @@
 1. Option Explicit: ensure all the variable are defined and used later
 2. Use explicit type: avoid using many Variant type, using explicit type, like Integer, String
 3. Speed up vba code by add following code lines:
+
 ```vb
 '    Application.Calculation = xlCalculationManual  ' Take Caution本条谨慎
 Option Explicit
@@ -103,8 +108,8 @@ Application.DisplayAlerts = True
 Application.AskToUpdateLinks = True
 End Sub
 ```
-[back to top](#top)
 
+[back to top](#top)
 
 <a id="2"></a>
 
@@ -114,8 +119,8 @@ End Sub
 wb.Sheets(1).Columns("A:D").AutoFit  ‘ 将A和D列之间的所有列都展开自适应
 wb.Sheets(1).Columns.AutoFit  ‘ 将所有用到的列展开自适应
 ```
-[back to top](#top)
 
+[back to top](#top)
 
 <a id="3"></a>
 
@@ -144,13 +149,15 @@ Function ocrFind(ByRef ws As Worksheet, ByVal col As String, ByVal fr As Integer
     ocrFind = row
 End Function
 ```
+
 [back to top](#top)
 
 <a id="4"></a>
 
-## **remove duplicates去重**
+## **remove duplicates 去重**
 
 对前两列去重
+
 ```vb
 ActiveSheet.Range("A1:C100").RemoveDuplicates Columns:=Array(1,2), Header:=xlYes
 ```
@@ -162,6 +169,7 @@ ActiveSheet.Range("A1:C100").RemoveDuplicates Columns:=Array(1,2), Header:=xlYes
 ## **Create Folder**
 
 If the path has already existed, return the path; if the path does not exist, create the folder and return the path
+
 ```vb
 Function CreateFolder(strPath As String, strFolderName As String) As String
     ' create a separate folder to save all the region reports
@@ -197,13 +205,15 @@ Sub mkDirs(ByVal path As String)
     Next i
 End Sub
 ```
+
 [back to top](#top)
 
 <a id="7"></a>
 
 ## **Open Workbook(优先)**
 
-如果path 不存在就会创建，如果workbook存在就直接打开，如果不存在，先创建后打开. 如果传入一个template_path的文件路径，会以这个文件为模板创建相同的文件再操作
+如果 path 不存在就会创建，如果 workbook 存在就直接打开，如果不存在，先创建后打开. 如果传入一个 template_path 的文件路径，会以这个文件为模板创建相同的文件再操作
+
 ```vb
 ' directory \ filename(including extension)
 Function openWb(ByVal directory As String, ByVal filename As String, Optional ByVal TEMPLATE_PATH As String) As Workbook
@@ -247,10 +257,9 @@ End Sub
 
 [back to top](#top)
 
-
 <a id="8"></a>
 
-## **遍历directory下的所有workbook**
+## **遍历 directory 下的所有 workbook**
 
 ```vb
 Sub LoopThroughFiles(directory As String)
@@ -268,11 +277,12 @@ Sub LoopThroughFiles(directory As String)
     Loop
 End Sub
 ```
+
 [back to top](#top)
 
 <a id="9"></a>
 
-## **遍历directory下的所有subDirectory and file**
+## **遍历 directory 下的所有 subDirectory and file**
 
 ```vb
 Sub loopDir(sDir As String)
@@ -297,7 +307,7 @@ End Sub
 
 <a id="10"></a>
 
-## **保存workbook, 并给出名字**
+## **保存 workbook, 并给出名字**
 
 ```vb
 wb.SaveAs 路径&文件名
@@ -311,7 +321,7 @@ wb.SaveAs 路径 & 文件名 & ”.csv”
 
 <a id="11"></a>
 
-## **退出workbook不保存**
+## **退出 workbook 不保存**
 
 ```vb
 Workbooks("BOOK1.XLS").Close SaveChanges:=False
@@ -321,7 +331,7 @@ Workbooks("BOOK1.XLS").Close SaveChanges:=False
 
 <a id="12"></a>
 
-## **hasWorksheet 判断该workbook有无该worksheets(可选择创建)**
+## **hasWorksheet 判断该 workbook 有无该 worksheets(可选择创建)**
 
 ```vb
 Function hasWorksheet(ByRef wb As Workbook, ByVal name As String, Optional ByVal toBuild As Boolean = False) As Boolean
@@ -344,9 +354,9 @@ End Function
 
 <a id="13"></a>
 
-## **查找列号getColsList / getFirstCol**
+## **查找列号 getColsList / getFirstCol**
 
-在ws的row行找target字符串,可以完全匹配或者模糊包含，将所有的列号返回到一个ArrayList中,可以用list.count获取size以及list.item(idx)来获取某个元素
+在 ws 的 row 行找 target 字符串,可以完全匹配或者模糊包含，将所有的列号返回到一个 ArrayList 中,可以用 list.count 获取 size 以及 list.item(idx)来获取某个元素
 
 ```vb
 Function getColsList(ByRef ws As Worksheet, ByVal row As Integer, ByVal target As String, Optional ByVal mustEqual As Boolean = True) As Object
@@ -364,6 +374,7 @@ Function getColsList(ByRef ws As Worksheet, ByVal row As Integer, ByVal target A
     Set getColsList = list
 End Function
 ```
+
 ```vb
 '找到返回列号，找不到返回-1, 默认从第一列开始找，可以设置开始列
 Function getFirstCol(ByRef ws As Worksheet, ByVal row As Integer, ByVal target As String, Optional ByVal start As Integer = 1, Optional ByVal mustEqual As Boolean = True) As Integer
@@ -389,10 +400,9 @@ End Function
 
 [back to top](#top)
 
-
 <a id="14"></a>
 
-## **查找行号getRowList / getFirstRow**
+## **查找行号 getRowList / getFirstRow**
 
 ```vb
 Function getRowsList(ByRef ws As Worksheet, ByVal col As Integer, ByVal target As String, Optional ByVal mustEqual As Boolean = True) As Object
@@ -410,6 +420,7 @@ Function getRowsList(ByRef ws As Worksheet, ByVal col As Integer, ByVal target A
     Set getRowsList = list
 End Function
 ```
+
 ```vb
 '找到返回行号，找不到返回-1, 默认从第一行开始找，可以设置开始行
 Function getFirstRow(ByRef ws As Worksheet, ByVal col As Integer, ByVal target As String, Optional ByVal start As Integer = 1, Optional ByVal mustEqual As Boolean = True) As Integer
@@ -532,9 +543,9 @@ ActiveCell.EntireColumn.Offset(0, 1).Insert
 
 <a id="20"></a>
 
-## **循环查找，找到worksheet里第一个内容为...或者内容不空的cell**
+## **循环查找，找到 worksheet 里第一个内容为...或者内容不空的 cell**
 
-sheet1为要查找的worksheet，text为查找内容，blurredMatch模糊匹配：True表示内容含有text就算找到，False表示内容完全相等才算找到
+sheet1 为要查找的 worksheet，text 为查找内容，blurredMatch 模糊匹配：True 表示内容含有 text 就算找到，False 表示内容完全相等才算找到
 
 ```vb
 Public Function getPos(sheet1 As Worksheet, text As String, blurredMatch As Boolean) As Variant
@@ -563,7 +574,7 @@ End Function
 
 ## **下拉列表框**
 
-Set the drop down list: strCellName represents the position you need to put a drop down list. formula1 := “=sht!A1:A6”  represents that the content in drop down list are in A1 : A6
+Set the drop down list: strCellName represents the position you need to put a drop down list. formula1 := “=sht!A1:A6” represents that the content in drop down list are in A1 : A6
 
 ```vb
 Sub setList(strCellName As String, val As String)
@@ -652,15 +663,21 @@ Sub copy(ws As Worksheet, wsTarget As Worksheet, strOriginCellName As String, st
     End With
 End Sub
 ```
+
 or
+
 ```vb
 wsSrc.Range("A2:A" & intSrcLastRow).Copy Destination:=wsTarget.Range("A" & intBegRow)
 ```
+
 or copy the entire `wsSrc` to `wsTarget`
+
 ```vb
 wsSrc.Cells.Copy Destination:=wsTarget.Cells
 ```
+
 or copy the `wsSrc` and place it after `wsPrev`
+
 ```vb
 wsSrc.Copy After:=wsPrev
 ```
@@ -691,7 +708,7 @@ ws.cells.clearFormat
 
 <a id="28"></a>
 
-##  **select file with dialog (only see the excel type file) and return the complete path of the file**
+## **select file with dialog (only see the excel type file) and return the complete path of the file**
 
 ```vb
 Public Function SelectFile() As String
@@ -741,7 +758,7 @@ Next i
 ws.Columns(j).EntireColumn.Delete
 ```
 
-删除这一列之后，后边的列会自动移过来，所以不能用for来遍历删除符合条件的列，可以用while循环
+删除这一列之后，后边的列会自动移过来，所以不能用 for 来遍历删除符合条件的列，可以用 while 循环
 
 ```vb
 i = 1
@@ -776,5 +793,90 @@ Application.Goto Reference:=wsCurrent.Range("a1"), Scroll:=True
 ```vb
 ActiveWorkbook.Worksheets.Count
 ```
+
+[back to top](#top)
+
+<a id="34"></a>
+
+## **Define and use Array**
+
+Define array:
+
+```vb
+	Dim arr(3) as String   ‘define an array with length as 4, then you could use from arr(0) to arr(3)
+
+Dim arr(1 To 5) as String    ‘then you could begin to use the arr from arr(1) to arr(5)
+	Dim matrix(1 To 5, 1 To 3) as String    ‘define a 2D matrix with size (5 X 3)
+
+	Dim arr as Variant
+	arr = Array(“123”, “abc”)   ' start from arr(0), 记得使用的时候要类型转换一下，如果是字符串，那么取元素的时候要用”” & arr(0)转为字符串，其他像CInt(), Clng(), CDbl()等等
+
+	Dim arr() as String
+	arr = Split (“123,abc”, “,”)  ' the arr has two elements, 123 and abc, use comma to split them. 可以在字典中保存(key, value)value是字符串有特定的分隔符，拿到字符串后用split()产生数组然后获取每一项具体的值：
+
+
+	Dim arr() as String
+	Redim arr(3)  ' clear array elements, redefine the length of arr of length 3
+	Redim Preserve arr(3)  ' preserve old data, redefine the length of arr
+```
+
+array boundary:
+
+```vb
+Ubound(arr) ' 最大index,
+Lbound(arr) ' 最小index,
+size = Ubound(arr)-Lbound(arr) +1
+```
+
+Traverse Array:
+
+```vb
+dim element as Variant
+For Each element In arr
+        Debug.Print element
+Next element
+dim i as Integer
+For i = 0 to Ubound(arr)-Lbound(arr)+1
+    Debug.print arr(i)
+Next i
+```
+
+[back to top](#top)
+
+<a id="35"></a>
+
+## **Define and use ArrayList**
+
+Define:
+```vb
+    Dim list As Object
+    Set list = CreateObject("System.Collections.ArrayList")
+```
+get element in arraylist
+```vb
+list.item(0)
+'or
+list(0)
+```
+add element in arraylist
+```vb
+list.add("123")
+'or
+list.add "123"
+```
+get length of arraylist
+```vb
+list.count   ' the element from [0, list.count - 1]
+```
+store ArrayList in dictionary
+```vb
+dict.Add Key, CreateObject("System.Collections.ArrayList")
+```
+convert to array
+```vb
+    Dim arr As Variant
+    arr = list.toArray
+```
+
 
 [back to top](#top)
