@@ -14,6 +14,8 @@
 
 [**Dynamic Import Demo**](#5)
 
+[**Babel-Polyfill and useBuiltIns**](#6)
+
 <a id="1"></a>
 
 ## App Initialization
@@ -734,9 +736,10 @@ describe("getBundleJsNameByQuery", () => {
   });
 });
 ```
+
 If the user app using `@walmart/electrode-index-page`, should refer [PR63](https://gecgithub01.walmart.com/electrode/electrode-index-page/pull/63) (**internal library, confidential code**)
 
-+ Note:
+- Note:
   `config/default.js` includes config of `electrode-react-webapp`:
 
 ```js
@@ -766,14 +769,15 @@ module.exports = {
 ```
 
 could create `src/server/bundleChunkSelector.js`:
+
 ```js
 module.exports = () => ({
   css: "foo",
   js: "foo"
-})
+});
 ```
-This will enable the app use the `foo` chunks, like `es6.foo.bundle.js`
 
+This will enable the app use the `foo` chunks, like `es6.foo.bundle.js`
 
 **Build**:
 
@@ -949,17 +953,21 @@ export default () => (
   </div>
 );
 ```
+
 `src/client/components/home.jsx`:
+
 ```js
 import DemoDynamicImport from "./demo-dynamic-import";
 // ...
-        <div styleName={"custom.docs-section"}>
-          <DemoDynamicImport/>
-        </div>
+<div styleName={"custom.docs-section"}>
+  <DemoDynamicImport />
+</div>;
 // ...
 const mapStateToProps = state => state;
 ```
+
 `src/client/reducers/index.jsx`:
+
 ```js
 const showFakeComp = (store, action) => {
   if (action.type === "SHOW_FAKE_COMP") {
@@ -972,11 +980,86 @@ const showFakeComp = (store, action) => {
 export default combineReducers({
   //...
   showFakeComp
-})
+});
 ```
+
 `src/server/routes/init-top.jsx`:
+
 ```js
-showFakeComp: { value: true }
+showFakeComp: {
+  value: true;
+}
+```
+
+[back to top](#top)
+
+<a id="6"></a>
+
+## **Babel-Polyfill and useBuiltIns**
+
+1. fix entry format when `archetype.webpack.enableBabelPolyfill` is `true`.
+
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/entry.js`:
+
+```js
+function shouldPolyfill() {
+  if (archetype.webpack.enableBabelPolyfill) {
+    const hasMultipleTarget =
+      Object.keys(archetype.babel.envTargets)
+        .sort()
+        .join(",") !== "default,node";
+    if (hasMultipleTarget) {
+      return archetype.babel.target === "default";
+      // for all other targets, disable polyfill
+    } else {
+      return true;
+    }
+  }
+  return false;
+}
+
+function makeEntry() {
+  let entry = appEntry();
+  const polyfill = shouldPolyfill();
+  if (polyfill) {
+    const babelPolyfill = "@babel/polyfill";
+    if (_.isArray(entry)) {
+      entry = { main: [babelPolyfill, ...entry] };
+    } else if (_.isObject(entry)) {
+      entry = Object.entries(entry).reduce((prev, [k, v]) => {
+        prev[k] = [babelPolyfill].concat(v);
+        return prev;
+      }, {});
+    } else {
+      entry = { main: [babelPolyfill, entry] };
+    }
+  }
+  return entry;
+}
+module.exports = {
+  context,
+  entry: makeEntry()
+};
+```
+
+2. add `useBuiltIns` and `corejs` to `env` options, when user import `babel-polyfill` or `@babel/polyfill` will dynamically load the polyfills that needed according to targeted browser version
+
+`packages/electrode-archetype-react-app-dev/config/babel/babelrc-client.js`:
+
+```js
+const hasOtherTargets =
+  Object.keys(archetype.babel.envTargets)
+    .sort()
+    .join(",") !== "default,node";
+const useBuiltIns = hasOtherTargets ? { useBuiltIns: "entry", corejs: "2" } : {};
+const presets = [
+  // ...
+  [
+    "@babel/preset-env",
+    { modules: isProduction ? "auto" : "commonjs", loose: true, targets, ...useBuiltIns }
+  ]
+  // ...
+];
 ```
 
 [back to top](#top)
