@@ -99,6 +99,34 @@ public class LC400_500 {
     /**
      * LC457 circular array loop
      * */
+    public boolean circularArrayLoop1(int[] nums) {
+        int len = nums.length;
+        for(int i = 0; i < len; i++) nums[i] %= len;
+        for(int i = 0; i < len; i++){
+            if(nums[i] == 0) continue;
+            int slow = i, fast = i;
+            int forward = nums[i] > 0 ? 1 : -1;
+            while(true){
+                if(nums[slow] * forward <= 0) break;
+                slow = (slow + nums[slow] + len) % len;
+
+                if(nums[fast]* forward <= 0) break;
+                fast = (fast  + nums[fast] + len) % len;
+
+                if(nums[fast]* forward <= 0) break;
+                fast = (fast  + nums[fast] + len) % len;
+
+                if(fast == slow)return true;
+            }
+            slow = i;
+            while(slow != fast){
+                int next = (slow + nums[slow] + len) % len;
+                nums[slow] = 0;
+                slow = next;
+            }
+        }
+        return false;
+    }
     public boolean circularArrayLoop(int[] arr) {
         if(arr == null || arr.length == 0) return false;
         for(int i = 0, len = arr.length; i < len; i ++){
