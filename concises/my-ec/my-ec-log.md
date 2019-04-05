@@ -22,6 +22,8 @@
 
 [**Express/Koa failing build because of process.send not a function error**](#issue-3)
 
+[**test and spec file in `src/server` cannot be removed after build**](#issue-4)
+
 <a id="1"></a>
 
 ## App Initialization
@@ -1079,6 +1081,7 @@ const presets = [
 The error was because of `setDevMiddleware` was called in `NODE_ENV=production node lib/server`.
 
 issue source:
+
 ```js
 `packages/generator-electrode/generators/app/templates/src/server/express-server.js` -> `setDevMiddleware`
 
@@ -1124,6 +1127,31 @@ function setup(app) {
   }
 }
 module.exports = setup;
+```
+
+[back to top](#top)
+
+<a id="issue-4"></a>
+
+## test and spec file in `src/server` cannot be removed after build
+
+`packages/electrode-archetype-react-app/arch-clap.js`:
+
+```js
+    ".build-lib:delete-babel-ignored-files": {
+      desc: false,
+      task: () => {
+        const libDir = Path.resolve(AppMode.lib.dir);  // should use `AppMode.lib.dir` to match all test and spec files in both `client` and `server`
+        const ignoredFiles = scanDir.sync({
+          dir: libDir,
+          includeRoot: true,
+          filter: x => {
+            return x.indexOf(".spec.") > 0 || x.indexOf(".test.") > 0;
+          }
+        });
+        ignoredFiles.forEach(f => Fs.unlinkSync(f));
+      }
+    },
 ```
 
 [back to top](#top)
