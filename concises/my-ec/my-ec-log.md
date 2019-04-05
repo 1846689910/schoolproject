@@ -1,12 +1,10 @@
-# Electrode app issues fix
+# Electrode app features dev & issues fix log
 
 <a id="top"></a>
 
 ## **Contents**
 
-[**App Initialization**](#1)
-
-[**Electrode App API**](#2)
+### features
 
 [**Css Module Enabled and other Css Preprocessor Configuration**](#3)
 
@@ -14,7 +12,14 @@
 
 [**Dynamic Import Demo**](#5)
 
-[**archetype.webpack.enableBabelPolyfill crash issue and useBuiltIns**](#6)
+[**entry format with archetype.webpack.enableBabelPolyfill and useBuiltIns**](#6)
+
+### issues
+
+[**App Initialization**](#1)
+
+[**Electrode App API**](#2)
+
 
 <a id="1"></a>
 
@@ -995,7 +1000,7 @@ showFakeComp: {
 
 <a id="6"></a>
 
-## **archetype.webpack.enableBabelPolyfill crash issue and useBuiltIns**
+## **entry format with archetype.webpack.enableBabelPolyfill and useBuiltIns**
 
 1. fix entry format when `archetype.webpack.enableBabelPolyfill` is `true`.
 
