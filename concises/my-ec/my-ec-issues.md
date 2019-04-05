@@ -14,7 +14,7 @@
 
 [**Dynamic Import Demo**](#5)
 
-[**Babel-Polyfill and useBuiltIns**](#6)
+[**archetype.webpack.enableBabelPolyfill crash issue and useBuiltIns**](#6)
 
 <a id="1"></a>
 
@@ -995,7 +995,7 @@ showFakeComp: {
 
 <a id="6"></a>
 
-## **Babel-Polyfill and useBuiltIns**
+## **archetype.webpack.enableBabelPolyfill crash issue and useBuiltIns**
 
 1. fix entry format when `archetype.webpack.enableBabelPolyfill` is `true`.
 
