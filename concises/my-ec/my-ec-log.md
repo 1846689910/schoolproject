@@ -20,6 +20,7 @@
 
 [**Electrode App API**](#2)
 
+[**Express/Koa failing build because of process.send not a function error**](#issue-3)
 
 <a id="1"></a>
 
@@ -1065,6 +1066,64 @@ const presets = [
   ]
   // ...
 ];
+```
+
+[back to top](#top)
+
+<a id="issue-3"></a>
+
+## Express/Koa failing build because of process.send not a function error
+
+`process.send` should be within process in a forked child process, used to communicate with parent process.
+
+The error was because of `setDevMiddleware` was called in `NODE_ENV=production node lib/server`.
+
+issue source:
+```js
+`packages/generator-electrode/generators/app/templates/src/server/express-server.js` -> `setDevMiddleware`
+
+`packages/generator-electrode/generators/app/templates/src/server/koa-server.js` -> `setDevMiddleware`
+```
+
+`packages/electrode-archetype-react-app-dev/lib/webpack-dev-express.js`:
+
+```js
+"use strict";
+const AppDevMiddleware = require("./app-dev-middleware");
+
+function setup(app) {
+  const isProduction = process.env.NODE_ENV === "production";
+  if (!isProduction) {
+    const middleware = new AppDevMiddleware({});
+    middleware.setup();
+    app.use((req, res, next) => {
+      if (!req.app) req.app = {};
+      req.app.webpackDev = middleware.webpackDev;
+      next();
+    });
+  }
+}
+module.exports = setup;
+```
+
+`packages/electrode-archetype-react-app-dev/lib/webpack-dev-koa.js`:
+
+```js
+"use strict";
+const AppDevMiddleware = require("./app-dev-middleware");
+
+function setup(app) {
+  const isProduction = process.env.NODE_ENV === "production";
+  if (!isProduction) {
+    const middleware = new AppDevMiddleware({});
+    middleware.setup();
+    app.use(async (ctx, next) => {
+      ctx.webpackDev = middleware.webpackDev;
+      return next();
+    });
+  }
+}
+module.exports = setup;
 ```
 
 [back to top](#top)
