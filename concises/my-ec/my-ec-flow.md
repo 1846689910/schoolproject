@@ -154,6 +154,8 @@ within `config/defualt.js`, plugin for: `electrode-react-webapp/lib/hapi`
 ```
 + `bundleChunkSelector` will get a function that returns which chunk the app should use. a function return `{css: "foo", js: "foo"}`. Useful when user specify their own `src/client/entry.config.js`: `{foo: "./app.jsx"}`
 
++ `registerOptions` in `packages/electrode-react-webapp/lib/hapi/register-routes.js` is a merged object with the result of `setupOptions()` in `packages/electrode-react-webapp/lib/react-webapp.js` and the above options of `electrode-react-webapp/lib/hapi` in your project `config/default.js`. you can override the default `registerOptions` here.
+
 } &rarr; `electrode-server/lib/electrode-server.js` {
 
 return promise chain, new Hapi.server, register listener, server starts
