@@ -180,6 +180,13 @@ Then, replace the remote by forcely push
 ```bash
 git push origin BRANCH --force
 ```
+
+**Exit rebase**
+
+```bash
+git rebase --abort
+```
+
 ### **Failure fix:**
 1. `Cannot 'squash' without a previous commit`
 ```bash
