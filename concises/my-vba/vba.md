@@ -1114,46 +1114,84 @@ End Function
 
 + **instr**
 
+`instr([intStart], strString, strTarget)`,  从intStart开始搜索(可省，默认为1，从首字符开始i), 从`strString`中找`strTarget`。如果找到返回位置，找不到返回0
+search `strTarget` in `strString` from `intStart` position. if found, return intPosition where the strTarget first show up. if not found, return 0. intStart is default 1
+
 <a id="40-2"></a>
 
 + **Round**
+
+`Round(dict(key), 2)`  将一个数保留小数点后2位
 
 <a id="40-3"></a>
 
 + **Dir**
 
+`Dir(“C:\ aaa.docx”)`: 如果路径存在返回字符串aaa.docx, 如果不存在返回空字符串””. 你可以使用*匹配0个或多个未知字符，或者使用?匹配一个未知字符
+`Dir(“C:\aaa”,vbDirectory)`如果是检测路径而不是文件，需要加`vbDirecotry`
+
 <a id="40-4"></a>
 
 + **Replace**
+
+`Replace(Date, “/”, “-”)`: 将字符串中的(/)替换为-
 
 <a id="40-5"></a>
 
 + **Split**
 
+`Split(str, “,”)`: 将字符串按, 分割开来，成一个数组，每一部分是数组的一个元素
+
 <a id="40-6"></a>
 
 + **Mid**
+
+`MID(text, start, K )`: 从字符串text的start位置开始，取K个字符出来, 注意首字符索引是1
 
 <a id="40-7"></a>
 
 + **Left & Right**
 
+`LEFT或RIGHT(text, K )`: 从字符串text的左边或右边开始，取K个字符出来
+
 <a id="40-8"></a>
 
 + **isNumeric**
+
+`IsNumeric`或~~IsEmpty~~或`IsDate(text)`: 检测表达式text
+	IsNumeric是否是数字类型, 比如整数12, 浮点1.2, 百分数12%都对，带了字母就错
+
+	~~IsEmpty是否是空 尽量不用，只是部分适用，请使用trim(text) = ""~~
+
+	IsDate 是否是日期格式，常用的日期写法都可以检测到
+
 
 <a id="40-9"></a>
 
 + **Trim, LTrim & RTrim**
 
+`Trim, LTrim, RTrim(text)`: 将字符串text的所有, 左边或右边的空格都去除
+
 <a id="40-10"></a>
 
 + **类型转换(字符串转数字,遇到空字符串转0)**
+
+```vb
+    Dim s As String
+    Dim d As Double
+    s = ""
+    If IsNumeric(Trim(s)) Then
+        d = CDbl(s)
+    ElseIf Trim(s) = "" Then
+        d = CDbl("0")
+    End If
+    Debug.Print d
+```
 
 <a id="40-11"></a>
 
 + **isMissing**
 
-
+检测函数中optional的value是否有传递, 如果optional X as boolean = False，那么就不算missing了，就会产生false
 
 [back to top](#top)
