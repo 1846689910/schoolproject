@@ -127,6 +127,13 @@ git reset --hard  # 强制放弃当前的所有修改
 git reset --hard COMMIT_HASH # 回退到该commit，并清除中间的commits
 # git push origin BRANCH --force  # 并将该状态提交到origin。注意:这样将强行将origin的代码替换，谨慎使用
 ```
+
+3. 返回之前的某个commit()
+```bash
+git checkout COMMIT_HASH # 返回该commit,并未清除任何commits
+# git checkout CURRENT_BRANCH # 可以再回到该branch的头部
+```
+
 [back to top](#top)
 
 <a id="6"></a>
