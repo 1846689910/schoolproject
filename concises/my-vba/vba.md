@@ -74,6 +74,8 @@
 
 [**Define and use ArrayList**](#35)
 
+[**Define and use Dictionary**](#36)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -878,5 +880,67 @@ convert to array
     arr = list.toArray
 ```
 
+[back to top](#top)
+
+<a id="36"></a>
+
+## **Define and use Dictionary**
+
+need reference `Microsoft Scripting Runtime`
+
+Declare and create (early binding)
+```vb
+Dim dict As Scripting.Dictionary
+Set dict = New Scripting.Dictionary
+```
+
+Declare and create (late binding)
+
+```vb
+Dim dict As Object
+Set dict = CreateObject("Scripting.Dictionary")
+```
+Add item (key must not already exist)
+```vb
+dict.Add Key, Value
+```
+Change value at key. Automatically adds if the key does not exist.
+```vb
+dict(Key) = Value
+```
+Get a value from the dictionary using the key
+```vb
+dict(Key)
+```
+Check if key exists
+```vb
+dict.Exists(Key)
+```
+Remove item
+```vb
+dict.Remove Key
+```
+Remove all items
+```vb
+dict.RemoveAll
+```
+Go through all items (for each loop)
+```vb
+Dim key As Variant
+For Each key In dict.Keys
+    Debug.Print key, dict(key)
+Next key
+```
+Go through all items (for loop - early binding only)
+```vb
+Dim i As Long
+For i = 0 To dict.Count - 1
+   Debug.Print dict.Keys(i), dict.Items(i)
+Next i
+```
+Get the number of items
+```vb
+dict.Count
+```
 
 [back to top](#top)
