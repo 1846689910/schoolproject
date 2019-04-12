@@ -1110,6 +1110,50 @@ End Function
 
 ## **常用函数**
 
+<a id="40-1"></a>
+
++ **instr**
+
+<a id="40-2"></a>
+
++ **Round**
+
+<a id="40-3"></a>
+
++ **Dir**
+
+<a id="40-4"></a>
+
++ **Replace**
+
+<a id="40-5"></a>
+
++ **Split**
+
+<a id="40-6"></a>
+
++ **Mid**
+
+<a id="40-7"></a>
+
++ **Left & Right**
+
+<a id="40-8"></a>
+
++ **isNumeric**
+
+<a id="40-9"></a>
+
++ **Trim, LTrim & RTrim**
+
+<a id="40-10"></a>
+
++ **类型转换(字符串转数字,遇到空字符串转0)**
+
+<a id="40-11"></a>
+
++ **isMissing**
+
 
 
 [back to top](#top)
