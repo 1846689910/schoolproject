@@ -80,6 +80,8 @@
 
 [**Send Email**](#38)
 
+[**Error Handling**](#39)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -1030,5 +1032,53 @@ Sub sEmail()
    Set olApp = Nothing
 End Sub
 ```
+
+[back to top](#top)
+
+<a id="39"></a>
+
+## **Error Handling**
+
+VBA中的error handling并不具备自身的独立的作用域和try catch很不同，仅仅起到 发现错误并跳转到代码标记的位置继续运行。如果没有发现错误，带标记的部分也会按照相应的上下文情况而被运行。
+
+可以在标记处使用`if Err.Number <> 0 then … `来隔开错误处理和正常运行的代码
+
+`on Error Goto 0`: 停在error处，并显示error
+
+`on Error Goto -1`: 清除当前的error
+
+`on Error Resume Next`: 忽略error，继续
+
+`on Error Goto LABEL`: 有error时，跳转到标记有LABEL的位置的代码，sub或function内跳转
+
+`Err.Description`: 错误描述
+
+**忽略error的例子:**
+```vb
+Sub errorTest()
+    On Error Resume Next
+    Debug.Print 1 / 0
+End Sub
+```
+
+**捕获error的例子:**
+将0到2的格子内容字符串连接起来，如果出错，连接内容变更为”NPE”
+
+```vb
+Function errorTestFn(ByRef ws As Worksheet) As String
+    Dim i As Integer
+    Dim s As String
+    For i = 0 To 2
+        On Error GoTo myCatch
+        s = s & ws.Range("A" & i).Value
+myCatch: ' 这个标记仅仅表示了一个跳转目的地, 并不影响正常的代码运行。即如果代码不出错，也会被执行，只不过出错后会跳转到此处向下执行. 通过if Err.Number <> 0 then … 来隔开错误处理与正常的代码
+    If Err.Number <> 0 Then
+        s = s & "NPE"
+    End If
+    Next i
+    errorTestFn = s
+End Function
+```
+
 
 [back to top](#top)
