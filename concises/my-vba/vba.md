@@ -74,6 +74,38 @@
 
 [**Define and use ArrayList**](#35)
 
+[**Define and use Dictionary**](#36)
+
+[**VBA Regular Expression**](#37)
+
+[**Send Email**](#38)
+
+[**Error Handling**](#39)
+
+[**常用函数**](#40)
+
++ [**instr**](#40-1)
+
++ [**Round**](#40-2)
+
++ [**Dir可检查file exists**](#40-3)
+
++ [**Replace**](#40-4)
+
++ [**Split**](#40-5)
+
++ [**Mid**](#40-6)
+
++ [**Left & Right**](#40-7)
+
++ [**isNumeric & isDate**](#40-8)
+
++ [**Trim, LTrim, RTrim**](#40-9)
+
++ [**类型转换(字符串转数字,遇到空字符串转0)**](#40-10)
+
++ [**isMissing**](#40-11)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -878,5 +910,288 @@ convert to array
     arr = list.toArray
 ```
 
+[back to top](#top)
+
+<a id="36"></a>
+
+## **Define and use Dictionary**
+
+need reference `Microsoft Scripting Runtime`
+
+Declare and create (early binding)
+```vb
+Dim dict As Scripting.Dictionary
+Set dict = New Scripting.Dictionary
+```
+
+Declare and create (late binding)
+
+```vb
+Dim dict As Object
+Set dict = CreateObject("Scripting.Dictionary")
+```
+Add item (key must not already exist)
+```vb
+dict.Add Key, Value
+```
+Change value at key. Automatically adds if the key does not exist.
+```vb
+dict(Key) = Value
+```
+Get a value from the dictionary using the key
+```vb
+dict(Key)
+```
+Check if key exists
+```vb
+dict.Exists(Key)
+```
+Remove item
+```vb
+dict.Remove Key
+```
+Remove all items
+```vb
+dict.RemoveAll
+```
+Go through all items (for each loop)
+```vb
+Dim key As Variant
+For Each key In dict.Keys
+    Debug.Print key, dict(key)
+Next key
+```
+Go through all items (for loop - early binding only)
+```vb
+Dim i As Long
+For i = 0 To dict.Count - 1
+   Debug.Print dict.Keys(i), dict.Items(i)
+Next i
+```
+Get the number of items
+```vb
+dict.Count
+```
+
+[back to top](#top)
+
+<a id="37"></a>
+
+## **VBA Regular Express**
+
+引入reference: `Microsoft VBScript Regular Expressions 5.5`
+```vb
+Dim regExp as Object, matches as Object
+Dim match as variant
+Set regExp = new RegExp
+with regExp
+    .global = true
+    .IgnoreCase = true
+    .Pattern = "(\(LE_.*?)\s*(\[.*?\])?)+"
+end with
+set matches = regExp.Execute("STRING")
+debug.print regExp.test("STRING1")
+debug.print matches.count
+for each match in matches
+    debug.print Cstr(match)
+next match
+```
+
+[back to top](#top)
+
+<a id="38"></a>
+
+## **Send Email**
+
+```vb
+Sub sEmail()
+   'Setting up the Excel variables.
+   Dim olApp As Object
+   Dim oMail As Outlook.MailItem 'Microsoft outlook object library
+   Dim iCounter As Integer
+   Dim Dest As Variant
+   Dim SDest As String
+   Dim Excel As Object
+   Dim Name As String
+   Dim Word As Object
+   Dim oAccount As Outlook.Account
+   Dim doc As Word.Document 'Microsoft word object library
+   Dim itm As Object
+   Dim MsgTxt As String
+   Dim template As String
+   Dim sBody As String
+   Dim wd As Object
+   'Create excel object.
+   Set ws = ThisWorkbook.Sheets("Sheet1")
+   'Create a word object.
+    Set wd = CreateObject("Word.Application")
+	wd.DisplayAlerts = False
+	Set doc = wd.Documents.Open("")
+    doc.Content.Copy
+	doc.Close
+ 	Set wd = Nothing
+   'Loop through the excel worksheet.
+   	For iCounter = 2 To 50
+       	Set OutApp = CreateObject("Outlook.Application")
+       	Set oMail = OutApp.CreateItem(0)
+       	'Create an email for each entry in the worksheet.
+        	strto = ws.Cells(iCounter, 2)
+        	strFirst = ws.Cells(iCounter, 1)
+       	With oMail
+         	.To = strto
+         	.Subject = "Symantec FY18 R&D Credit Study Survey" & " - " & strFirst
+         	.BodyFormat = olFormatRichText
+         	Set Editor = .GetInspector.WordEditor
+         	Editor.Content.Paste
+        	.Display
+        	.CC = ""
+         	sBody = .HTMLBody
+         	.HTMLBody = Replace(sBody, "[Name]", ws.Range("C" & iCounter).Value)
+         	.Send
+       	End With
+   	Next iCounter
+       MsgBox "done"
+   'Clean up the Outlook application.
+   Set olMailItm = Nothing
+   Set olApp = Nothing
+End Sub
+```
+
+[back to top](#top)
+
+<a id="39"></a>
+
+## **Error Handling**
+
+VBA中的error handling并不具备自身的独立的作用域和try catch很不同，仅仅起到 发现错误并跳转到代码标记的位置继续运行。如果没有发现错误，带标记的部分也会按照相应的上下文情况而被运行。
+
+可以在标记处使用`if Err.Number <> 0 then … `来隔开错误处理和正常运行的代码
+
+`on Error Goto 0`: 停在error处，并显示error
+
+`on Error Goto -1`: 清除当前的error
+
+`on Error Resume Next`: 忽略error，继续
+
+`on Error Goto LABEL`: 有error时，跳转到标记有LABEL的位置的代码，sub或function内跳转
+
+`Err.Description`: 错误描述
+
+**忽略error的例子:**
+```vb
+Sub errorTest()
+    On Error Resume Next
+    Debug.Print 1 / 0
+End Sub
+```
+
+**捕获error的例子:**
+将0到2的格子内容字符串连接起来，如果出错，连接内容变更为”NPE”
+
+```vb
+Function errorTestFn(ByRef ws As Worksheet) As String
+    Dim i As Integer
+    Dim s As String
+    For i = 0 To 2
+        On Error GoTo myCatch
+        s = s & ws.Range("A" & i).Value
+myCatch: ' 这个标记仅仅表示了一个跳转目的地, 并不影响正常的代码运行。即如果代码不出错，也会被执行，只不过出错后会跳转到此处向下执行. 通过if Err.Number <> 0 then … 来隔开错误处理与正常的代码
+    If Err.Number <> 0 Then
+        s = s & "NPE"
+    End If
+    Next i
+    errorTestFn = s
+End Function
+```
+
+[back to top](#top)
+
+<a id="40"></a>
+
+## **常用函数**
+
+<a id="40-1"></a>
+
++ **instr**
+
+`instr([intStart], strString, strTarget)`,  从intStart开始搜索(可省，默认为1，从首字符开始i), 从`strString`中找`strTarget`。如果找到返回位置，找不到返回0
+search `strTarget` in `strString` from `intStart` position. if found, return intPosition where the strTarget first show up. if not found, return 0. intStart is default 1
+
+<a id="40-2"></a>
+
++ **Round**
+
+`Round(dict(key), 2)`  将一个数保留小数点后2位
+
+<a id="40-3"></a>
+
++ **Dir**
+
+`Dir(“C:\ aaa.docx”)`: 如果路径存在返回字符串aaa.docx, 如果不存在返回空字符串””. 你可以使用*匹配0个或多个未知字符，或者使用?匹配一个未知字符
+`Dir(“C:\aaa”,vbDirectory)`如果是检测路径而不是文件，需要加`vbDirecotry`
+
+<a id="40-4"></a>
+
++ **Replace**
+
+`Replace(Date, “/”, “-”)`: 将字符串中的(/)替换为-
+
+<a id="40-5"></a>
+
++ **Split**
+
+`Split(str, “,”)`: 将字符串按, 分割开来，成一个数组，每一部分是数组的一个元素
+
+<a id="40-6"></a>
+
++ **Mid**
+
+`MID(text, start, K )`: 从字符串text的start位置开始，取K个字符出来, 注意首字符索引是1
+
+<a id="40-7"></a>
+
++ **Left & Right**
+
+`LEFT或RIGHT(text, K )`: 从字符串text的左边或右边开始，取K个字符出来
+
+<a id="40-8"></a>
+
++ **isNumeric**
+
+`IsNumeric`或~~IsEmpty~~或`IsDate(text)`: 检测表达式text
+	IsNumeric是否是数字类型, 比如整数12, 浮点1.2, 百分数12%都对，带了字母就错
+
+	~~IsEmpty是否是空 尽量不用，只是部分适用，请使用trim(text) = ""~~
+
+	IsDate 是否是日期格式，常用的日期写法都可以检测到
+
+
+<a id="40-9"></a>
+
++ **Trim, LTrim & RTrim**
+
+`Trim, LTrim, RTrim(text)`: 将字符串text的所有, 左边或右边的空格都去除
+
+<a id="40-10"></a>
+
++ **类型转换(字符串转数字,遇到空字符串转0)**
+
+```vb
+    Dim s As String
+    Dim d As Double
+    s = ""
+    If IsNumeric(Trim(s)) Then
+        d = CDbl(s)
+    ElseIf Trim(s) = "" Then
+        d = CDbl("0")
+    End If
+    Debug.Print d
+```
+
+<a id="40-11"></a>
+
++ **isMissing**
+
+检测函数中optional的value是否有传递, 如果optional X as boolean = False，那么就不算missing了，就会产生false
 
 [back to top](#top)
