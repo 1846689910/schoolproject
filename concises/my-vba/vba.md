@@ -76,6 +76,8 @@
 
 [**Define and use Dictionary**](#36)
 
+[**VBA Regular Expression**](#37)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -941,6 +943,30 @@ Next i
 Get the number of items
 ```vb
 dict.Count
+```
+
+[back to top](#top)
+
+<a id="37"></a>
+
+## **VBA Regular Express**
+
+引入reference: `Microsoft VBScript Regular Expressions 5.5`
+```vb
+Dim regExp as Object, matches as Object
+Dim match as variant
+Set regExp = new RegExp
+with regExp
+    .global = true
+    .IgnoreCase = true
+    .Pattern = "(\(LE_.*?)\s*(\[.*?\])?)+"
+end with
+set matches = regExp.Execute("STRING")
+debug.print regExp.test("STRING1")
+debug.print matches.count
+for each match in matches
+    debug.print Cstr(match)
+next match
 ```
 
 [back to top](#top)
