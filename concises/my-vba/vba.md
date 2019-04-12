@@ -78,6 +78,8 @@
 
 [**VBA Regular Expression**](#37)
 
+[**Send Email**](#38)
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -967,6 +969,66 @@ debug.print matches.count
 for each match in matches
     debug.print Cstr(match)
 next match
+```
+
+[back to top](#top)
+
+<a id="38"></a>
+
+## **Send Email**
+
+```vb
+Sub sEmail()
+   'Setting up the Excel variables.
+   Dim olApp As Object
+   Dim oMail As Outlook.MailItem 'Microsoft outlook object library
+   Dim iCounter As Integer
+   Dim Dest As Variant
+   Dim SDest As String
+   Dim Excel As Object
+   Dim Name As String
+   Dim Word As Object
+   Dim oAccount As Outlook.Account
+   Dim doc As Word.Document 'Microsoft word object library
+   Dim itm As Object
+   Dim MsgTxt As String
+   Dim template As String
+   Dim sBody As String
+   Dim wd As Object
+   'Create excel object.
+   Set ws = ThisWorkbook.Sheets("Sheet1")
+   'Create a word object.
+    Set wd = CreateObject("Word.Application")
+	wd.DisplayAlerts = False
+	Set doc = wd.Documents.Open("")
+    doc.Content.Copy
+	doc.Close
+ 	Set wd = Nothing
+   'Loop through the excel worksheet.
+   	For iCounter = 2 To 50
+       	Set OutApp = CreateObject("Outlook.Application")
+       	Set oMail = OutApp.CreateItem(0)
+       	'Create an email for each entry in the worksheet.
+        	strto = ws.Cells(iCounter, 2)
+        	strFirst = ws.Cells(iCounter, 1)
+       	With oMail
+         	.To = strto
+         	.Subject = "Symantec FY18 R&D Credit Study Survey" & " - " & strFirst
+         	.BodyFormat = olFormatRichText
+         	Set Editor = .GetInspector.WordEditor
+         	Editor.Content.Paste
+        	.Display
+        	.CC = ""
+         	sBody = .HTMLBody
+         	.HTMLBody = Replace(sBody, "[Name]", ws.Range("C" & iCounter).Value)
+         	.Send
+       	End With
+   	Next iCounter
+       MsgBox "done"
+   'Clean up the Outlook application.
+   Set olMailItm = Nothing
+   Set olApp = Nothing
+End Sub
 ```
 
 [back to top](#top)
