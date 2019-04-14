@@ -287,6 +287,10 @@ public class LC101_200 {
      * LC117 同LC116，但没有完美节点的假设
      * */
     public void connect1(TreeLinkNode root) {
+        connect1Helper(root);
+        return root;
+    }
+    private void connect1Helper(TreeLinkNode root){
         while(root != null){
             TreeLinkNode dummy = new TreeLinkNode(0);
             TreeLinkNode cur = dummy;
