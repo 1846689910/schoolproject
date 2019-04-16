@@ -344,8 +344,18 @@ const babelConfigSpec = {
     env: "ENV_TARGET",
     type: "string",
     default: "default"
+  },
+  // `extendLoader` is used to override `babel-loader` only when `hasMultiTargets=true`
+  extendLoader: {
+    type: "json",
+    default: {}
   }
 };
+//......
+module.exports.babel.hasMultiTargets =
+  Object.keys(module.exports.babel.envTargets)
+    .sort()
+    .join(",") !== "default,node";
 ```
 
 `packages/electrode-archetype-react-app-dev/config/babel/babelrc-client.js`:
@@ -410,7 +420,7 @@ const basePlugins = [
 ];
 //...
 const targets = archetype.babel.envTargets[archetype.babel.target];
-
+const useBuiltIns = archetype.babel.hasMultiTargets ? { useBuiltIns: "entry", corejs: "2" } : {};
 const presets = [
   //
   // webpack 4 can handle ES modules now so turn off babel module transformation
@@ -418,7 +428,7 @@ const presets = [
   // But keep transforming modules to commonjs when not in production mode so tests
   // can continue to stub ES modules.
   //
-  ["@babel/preset-env", { modules: isProduction ? "auto" : "commonjs", loose: true, targets }],
+  ["@babel/preset-env", { modules: isProduction ? "auto" : "commonjs", loose: true, targets, ...useBuiltIns }],
   enableTypeScript && "@babel/preset-typescript",
   "@babel/preset-react"
 ];
@@ -459,31 +469,48 @@ module.exports = {
 "use strict";
 
 const Path = require("path");
-const { AppMode, babel } = require("electrode-archetype-react-app/config/archetype");
-const inspectpack = process.env.INSPECTPACK_DEBUG === "true";
-const { target, envTargets } = babel;
-const hasOtherTargets =
-  Object.keys(envTargets).filter(x => x !== "default" && x !== "node").length > 0;
+const archetype = require("electrode-archetype-react-app/config/archetype");
+const { AppMode, babel } = archetype;
 
-const filename = (() => {
-  let _filename = "[name].bundle.[hash].js";
+const inspectpack = process.env.INSPECTPACK_DEBUG === "true";
+
+const getOutputFilename = () => {
+  let filename = "[name].bundle.[hash].js";
+
   if (AppMode.hasSubApps) {
-    _filename = "[name].bundle.js";
-  } else if (hasOtherTargets) {
-    _filename = `${target}.[name].bundle.js`;
+    filename = "[name].bundle.js";
+  } else if (babel.hasMultiTargets) {
+    filename = `${babel.target}.[name].bundle.js`;
   }
-  return _filename;
-})();
+
+  return filename;
+};
+
+const getOutputPath = () => {
+  if (process.env.WEBPACK_DEV === "true") {
+    return "/"; // simulate the behavior of webpack-dev-server, which sets output path to /
+  } else {
+    return Path.resolve(babel.target !== "default" ? `dist-${babel.target}` : "dist", "js");
+  }
+};
 
 module.exports = {
   output: {
-    path: Path.resolve(target !== "default" ? `dist-${target}` : "dist", "js"),
+    path: getOutputPath(),
     pathinfo: inspectpack, // Enable path information for inspectpack
     publicPath: "/js/",
-    chunkFilename: hasOtherTargets ? `${target}.[hash].[name].js` : "[hash].[name].js",
-    filename
+    chunkFilename: babel.hasMultiTargets ? `${babel.target}.[hash].[name].js` : "[hash].[name].js",
+    filename: getOutputFilename()
   }
 };
+```
+
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/babel.js`
+
+```js
+rules: [
+  assign({}, babelLoaderConfig, archetype.babel.hasMultiTargets ? archetype.babel.extendLoader : {})
+];
 ```
 
 `packages/electrode-archetype-react-app/arch-clap.js`:
