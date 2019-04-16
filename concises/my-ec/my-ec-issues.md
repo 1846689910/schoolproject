@@ -14,6 +14,8 @@
 
 [**test and spec file in `src/server` cannot be removed after build**](#issue-4)
 
+[**add cssLoaderModules**](#5)
+
 <a id="1"></a>
 
 ## App Initialization
@@ -248,6 +250,32 @@ module.exports = setup;
         ignoredFiles.forEach(f => Fs.unlinkSync(f));
       }
     },
+```
+
+[back to top](#top)
+
+<a id="5"></a>
+
+## add cssLoaderModules
+
+In order to back compatible with archetypeV3, when `cssModuleSupport` not enabled, the `localIdentName` still in `name__local__hash` format.
+introduce `cssLoaderModules` in archetypeV5
+
+`packages/electrode-archetype-react-app-dev/config/archetype.js`:
+
+```js
+const webpackConfigSpec = {
+  // ...
+  cssLoaderModules: { env: "CSS_LOADER_MODULES", default: false }
+};
+```
+
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/extract-style.js`:
+
+```js
+const cssQuery = `${cssLoader}${
+  archetype.webpack.cssLoaderModules ? cssLoaderOptions : ""
+}!${postcssLoader}`;
 ```
 
 [back to top](#top)
