@@ -1120,24 +1120,191 @@ module.exports = {
   }
 };
 ```
+
 `packages/electrode-archetype-react-app-dev/package.json`
 
 ```json
 {
   "uglifyjs-webpack-plugin": "^1.2.2",
-  "xclap": "^0.2.30",
+  "xclap": "^0.2.30"
 }
 ```
 
 `packages/electrode-archetype-react-app/arch-clap.js`
+
 ```js
 const scanDir = devRequire("filter-scan-dir");
 function makeTasks(xclap) {
   assert(xclap.concurrent, "xclap version must be 0.2.28+");
   // ...
+    const babelCliIgnore = quote(
+    [`**/*.spec.js`, `**/*.spec.jsx`]
+      .concat(archetype.babel.enableTypeScript && [`**/*.test.ts`, `**/*.test.tsx`])
+      .filter(x => x)
+      .join(",")
+  );
+
+  const babelCliExtensions = quote(
+    [".js", ".jsx"]
+      .concat(archetype.babel.enableTypeScript && [".ts", ".tsx"])
+      .filter(x => x)
+      .join(",")
+  );
+  const babelEnvTargetsArr = Object.keys(archetype.babel.envTargets).filter(k => k !== "node");
+
+  const buildDistDirs = babelEnvTargetsArr
+    .filter(name => name !== "default")
+    .map(name => `dist-${name}`);
+  let tasks = {
+    // ...
+    build: {
+      //...
+      task: ["build-dist", ".build-lib", ".check.top.level.babelrc", "mv-to-dist"]
+    }
+    "mv-to-dist": ["mv-to-dist:clean", "mv-to-dist:mv-dirs", "mv-to-dist:keep-targets"],
+    "build-dist-min": {
+      dep: [".production-env"],
+            desc: "build dist for production",
+      task: xclap.concurrent(
+        babelEnvTargetsArr.map((name, index) =>
+          xclap.exec(
+            [
+              `webpack --config`,
+              quote(webpackConfig("webpack.config.js")),
+              `--colors --display-error-details`
+            ],
+            {
+              xclap: { delayRunMs: index * 2000 },
+              execOptions: { env: { ENV_TARGET: name } }
+            }
+          )
+        )
+      )
+    },
+        "mv-to-dist:clean": {
+      desc: `clean static resources within ${buildDistDirs}`,
+      task: () => {
+        buildDistDirs.forEach(dir => {
+          // clean static resources within `dist-X` built by user specified env targets
+          // and leave [.js, .map, .json] files only
+          const removedFiles = scanDir.sync({
+            dir: Path.resolve(dir),
+            includeRoot: true,
+            ignoreExt: [".js", ".map", ".json"]
+          });
+          shell.rm("-rf", ...removedFiles);
+        });
+        return;
+      }
+    },
+
+    "mv-to-dist:mv-dirs": {
+      desc: `move ${buildDistDirs} to dist`,
+      task: () => {
+        buildDistDirs.forEach(dir => {
+          scanDir
+            .sync({
+              dir,
+              includeRoot: true,
+              filterExt: [".js", ".json", ".map"]
+              // the regex above matches all the sw-registration.js, sw-registration.js.map,
+              // main.bundle.js and main.bundle.js.map and stats.json
+            })
+            .forEach(file => {
+              if (file.endsWith(".js")) {
+                shell.cp("-r", file, "dist/js");
+              } else if (file.endsWith(".map")) {
+                shell.cp("-r", file, "dist/map");
+              } else {
+                shell.cp("-r", file, `dist/server/${dir.split("-")[1]}-${Path.basename(file)}`);
+              }
+            });
+        });
+        return;
+      }
+    },
+
+    "mv-to-dist:keep-targets": {
+      desc: `write each targets to respective isomorphic-assets.json`,
+      task: () => {
+        buildDistDirs.forEach(dir => {
+          const isomorphicPath = Path.resolve(dir, "isomorphic-assets.json"); // add `targets` field to `dist-X/isomorphic-assets.json`
+          if (Fs.existsSync(isomorphicPath)) {
+            Fs.readFile(isomorphicPath, { encoding: "utf8" }, (err, data) => {
+              if (err) throw err;
+              const assetsJson = JSON.parse(data);
+              const { envTargets } = archetype.babel;
+              assetsJson.targets = envTargets[dir.split("-")[1]];
+              Fs.writeFile(isomorphicPath, JSON.stringify(assetsJson, null, 2), err => {
+                if (err) throw err;
+              });
+            });
+          }
+        });
+        return;
+      }
+    },
+    "build-lib:client":{
+            task: () => {
+        const dirs = AppMode.hasSubApps
+          ? []
+              .concat(
+                scanDir.sync({
+                  dir: AppMode.src.dir,
+                  includeDir: true,
+                  grouping: true,
+                  filterDir: x => !x.startsWith("server") && "dirs",
+                  filter: () => false
+                }).dirs
+              )
+              .filter(x => x)
+          : [AppMode.client];
+        return dirs.map(x =>
+          mkCmd(
+            `~$babel ${Path.posix.join(AppMode.src.dir, x)}`,
+            `--out-dir=${Path.posix.join(AppMode.lib.dir, x)}`,
+            `--extensions=${babelCliExtensions}`,
+            `--source-maps=inline --copy-files`,
+            `--verbose --ignore=${babelCliIgnore}`
+          )
+        );
+      }
+    },
+    ".clean.dist": () => shell.rm("-rf", "dist", ...buildDistDirs),
+  }
+}
+module.exports = function(xclap) {
+  setupPath();
+  createElectrodeTmpDir();
+  xclap = xclap || requireAt(process.cwd())("xclap") || devRequire("xclap");
+  process.env.FORCE_COLOR = "true"; // force color for chalk
+  xclap.load("electrode", makeTasks(xclap));
+  warnYarn();
+};
+```
+
+`packages/electrode-archetype-react-app/lib/app-mode.js`
+
+```js
+{
+  //...
+        hasEnv: () => {
+        return !!process.env[envKey];
+      },
+      client,
+      server,
 }
 ```
 
+`packages/electrode-archetype-react-app/package.json`
+
+```json
+{
+  "dependencies": {
+    "filter-scan-dir": "^1.0.10"
+  }
+}
+```
 
 [back to top](#top)
 
