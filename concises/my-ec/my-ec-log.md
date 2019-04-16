@@ -268,7 +268,10 @@ const presets = [
   // But keep transforming modules to commonjs when not in production mode so tests
   // can continue to stub ES modules.
   //
-  ["@babel/preset-env", { modules: isProduction ? "auto" : "commonjs", loose: true, targets, ...useBuiltIns }],
+  [
+    "@babel/preset-env",
+    { modules: isProduction ? "auto" : "commonjs", loose: true, targets, ...useBuiltIns }
+  ],
   enableTypeScript && "@babel/preset-typescript",
   "@babel/preset-react"
 ];
@@ -943,6 +946,197 @@ const presets = [
 
 ## Server Side Bundle Selection(user configurable env target) for archetypeV5
 
+archetype v5 use webpack3 + babel6
+
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/uglify.js`:
+webpack 3 does not have `mode: production/development`
+
+```js
+"use strict";
+
+const Uglify = require("uglifyjs-webpack-plugin");
+const optimize = require("webpack").optimize;
+const archetype = require("electrode-archetype-react-app/config/archetype");
+
+module.exports = function() {
+  // Allow env var to disable minifcation for inspectpack usage.
+  if (process.env.INSPECTPACK_DEBUG === "true") {
+    return {};
+  }
+
+  const uglifyOpts = archetype.babel.hasMultiTargets
+    ? {
+        sourceMap: true,
+        uglifyOptions: {
+          compress: {
+            warnings: false
+          }
+        }
+      }
+    : {
+        sourceMap: true,
+        compress: {
+          warnings: false
+        }
+      };
+
+  // preserve module ID comment in bundle output for optimizeStats
+  if (process.env.OPTIMIZE_STATS === "true") {
+    const comments = archetype.babel.hasMultiTargets ? "extractComments" : "comments";
+    uglifyOpts[comments] = /^\**!|^ [0-9]+ $|@preserve|@license/;
+  }
+
+  const uglifyPlugin = archetype.babel.hasMultiTargets
+    ? new Uglify(uglifyOpts)
+    : new optimize.UglifyJsPlugin(uglifyOpts);
+
+  return { plugins: [uglifyPlugin] };
+};
+```
+
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/babel.js`
+
+```js
+module.exports = function(options) {
+  const { options: babelLoaderOptions = {}, ...rest } = archetype.babel.extendLoader;
+
+  const getBabelrcClient = () => {
+    const babelrcClient = JSON.parse(
+      Fs.readFileSync(require.resolve("../../babel/babelrc-client-multitargets"))
+    );
+    const { target, envTargets } = archetype.babel;
+    const { presets, plugins, ...restOptions } = babelLoaderOptions;
+    const targets = envTargets[target];
+    babelrcClient.presets.unshift([
+      "env",
+      { loose: true, targets, useBuiltIns: "entry", corejs: "2" }
+    ]);
+    babelrcClient.presets = Object.assign(babelrcClient.presets, presets);
+    babelrcClient.plugins = Object.assign(babelrcClient.plugins, plugins);
+    return Object.assign(babelrcClient, { babelrc: false }, restOptions);
+  };
+
+  if (options.HotModuleReload) {
+    require("react-hot-loader/patch");
+  }
+
+  const clientVendor = Path.join(AppMode.src.client, "vendor/");
+  const babelExclude = x => {
+    if (x.indexOf("node_modules") >= 0) return true;
+    if (x.indexOf(clientVendor) >= 0) return true;
+    return false;
+  };
+
+  const babelLoader = {
+    _name: "babel",
+    test: /\.jsx?$/,
+    exclude: babelExclude,
+    use: [
+      {
+        loader: "babel-loader",
+        options: Object.assign(
+          { cacheDirectory: Path.resolve(".etmp/babel-loader") },
+          options.babel,
+          archetype.babel.hasMultiTargets ? getBabelrcClient() : {}
+        )
+      }
+    ].filter(_.identity)
+  };
+
+  if (options.HotModuleReload) {
+    logger.info("Enabling Hot Module Reload support in webpack babel loader");
+    babelLoader.include = Path.resolve(AppMode.src.client);
+  }
+
+  return {
+    module: {
+      rules: [_.assign({}, babelLoader, archetype.babel.hasMultiTargets ? rest : {})]
+    }
+  };
+};
+```
+
+`packages/electrode-archetype-react-app-dev/config/archetype.js`
+
+```js
+const babelConfigSpec = {
+  envTargets: {
+    env: "BABEL_ENV_TARGETS",
+    type: "json",
+    default: {
+      //`default` and `node` targets object is required
+      default: {
+        ie: "8"
+      },
+      node: process.versions.node.split(".")[0]
+    }
+  },
+  target: {
+    env: "ENV_TARGET",
+    type: "string",
+    default: "default"
+  },
+  // `extendLoader` is used to override `babel-loader` only when `hasMultiTargets=true`
+  extendLoader: {
+    type: "json",
+    default: {}
+  }
+};
+const config = {
+  //...
+  babel: xenvConfig(babelConfigSpec, userConfig.babel, { merge })
+};
+module.exports.babel.hasMultiTargets =
+  Object.keys(module.exports.babel.envTargets)
+    .sort()
+    .join(",") !== "default,node";
+```
+
+add `packages/electrode-archetype-react-app-dev/config/babel/babelrc-client-multitargets`
+
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/extract-style.js`
+
+```js
+new ExtractTextPlugin({ filename: archetype.babel.hasMultiTargets ? "[name].style.css" : "[name].style.[hash].css" }),
+```
+
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/output.js`
+
+```js
+"use strict";
+
+const Path = require("path");
+const { babel } = require("electrode-archetype-react-app/config/archetype");
+const inspectpack = process.env.INSPECTPACK_DEBUG === "true";
+const { target, hasMultiTargets } = babel;
+
+module.exports = {
+  output: {
+    path: Path.resolve(target !== "default" ? `dist-${target}` : "dist", "js"),
+    pathinfo: inspectpack, // Enable path information for inspectpack
+    publicPath: "/js/",
+    chunkFilename: hasMultiTargets ? `${target}.[hash].[name].js` : "[hash].[name].js",
+    filename: hasMultiTargets ? `${target}.[name].bundle.js` : "[name].bundle.[hash].js"
+  }
+};
+```
+`packages/electrode-archetype-react-app-dev/package.json`
+
+```json
+{
+  "uglifyjs-webpack-plugin": "^1.2.2",
+  "xclap": "^0.2.30",
+}
+```
+
+`packages/electrode-archetype-react-app/arch-clap.js`
+```js
+const scanDir = devRequire("filter-scan-dir");
+function makeTasks(xclap) {
+  assert(xclap.concurrent, "xclap version must be 0.2.28+");
+  // ...
+}
+```
 
 
 [back to top](#top)
