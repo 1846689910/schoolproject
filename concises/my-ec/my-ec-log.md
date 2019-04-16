@@ -16,6 +16,8 @@
 
 [**Server Side Bundle Selection(user configurable env target) for archetypeV5**](#7)
 
+[**entry format with archetype.webpack.enableBabelPolyfill and useBuiltIns for archetypeV5**](#8)
+
 <a id="3"></a>
 
 ## **Css Module Enabled and other Css Preprocessor Configuration**
@@ -942,5 +944,51 @@ const presets = [
 ## Server Side Bundle Selection(user configurable env target) for archetypeV5
 
 
+
+[back to top](#top)
+
+<a id="8"></a>
+
+## entry format with archetype.webpack.enableBabelPolyfill for archetypeV5
+
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/entry.js`
+
+```js
+function shouldPolyfill() {
+  if (archetype.webpack.enableBabelPolyfill) {
+    if (archetype.babel.hasMultipleTarget) {
+      return archetype.babel.target === "default";
+      // for all other targets, disable polyfill
+    } else {
+      return true;
+    }
+  }
+  return false;
+}
+
+function makeEntry() {
+  let entry = appEntry();
+  const polyfill = shouldPolyfill();
+  if (polyfill) {
+    const babelPolyfill = "babel-polyfill";
+    if (_.isArray(entry)) {
+      entry = { main: [babelPolyfill, ...entry] };
+    } else if (_.isObject(entry)) {
+      entry = Object.entries(entry).reduce((prev, [k, v]) => {
+        prev[k] = [babelPolyfill].concat(v);
+        return prev;
+      }, {});
+    } else {
+      entry = { main: [babelPolyfill, entry] };
+    }
+  }
+  return entry;
+}
+
+module.exports = {
+  context,
+  entry: makeEntry()
+};
+```
 
 [back to top](#top)
