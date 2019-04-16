@@ -61,6 +61,7 @@ rm -rf ${user}_tmp
 echo "we are in $(pwd)"
 mkdir $myDir
 mkdir ${myDir}/tar_tmp
+# mkdir -p a/b/c/d # will make non-existent dir recursively
 
 touch $txtFile # create tmp.txt
 chmod 777 $txtFile # user group other all able to read/write/execute

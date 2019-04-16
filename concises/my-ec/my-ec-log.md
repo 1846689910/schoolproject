@@ -1,4 +1,4 @@
-# Electrode app features dev & issues fix log
+# Electrode app features dev log
 
 <a id="top"></a>
 
@@ -14,169 +14,9 @@
 
 [**entry format with archetype.webpack.enableBabelPolyfill and useBuiltIns**](#6)
 
-### issues
+[**Server Side Bundle Selection(user configurable env target) for archetypeV5**](#7)
 
-[**App Initialization**](#1)
-
-[**Electrode App API**](#2)
-
-[**Express/Koa failing build because of process.send not a function error**](#issue-3)
-
-[**test and spec file in `src/server` cannot be removed after build**](#issue-4)
-
-<a id="1"></a>
-
-## App Initialization
-
-React is using virtual dom to render all components within a statically designated element. All state changes, component operations and corresponding responses are all handled by react component life cycle and its render method. The static HTML page source is not changing when app state changes.
-
-The simplie HTML source code is returned from SSR(server side rendering), which sends plain initial HTML to user while other resources are still in fetch. This is for improving the user performance.
-
-check the source code changes from ssr, needs to revisit the page
-
-App Initialization:
-
-If you want to do some initialization before the app starts, you could use `async/await` in `src/server/routes/`.
-For example, you wants to initialize the whole app and `Home` component.
-
-in `src\client\routes.jsx`:
-
-```js
-const routes = [
-  {
-    path: "/",
-    component: withRouter(Root),
-    init: "./init-top",
-    routes: [
-      {
-        path: "/",
-        exact: true,
-        component: Home,
-        init: "./init-home"
-      },
-      {
-        path: "/demo1",
-        exact: true,
-        component: Demo1
-      },
-      {
-        path: "/demo2",
-        exact: true,
-        component: Demo2
-      }
-    ]
-  }
-];
-
-export { routes };
-```
-
-**Note:**
-
-- the `init` property refer to a node module that will do init for this component, the default path if you use `.` as beginning of the path will be `src/server/routes`, so if all your init functions are in `src/server/routes`, the path should be `./init-X`
-
-Then, in `src/server/routes/init-top.jsx`, you could have some async calls to fetch resources then set the initialState:
-
-```js
-import reducer from "../../client/reducers";
-const initNumber = async () => {
-  const value = await new Promise(resolve => setTimeout(() => resolve(123), 2000));
-  return { value };
-};
-export default async function initTop() {
-  return {
-    reducer,
-    initialState: {
-      checkBox: { checked: false },
-      number: await initNumber(),
-      username: { value: "" },
-      textarea: { value: "" },
-      selectedOption: { value: "0-13" }
-    }
-  };
-}
-```
-
-and it is the same with `src\server\routes\init-home.jsx`
-
-```js
-import reducer from "../../client/reducers";
-const initUsername = async () => {
-  const value = await new Promise(resolve => setTimeout(() => resolve("alex"), 2000));
-  return { value };
-};
-export default async () => ({
-  reducer,
-  initialState: {
-    username: await initUsername()
-  }
-});
-```
-
-[back to top](#top)
-
-<a id="2"></a>
-
-## **Electrode App API**
-
-Electrode app encapsulate the `express`, `hapi` and `koa` well inside. To add self-defined api:
-
-create `src/server/plugins/my-api.js`:
-
-```js
-module.exports = {
-  name: "MyApi",
-  register: server =>
-    server.route([
-      {
-        method: "GET",
-        path: "/my-api1",
-        handler: (request, h) => h.response("this is my-api1").code(200)
-      },
-      {
-        method: "GET",
-        path: "/my-api2",
-        handler: (request, h) =>
-          h
-            .response(JSON.stringify({ foo: 123 }))
-            .header("Content-Type", "application/json")
-            .code(200)
-      }
-    ])
-};
-```
-
-Then, in `config/default.js`, add the above plugin to the plugins array in `module.exports = {..., plugins:[...], ...}`:
-
-```js
-module.exports = {
-  // ...
-  "server/plugins/my-api": {
-    module: "./{{env.APP_SRC_DIR}}/server/plugins/my-api"
-  }
-  // ...
-};
-```
-
-Then you could start the app with `clap dev` and visit your api at http://localhost:3000/my-api1
-
-As for `Express` app, it will be much easier to manipulate `src/server/views/index-view.jsx`, use `async` function and add a `req.path` check:
-
-```js
-module.exports = async req => {
-  if (!routesEngine) {
-    routesEngine = new ReduxRouterEngine({ routes });
-  }
-  if (req.path === "/my-api1") {
-    const { res } = req;
-    res.set("Content-Type", "application/json");
-    return JSON.stringify({ foo: 123, bar: 2 });
-  }
-  return routesEngine.render(req);
-};
-```
-
-[back to top](#top)
+[**entry format with archetype.webpack.enableBabelPolyfill and useBuiltIns for archetypeV5**](#8)
 
 <a id="3"></a>
 
@@ -344,8 +184,18 @@ const babelConfigSpec = {
     env: "ENV_TARGET",
     type: "string",
     default: "default"
+  },
+  // `extendLoader` is used to override `babel-loader` only when `hasMultiTargets=true`
+  extendLoader: {
+    type: "json",
+    default: {}
   }
 };
+//......
+module.exports.babel.hasMultiTargets =
+  Object.keys(module.exports.babel.envTargets)
+    .sort()
+    .join(",") !== "default,node";
 ```
 
 `packages/electrode-archetype-react-app-dev/config/babel/babelrc-client.js`:
@@ -410,7 +260,7 @@ const basePlugins = [
 ];
 //...
 const targets = archetype.babel.envTargets[archetype.babel.target];
-
+const useBuiltIns = archetype.babel.hasMultiTargets ? { useBuiltIns: "entry", corejs: "2" } : {};
 const presets = [
   //
   // webpack 4 can handle ES modules now so turn off babel module transformation
@@ -418,7 +268,10 @@ const presets = [
   // But keep transforming modules to commonjs when not in production mode so tests
   // can continue to stub ES modules.
   //
-  ["@babel/preset-env", { modules: isProduction ? "auto" : "commonjs", loose: true, targets }],
+  [
+    "@babel/preset-env",
+    { modules: isProduction ? "auto" : "commonjs", loose: true, targets, ...useBuiltIns }
+  ],
   enableTypeScript && "@babel/preset-typescript",
   "@babel/preset-react"
 ];
@@ -459,31 +312,48 @@ module.exports = {
 "use strict";
 
 const Path = require("path");
-const { AppMode, babel } = require("electrode-archetype-react-app/config/archetype");
-const inspectpack = process.env.INSPECTPACK_DEBUG === "true";
-const { target, envTargets } = babel;
-const hasOtherTargets =
-  Object.keys(envTargets).filter(x => x !== "default" && x !== "node").length > 0;
+const archetype = require("electrode-archetype-react-app/config/archetype");
+const { AppMode, babel } = archetype;
 
-const filename = (() => {
-  let _filename = "[name].bundle.[hash].js";
+const inspectpack = process.env.INSPECTPACK_DEBUG === "true";
+
+const getOutputFilename = () => {
+  let filename = "[name].bundle.[hash].js";
+
   if (AppMode.hasSubApps) {
-    _filename = "[name].bundle.js";
-  } else if (hasOtherTargets) {
-    _filename = `${target}.[name].bundle.js`;
+    filename = "[name].bundle.js";
+  } else if (babel.hasMultiTargets) {
+    filename = `${babel.target}.[name].bundle.js`;
   }
-  return _filename;
-})();
+
+  return filename;
+};
+
+const getOutputPath = () => {
+  if (process.env.WEBPACK_DEV === "true") {
+    return "/"; // simulate the behavior of webpack-dev-server, which sets output path to /
+  } else {
+    return Path.resolve(babel.target !== "default" ? `dist-${babel.target}` : "dist", "js");
+  }
+};
 
 module.exports = {
   output: {
-    path: Path.resolve(target !== "default" ? `dist-${target}` : "dist", "js"),
+    path: getOutputPath(),
     pathinfo: inspectpack, // Enable path information for inspectpack
     publicPath: "/js/",
-    chunkFilename: hasOtherTargets ? `${target}.[hash].[name].js` : "[hash].[name].js",
-    filename
+    chunkFilename: babel.hasMultiTargets ? `${babel.target}.[hash].[name].js` : "[hash].[name].js",
+    filename: getOutputFilename()
   }
 };
+```
+
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/babel.js`
+
+```js
+rules: [
+  assign({}, babelLoaderConfig, archetype.babel.hasMultiTargets ? archetype.babel.extendLoader : {})
+];
 ```
 
 `packages/electrode-archetype-react-app/arch-clap.js`:
@@ -1072,86 +942,414 @@ const presets = [
 
 [back to top](#top)
 
-<a id="issue-3"></a>
+<a id="7"></a>
 
-## Express/Koa failing build because of process.send not a function error
+## Server Side Bundle Selection(user configurable env target) for archetypeV5
 
-`process.send` should be within process in a forked child process, used to communicate with parent process.
+archetype v5 use webpack3 + babel6
 
-The error was because of `setDevMiddleware` was called in `NODE_ENV=production node lib/server`.
-
-issue source:
-
-```js
-`packages/generator-electrode/generators/app/templates/src/server/express-server.js` -> `setDevMiddleware`
-
-`packages/generator-electrode/generators/app/templates/src/server/koa-server.js` -> `setDevMiddleware`
-```
-
-`packages/electrode-archetype-react-app-dev/lib/webpack-dev-express.js`:
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/uglify.js`:
+webpack 3 does not have `mode: production/development`
 
 ```js
 "use strict";
-const AppDevMiddleware = require("./app-dev-middleware");
 
-function setup(app) {
-  const isProduction = process.env.NODE_ENV === "production";
-  if (!isProduction) {
-    const middleware = new AppDevMiddleware({});
-    middleware.setup();
-    app.use((req, res, next) => {
-      if (!req.app) req.app = {};
-      req.app.webpackDev = middleware.webpackDev;
-      next();
-    });
+const Uglify = require("uglifyjs-webpack-plugin");
+const optimize = require("webpack").optimize;
+const archetype = require("electrode-archetype-react-app/config/archetype");
+
+module.exports = function() {
+  // Allow env var to disable minifcation for inspectpack usage.
+  if (process.env.INSPECTPACK_DEBUG === "true") {
+    return {};
   }
-}
-module.exports = setup;
+
+  const uglifyOpts = archetype.babel.hasMultiTargets
+    ? {
+        sourceMap: true,
+        uglifyOptions: {
+          compress: {
+            warnings: false
+          }
+        }
+      }
+    : {
+        sourceMap: true,
+        compress: {
+          warnings: false
+        }
+      };
+
+  // preserve module ID comment in bundle output for optimizeStats
+  if (process.env.OPTIMIZE_STATS === "true") {
+    const comments = archetype.babel.hasMultiTargets ? "extractComments" : "comments";
+    uglifyOpts[comments] = /^\**!|^ [0-9]+ $|@preserve|@license/;
+  }
+
+  const uglifyPlugin = archetype.babel.hasMultiTargets
+    ? new Uglify(uglifyOpts)
+    : new optimize.UglifyJsPlugin(uglifyOpts);
+
+  return { plugins: [uglifyPlugin] };
+};
 ```
 
-`packages/electrode-archetype-react-app-dev/lib/webpack-dev-koa.js`:
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/babel.js`
+
+```js
+module.exports = function(options) {
+  const { options: babelLoaderOptions = {}, ...rest } = archetype.babel.extendLoader;
+
+  const getBabelrcClient = () => {
+    const babelrcClient = JSON.parse(
+      Fs.readFileSync(require.resolve("../../babel/babelrc-client-multitargets"))
+    );
+    const { target, envTargets } = archetype.babel;
+    const { presets, plugins, ...restOptions } = babelLoaderOptions;
+    const targets = envTargets[target];
+    babelrcClient.presets.unshift([
+      "env",
+      { loose: true, targets, useBuiltIns: "entry", corejs: "2" }
+    ]);
+    babelrcClient.presets = Object.assign(babelrcClient.presets, presets);
+    babelrcClient.plugins = Object.assign(babelrcClient.plugins, plugins);
+    return Object.assign(babelrcClient, { babelrc: false }, restOptions);
+  };
+
+  if (options.HotModuleReload) {
+    require("react-hot-loader/patch");
+  }
+
+  const clientVendor = Path.join(AppMode.src.client, "vendor/");
+  const babelExclude = x => {
+    if (x.indexOf("node_modules") >= 0) return true;
+    if (x.indexOf(clientVendor) >= 0) return true;
+    return false;
+  };
+
+  const babelLoader = {
+    _name: "babel",
+    test: /\.jsx?$/,
+    exclude: babelExclude,
+    use: [
+      {
+        loader: "babel-loader",
+        options: Object.assign(
+          { cacheDirectory: Path.resolve(".etmp/babel-loader") },
+          options.babel,
+          archetype.babel.hasMultiTargets ? getBabelrcClient() : {}
+        )
+      }
+    ].filter(_.identity)
+  };
+
+  if (options.HotModuleReload) {
+    logger.info("Enabling Hot Module Reload support in webpack babel loader");
+    babelLoader.include = Path.resolve(AppMode.src.client);
+  }
+
+  return {
+    module: {
+      rules: [_.assign({}, babelLoader, archetype.babel.hasMultiTargets ? rest : {})]
+    }
+  };
+};
+```
+
+`packages/electrode-archetype-react-app-dev/config/archetype.js`
+
+```js
+const babelConfigSpec = {
+  envTargets: {
+    env: "BABEL_ENV_TARGETS",
+    type: "json",
+    default: {
+      //`default` and `node` targets object is required
+      default: {
+        ie: "8"
+      },
+      node: process.versions.node.split(".")[0]
+    }
+  },
+  target: {
+    env: "ENV_TARGET",
+    type: "string",
+    default: "default"
+  },
+  // `extendLoader` is used to override `babel-loader` only when `hasMultiTargets=true`
+  extendLoader: {
+    type: "json",
+    default: {}
+  }
+};
+const config = {
+  //...
+  babel: xenvConfig(babelConfigSpec, userConfig.babel, { merge })
+};
+module.exports.babel.hasMultiTargets =
+  Object.keys(module.exports.babel.envTargets)
+    .sort()
+    .join(",") !== "default,node";
+```
+
+add `packages/electrode-archetype-react-app-dev/config/babel/babelrc-client-multitargets`
+
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/extract-style.js`
+
+```js
+new ExtractTextPlugin({ filename: archetype.babel.hasMultiTargets ? "[name].style.css" : "[name].style.[hash].css" }),
+```
+
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/output.js`
 
 ```js
 "use strict";
-const AppDevMiddleware = require("./app-dev-middleware");
 
-function setup(app) {
-  const isProduction = process.env.NODE_ENV === "production";
-  if (!isProduction) {
-    const middleware = new AppDevMiddleware({});
-    middleware.setup();
-    app.use(async (ctx, next) => {
-      ctx.webpackDev = middleware.webpackDev;
-      return next();
-    });
+const Path = require("path");
+const { babel } = require("electrode-archetype-react-app/config/archetype");
+const inspectpack = process.env.INSPECTPACK_DEBUG === "true";
+const { target, hasMultiTargets } = babel;
+
+module.exports = {
+  output: {
+    path: Path.resolve(target !== "default" ? `dist-${target}` : "dist", "js"),
+    pathinfo: inspectpack, // Enable path information for inspectpack
+    publicPath: "/js/",
+    chunkFilename: hasMultiTargets ? `${target}.[hash].[name].js` : "[hash].[name].js",
+    filename: hasMultiTargets ? `${target}.[name].bundle.js` : "[name].bundle.[hash].js"
+  }
+};
+```
+
+`packages/electrode-archetype-react-app-dev/package.json`
+
+```json
+{
+  "uglifyjs-webpack-plugin": "^1.2.2",
+  "xclap": "^0.2.30"
+}
+```
+
+`packages/electrode-archetype-react-app/arch-clap.js`
+
+```js
+const scanDir = devRequire("filter-scan-dir");
+function makeTasks(xclap) {
+  assert(xclap.concurrent, "xclap version must be 0.2.28+");
+  // ...
+    const babelCliIgnore = quote(
+    [`**/*.spec.js`, `**/*.spec.jsx`]
+      .concat(archetype.babel.enableTypeScript && [`**/*.test.ts`, `**/*.test.tsx`])
+      .filter(x => x)
+      .join(",")
+  );
+
+  const babelCliExtensions = quote(
+    [".js", ".jsx"]
+      .concat(archetype.babel.enableTypeScript && [".ts", ".tsx"])
+      .filter(x => x)
+      .join(",")
+  );
+  const babelEnvTargetsArr = Object.keys(archetype.babel.envTargets).filter(k => k !== "node");
+
+  const buildDistDirs = babelEnvTargetsArr
+    .filter(name => name !== "default")
+    .map(name => `dist-${name}`);
+  let tasks = {
+    // ...
+    build: {
+      //...
+      task: ["build-dist", ".build-lib", ".check.top.level.babelrc", "mv-to-dist"]
+    }
+    "mv-to-dist": ["mv-to-dist:clean", "mv-to-dist:mv-dirs", "mv-to-dist:keep-targets"],
+    "build-dist-min": {
+      dep: [".production-env"],
+            desc: "build dist for production",
+      task: xclap.concurrent(
+        babelEnvTargetsArr.map((name, index) =>
+          xclap.exec(
+            [
+              `webpack --config`,
+              quote(webpackConfig("webpack.config.js")),
+              `--colors --display-error-details`
+            ],
+            {
+              xclap: { delayRunMs: index * 2000 },
+              execOptions: { env: { ENV_TARGET: name } }
+            }
+          )
+        )
+      )
+    },
+        "mv-to-dist:clean": {
+      desc: `clean static resources within ${buildDistDirs}`,
+      task: () => {
+        buildDistDirs.forEach(dir => {
+          // clean static resources within `dist-X` built by user specified env targets
+          // and leave [.js, .map, .json] files only
+          const removedFiles = scanDir.sync({
+            dir: Path.resolve(dir),
+            includeRoot: true,
+            ignoreExt: [".js", ".map", ".json"]
+          });
+          shell.rm("-rf", ...removedFiles);
+        });
+        return;
+      }
+    },
+
+    "mv-to-dist:mv-dirs": {
+      desc: `move ${buildDistDirs} to dist`,
+      task: () => {
+        buildDistDirs.forEach(dir => {
+          scanDir
+            .sync({
+              dir,
+              includeRoot: true,
+              filterExt: [".js", ".json", ".map"]
+              // the regex above matches all the sw-registration.js, sw-registration.js.map,
+              // main.bundle.js and main.bundle.js.map and stats.json
+            })
+            .forEach(file => {
+              if (file.endsWith(".js")) {
+                shell.cp("-r", file, "dist/js");
+              } else if (file.endsWith(".map")) {
+                shell.cp("-r", file, "dist/map");
+              } else {
+                shell.cp("-r", file, `dist/server/${dir.split("-")[1]}-${Path.basename(file)}`);
+              }
+            });
+        });
+        return;
+      }
+    },
+
+    "mv-to-dist:keep-targets": {
+      desc: `write each targets to respective isomorphic-assets.json`,
+      task: () => {
+        buildDistDirs.forEach(dir => {
+          const isomorphicPath = Path.resolve(dir, "isomorphic-assets.json"); // add `targets` field to `dist-X/isomorphic-assets.json`
+          if (Fs.existsSync(isomorphicPath)) {
+            Fs.readFile(isomorphicPath, { encoding: "utf8" }, (err, data) => {
+              if (err) throw err;
+              const assetsJson = JSON.parse(data);
+              const { envTargets } = archetype.babel;
+              assetsJson.targets = envTargets[dir.split("-")[1]];
+              Fs.writeFile(isomorphicPath, JSON.stringify(assetsJson, null, 2), err => {
+                if (err) throw err;
+              });
+            });
+          }
+        });
+        return;
+      }
+    },
+    "build-lib:client":{
+            task: () => {
+        const dirs = AppMode.hasSubApps
+          ? []
+              .concat(
+                scanDir.sync({
+                  dir: AppMode.src.dir,
+                  includeDir: true,
+                  grouping: true,
+                  filterDir: x => !x.startsWith("server") && "dirs",
+                  filter: () => false
+                }).dirs
+              )
+              .filter(x => x)
+          : [AppMode.client];
+        return dirs.map(x =>
+          mkCmd(
+            `~$babel ${Path.posix.join(AppMode.src.dir, x)}`,
+            `--out-dir=${Path.posix.join(AppMode.lib.dir, x)}`,
+            `--extensions=${babelCliExtensions}`,
+            `--source-maps=inline --copy-files`,
+            `--verbose --ignore=${babelCliIgnore}`
+          )
+        );
+      }
+    },
+    ".clean.dist": () => shell.rm("-rf", "dist", ...buildDistDirs),
   }
 }
-module.exports = setup;
+module.exports = function(xclap) {
+  setupPath();
+  createElectrodeTmpDir();
+  xclap = xclap || requireAt(process.cwd())("xclap") || devRequire("xclap");
+  process.env.FORCE_COLOR = "true"; // force color for chalk
+  xclap.load("electrode", makeTasks(xclap));
+  warnYarn();
+};
+```
+
+`packages/electrode-archetype-react-app/lib/app-mode.js`
+
+```js
+{
+  //...
+        hasEnv: () => {
+        return !!process.env[envKey];
+      },
+      client,
+      server,
+}
+```
+
+`packages/electrode-archetype-react-app/package.json`
+
+```json
+{
+  "dependencies": {
+    "filter-scan-dir": "^1.0.10"
+  }
+}
 ```
 
 [back to top](#top)
 
-<a id="issue-4"></a>
+<a id="8"></a>
 
-## test and spec file in `src/server` cannot be removed after build
+## entry format with archetype.webpack.enableBabelPolyfill for archetypeV5
 
-`packages/electrode-archetype-react-app/arch-clap.js`:
+`packages/electrode-archetype-react-app-dev/config/webpack/partial/entry.js`
 
 ```js
-    ".build-lib:delete-babel-ignored-files": {
-      desc: false,
-      task: () => {
-        const libDir = Path.resolve(AppMode.lib.dir);  // should use `AppMode.lib.dir` to match all test and spec files in both `client` and `server`
-        const ignoredFiles = scanDir.sync({
-          dir: libDir,
-          includeRoot: true,
-          filter: x => {
-            return x.indexOf(".spec.") > 0 || x.indexOf(".test.") > 0;
-          }
-        });
-        ignoredFiles.forEach(f => Fs.unlinkSync(f));
-      }
-    },
+function shouldPolyfill() {
+  if (archetype.webpack.enableBabelPolyfill) {
+    if (archetype.babel.hasMultipleTarget) {
+      return archetype.babel.target === "default";
+      // for all other targets, disable polyfill
+    } else {
+      return true;
+    }
+  }
+  return false;
+}
+
+function makeEntry() {
+  let entry = appEntry();
+  const polyfill = shouldPolyfill();
+  if (polyfill) {
+    const babelPolyfill = "babel-polyfill";
+    if (_.isArray(entry)) {
+      entry = { main: [babelPolyfill, ...entry] };
+    } else if (_.isObject(entry)) {
+      entry = Object.entries(entry).reduce((prev, [k, v]) => {
+        prev[k] = [babelPolyfill].concat(v);
+        return prev;
+      }, {});
+    } else {
+      entry = { main: [babelPolyfill, entry] };
+    }
+  }
+  return entry;
+}
+
+module.exports = {
+  context,
+  entry: makeEntry()
+};
 ```
 
 [back to top](#top)
