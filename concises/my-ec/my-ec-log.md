@@ -1005,14 +1005,14 @@ module.exports = function(options) {
       Fs.readFileSync(require.resolve("../../babel/babelrc-client-multitargets"))
     );
     const { target, envTargets } = archetype.babel;
-    const { presets, plugins, ...restOptions } = babelLoaderOptions;
+    const { presets = [], plugins = [], ...restOptions } = babelLoaderOptions;
     const targets = envTargets[target];
     babelrcClient.presets.unshift([
       "env",
       { loose: true, targets, useBuiltIns: "entry", corejs: "2" }
     ]);
-    babelrcClient.presets = Object.assign(babelrcClient.presets, presets);
-    babelrcClient.plugins = Object.assign(babelrcClient.plugins, plugins);
+    babelrcClient.presets = babelrcClient.presets.concat(presets);
+    babelrcClient.plugins = babelrcClient.plugins.concat(plugins);
     return Object.assign(babelrcClient, { babelrc: false }, restOptions);
   };
 
