@@ -53,7 +53,7 @@ git clone <forked_your_repo_URL>
 ```
 3. set others' repo as your repo's `upstream` repo(Your repo is `origin`, while others' repo is `upstream`)
 ```bash
-git remote add upstream git://github.com/ORIGINAL-DEV-USERNAME/REPO-YOU-FORKED-FROM.git
+git remote add upstream https://github.com/ORIGINAL-DEV-USERNAME/REPO-YOU-FORKED-FROM.git
 git branch -r
 git fetch upstream  # fetch 远端的所有分支和commit, git fetch upstream master只获取远端的master分支
 ```
@@ -63,6 +63,18 @@ git fetch upstream
 git reset --hard upstream/master # 放弃本地的修改，将branch与upstream/master的HEAD同步
 # git pull upstream master # 从upstream/master里pull changes
 git push origin master --force  # 强制将upstream/master的代码放入remote的repo
+```
+
+5. check remote branch and their urls
+```bash
+git remote -v
+```
+
+6. change remote branch url
+
+the following example change the remote branch `upstream` url. this method could be used to change to other people's forked branch from source repo
+```bash
+git remote set-url upstream https://github.com/ORIGINAL-DEV-USERNAME/REPO-YOU-FORKED-FROM.git
 ```
 
 [back to top](#top)
