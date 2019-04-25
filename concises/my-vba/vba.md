@@ -96,7 +96,7 @@
 
 + [**Mid**](#40-6)
 
-+ [**Left & Right**](#40-7)
++ [**Left & Right**](#40-7)
 
 + [**isNumeric & isDate**](#40-8)
 
@@ -1161,7 +1161,7 @@ search `strTarget` in `strString` from `intStart` position. if found, return int
 `IsNumeric`或~~IsEmpty~~或`IsDate(text)`: 检测表达式text
 	IsNumeric是否是数字类型, 比如整数12, 浮点1.2, 百分数12%都对，带了字母就错
 
-	~~IsEmpty是否是空 尽量不用，只是部分适用，请使用trim(text) = ""~~
+~~IsEmpty是否是空~~ 尽量不用，只是部分适用，请使用trim(text) = ""
 
 	IsDate 是否是日期格式，常用的日期写法都可以检测到
 
