@@ -94,6 +94,8 @@
 
 + [**Split**](#40-5)
 
++ [**Join**](#40-5-1)
+
 + [**Mid**](#40-6)
 
 + [**Left & Right**](#40-7)
@@ -1141,6 +1143,12 @@ search `strTarget` in `strString` from `intStart` position. if found, return int
 + **Split**
 
 `Split(str, “,”)`: 将字符串按, 分割开来，成一个数组，每一部分是数组的一个元素
+
+<a id="40-5-1"></a>
+
++ **Join**
+
+`Join(arr, ",")`: 将s数组按,来连接，成一个字符串. 如果不提供splitor, 默认按照**一个空格**来连接
 
 <a id="40-6"></a>
 
