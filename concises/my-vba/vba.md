@@ -82,6 +82,8 @@
 
 [**Error Handling**](#39)
 
+[**Cells color**](#41)
+
 [**常用函数**](#40)
 
 + [**instr**](#40-1)
@@ -1104,6 +1106,19 @@ myCatch: ' 这个标记仅仅表示了一个跳转目的地, 并不影响正常�
     Next i
     errorTestFn = s
 End Function
+```
+
+[back to top](#top)
+
+<a id="41"></a>
+
+## **Cells color**
+
+More colorIndex at [colorIndex](http://dmcritchie.mvps.org/excel/colors.htm)
+
+```vb
+ws.Range("A1").Interior.ColorIndex = 37
+ws.cells(1, "C").Interior.ColorIndex = 37
 ```
 
 [back to top](#top)
