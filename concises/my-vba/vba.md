@@ -82,6 +82,8 @@
 
 [**Error Handling**](#39)
 
+[**Cells color**](#41)
+
 [**常用函数**](#40)
 
 + [**instr**](#40-1)
@@ -94,9 +96,11 @@
 
 + [**Split**](#40-5)
 
++ [**Join**](#40-5-1)
+
 + [**Mid**](#40-6)
 
-+ [**Left & Right**](#40-7)
++ [**Left & Right**](#40-7)
 
 + [**isNumeric & isDate**](#40-8)
 
@@ -1106,6 +1110,19 @@ End Function
 
 [back to top](#top)
 
+<a id="41"></a>
+
+## **Cells color**
+
+More colorIndex at [colorIndex](http://dmcritchie.mvps.org/excel/colors.htm)
+
+```vb
+ws.Range("A1").Interior.ColorIndex = 37
+ws.cells(1, "C").Interior.ColorIndex = 37
+```
+
+[back to top](#top)
+
 <a id="40"></a>
 
 ## **常用函数**
@@ -1142,6 +1159,12 @@ search `strTarget` in `strString` from `intStart` position. if found, return int
 
 `Split(str, “,”)`: 将字符串按, 分割开来，成一个数组，每一部分是数组的一个元素
 
+<a id="40-5-1"></a>
+
++ **Join**
+
+`Join(arr, ",")`: 将s数组按,来连接，成一个字符串. 如果不提供splitor, 默认按照**一个空格**来连接
+
 <a id="40-6"></a>
 
 + **Mid**
@@ -1161,7 +1184,7 @@ search `strTarget` in `strString` from `intStart` position. if found, return int
 `IsNumeric`或~~IsEmpty~~或`IsDate(text)`: 检测表达式text
 	IsNumeric是否是数字类型, 比如整数12, 浮点1.2, 百分数12%都对，带了字母就错
 
-	~~IsEmpty是否是空 尽量不用，只是部分适用，请使用trim(text) = ""~~
+~~IsEmpty是否是空~~ 尽量不用，只是部分适用，请使用trim(text) = ""
 
 	IsDate 是否是日期格式，常用的日期写法都可以检测到
 
