@@ -8,7 +8,7 @@
 
 [**git clone**](#2)
 
-[**Fork Others' Repo**](#3)
+[**Fork Others' Repo(Remote)**](#3)
 
 [**Branches**](#4)
 
@@ -75,6 +75,18 @@ git remote -v
 the following example change the remote branch `upstream` url. this method could be used to change to other people's forked branch from source repo
 ```bash
 git remote set-url upstream https://github.com/ORIGINAL-DEV-USERNAME/REPO-YOU-FORKED-FROM.git
+```
+
+7. rename a remote repo
+
+```bash
+git remote rename OLD_REMOTE_NAME NEW_NAME
+```
+
+8. remote a remote repo
+
+```bash
+git remote rm REMOTE_NAME # or use `git remote remove`
 ```
 
 [back to top](#top)
