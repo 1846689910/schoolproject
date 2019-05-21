@@ -18,6 +18,8 @@
 
 [**entry format with archetype.webpack.enableBabelPolyfill and useBuiltIns for archetypeV5**](#8)
 
+[**set babel env target for dev mode with archetype v5**](#9)
+
 <a id="3"></a>
 
 ## **Css Module Enabled and other Css Preprocessor Configuration**
@@ -1349,6 +1351,50 @@ function makeEntry() {
 module.exports = {
   context,
   entry: makeEntry()
+};
+```
+
+[back to top](#top)
+
+<a id="9"></a>
+
+## set babel env target for dev mode with archetype v5
+
+make dev mode build and use `es6` target
+
+define `envTargets` in `archetype/config/index.js`
+
+use `clap dev --target=es6` or `clap dev-es6` as alias
+
+`packages/electrode-archetype-react-app/arch-clap.js`
+
+```js
+function setDevelopmentTarget(args) {
+  if (archetype.babel.target === "default") {
+    const idx = args.findIndex(arg => arg.startsWith("--target"));
+    if (idx >= 0) {
+      const [arg] = args.splice(idx, 1);
+      process.env.ENV_TARGET = arg.substr("--target=".length);
+    }
+  }
+}
+// ...
+const setEnvTarget = target => {
+  process.env.ENV_TARGET = target;
+};
+
+let tasks = {
+  ".mk-prod-dir": () => {
+    // ...
+    const args = taskArgs(this.argv);
+    setDevelopmentTarget(args);
+    // ...
+  },
+  "dev-es6": {
+    desc:
+      "Start your app with watch in development mode with webpack-dev-server with ENV_TARGET=es6",
+    task: ["dev --target=es6"]
+  }
 };
 ```
 
