@@ -173,7 +173,7 @@ public class C6 {
                     remain[i] --;
                     allParentheses2Helper(p, sb, stack, remain, len, result);
                     sb.deleteCharAt(sb.length() - 1);
-                    stack.offerFirst(p[i]);
+                    stack.offerFirst(p[i - 1]);
                     remain[i] ++;
                 }
             }
