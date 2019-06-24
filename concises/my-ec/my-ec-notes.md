@@ -12,6 +12,8 @@
 
 [**fyn-lock.yaml lock sub-dependencies version**](#4)
 
+[**unknown command debug(chrome debugger)**](#5)
+
 <a id="1"></a>
 
 ## cloned electrode start issue
@@ -86,11 +88,14 @@ visual studio code debuger add configuration:
 
 For instance, the `caniuse-lite@1.0.30000975` breaks and bring in error for `browserslist`. Then it is necessary to limit or downgrade the version of `caniuse-lite` to `1.0.30000974`.
 
-+ install the package with version
+- install the package with version
+
 ```bash
 fyn add caniuse-lite@1.0.30000974
 ```
-+ modify `fyn-lock.yaml`, let all the dependency reference version to point to the wanted version
+
+- modify `fyn-lock.yaml`, let all the dependency reference version to point to the wanted version
+
 ```
 caniuse-lite:
  _latest: 1.0.30000975
@@ -98,5 +103,34 @@ caniuse-lite:
   '1.0.30000974,^1.0.0,^1.0.30000844,^1.0.30000864,^1.0.30000865,^1.0.30000971,^1.0.30000975': 1.0.30000974
 ......
 ```
+
+[back to top](#top)
+
+<a id="5"></a>
+
+## unknown command debug(chrome debugger)
+
+For an unknown command execution error or a node.js script execution error debug:
+
+1. pinpoint script location, for example `wml-ignite`
+
+```bash
+which wml-ignite
+```
+
+2. start chrome debugger
+
+```bash
+node --inspect-brk ~/Documents/electrode/samples/demo-component/test.js
+```
+
+or for a command
+
+```bash
+node --inspect-brk ${which wml-ignite}
+```
+
+3. debug with chrome debugger
+   open chrome browser, go to `chrome://inspect`. Then, a localhost debug process is waiting there. click the `inspect` link beside the target
 
 [back to top](#top)
