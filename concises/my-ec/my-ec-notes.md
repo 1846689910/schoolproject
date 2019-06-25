@@ -8,7 +8,7 @@
 
 [**inspection of app crash caused by dependencies**](#2)
 
-[**dev brk debug in vs code debuger**](#3)
+[**dev brk debug in VS code debuger**](#3)
 
 [**fyn-lock.yaml lock sub-dependencies version**](#4)
 
@@ -64,7 +64,7 @@ diff fyn-lock.yaml last.yaml | grep tgz
 
 <a id="3"></a>
 
-## dev brk debug in vs code debuger
+## dev brk debug in VS code debuger
 
 visual studio code debuger add configuration:
 
@@ -79,6 +79,7 @@ visual studio code debuger add configuration:
   "remoteRoot": "${workspaceFolder}"
 }
 ```
+then use `clap dev` to run in dev mode. After server fully starts, click the green play button in debug page in VS code then press `d` for dev break.
 
 [back to top](#top)
 
@@ -132,5 +133,7 @@ node --inspect-brk ${which wml-ignite}
 
 3. debug with chrome debugger
    open chrome browser, go to `chrome://inspect`. Then, a localhost debug process is waiting there. click the `inspect` link beside the target
+
+** `package.json` to lock the version, you need to install the package with a specific version
 
 [back to top](#top)
