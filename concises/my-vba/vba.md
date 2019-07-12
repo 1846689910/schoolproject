@@ -84,6 +84,8 @@
 
 [**Cells color**](#41)
 
+[**面向对象**](#42)
+
 [**常用函数**](#40)
 
 + [**instr**](#40-1)
@@ -1119,6 +1121,62 @@ More colorIndex at [colorIndex](http://dmcritchie.mvps.org/excel/colors.htm)
 ```vb
 ws.Range("A1").Interior.ColorIndex = 37
 ws.cells(1, "C").Interior.ColorIndex = 37
+```
+
+[back to top](#top)
+
+<a id="42"></a>
+
+## **面向对象**
+
+定义一个`Student`类. 
+ + insert `Class Module`, rename as `Student`
+ + add the following code snippet
+```vb
+Option Explicit
+
+Private prName$
+Private prAge$
+Private prLevel$
+Public Function getName() As String ' use function as getter
+    getName = prName
+End Function
+Public Property Get name() As String ' use getter function
+  name = prName
+End Property
+Public Property Let name(ByVal name As String) ' variable `prName` setter
+  prName = name
+End Property
+Public Function getAge() As Integer
+    getAge = prAge
+End Function
+Public Function getLevel() As String
+    getLevel = prLevel
+End Function
+Public Sub init(ByVal name As String, ByVal age As Integer, ByVal level As String)
+    prName = name
+    prAge = age
+    prLevel = level
+End Sub
+Public Sub run()
+    Debug.Print prName & " is running"
+End Sub
+Public Function study(ByVal course As String) As String
+    study = prName & " is studying " & course
+End Function
+```
+
+创建对象，调用方法
+```vb
+Option Explicit
+Sub main()
+    Dim s As New Student
+    s.init "george", 12, "elementary"
+    Debug.Print s.getAge() ' 12
+    Debug.Print s.name ' george
+    s.name = "alex"
+    Debug.Print s.getName() ' alex
+End Sub
 ```
 
 [back to top](#top)
