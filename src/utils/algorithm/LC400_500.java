@@ -180,43 +180,57 @@ public:
  * LC460
  * */
 class LFUCache {
-    Map<Integer, Integer> vals;
-    Map<Integer, Integer> counts;
-    HashMap<Integer, LinkedHashSet<Integer>> lists;
-    int size;
-    int min = -1;
-    public LFUCache(int capacity) {
-        size = capacity;
-        vals = new HashMap<>();
-        counts = new HashMap<>();
-        lists = new HashMap<>();
-        lists.put(1, new LinkedHashSet<>());
+    private Map<Integer, Integer> keyVals;
+    private Map<Integer, Integer> keyCounts;
+    private Map<Integer, LinkedHashSet<Integer>> countKeySets;
+    private final int size;
+    private int min;
+
+    public LFUCache(int size) {
+        this.size = size;
+        this.min = -1;
+        keyVals = new HashMap<Integer, Integer>();
+        keyCounts = new HashMap<Integer, Integer>();
+        countKeySets = new HashMap<Integer, LinkedHashSet<Integer>>();
+        countKeySets.put(1, new LinkedHashSet<Integer>());
     }
+
     public int get(int key) {
-        if(!vals.containsKey(key)) return -1;
-        int count = counts.get(key);
-        counts.put(key, count+1);
-        lists.get(count).remove(key);
-        if(count==min && lists.get(count).size()==0) min++;
-        if(!lists.containsKey(count+1)) lists.put(count+1, new LinkedHashSet<>());
-        lists.get(count+1).add(key);
-        return vals.get(key);
+        if(!keyVals.containsKey(key)){
+            return -1;
+        }
+        int count = keyCounts.get(key);
+        keyCounts.put(key, count + 1);
+        countKeySets.get(count).remove(key);
+        if(count == min && countKeySets.get(count).size() == 0){
+            min ++;
+        }
+        if(!countKeySets.containsKey(count + 1)){
+            countKeySets.put(count + 1, new LinkedHashSet<Integer>());
+        }
+        countKeySets.get(count + 1).add(key);
+        return keyVals.get(key);
     }
-    public void set(int key, int value) {
-        if(size <=0) return;
-        if(vals.containsKey(key)) {
-            vals.put(key, value);
+
+    public void put(int key, int value) {
+        if(size <= 0){
+            return;
+        }
+
+        if(keyVals.containsKey(key)){
+            keyVals.put(key, value);
             get(key);
             return;
         }
-        if(vals.size() >= size) {
-            int evit = lists.get(min).iterator().next();
-            lists.get(min).remove(evit);
-            vals.remove(evit);
+        if(keyVals.size() >= size){
+            int leastFreq = countKeySets.get(min).iterator().next();
+            keyVals.remove(leastFreq);
+            keyCounts.remove(leastFreq);
+            countKeySets.get(min).remove(leastFreq);
         }
-        vals.put(key, value);
-        counts.put(key, 1);
+        keyVals.put(key, value);
+        keyCounts.put(key, 1);
+        countKeySets.get(1).add(key);
         min = 1;
-        lists.get(1).add(key);
     }
 }
