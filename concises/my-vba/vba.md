@@ -86,6 +86,8 @@
 
 [**面向对象**](#42)
 
+[**Hyperlink**](#43)
+
 [**常用函数**](#40)
 
 + [**instr**](#40-1)
@@ -1176,6 +1178,19 @@ Sub main()
     Debug.Print s.name ' george
     s.name = "alex"
     Debug.Print s.getName() ' alex
+End Sub
+```
+
+[back to top](#top)
+
+<a id="43"></a>
+
+## **Hyperlink**
+
+- 在`wsFrom.range(fromRangeSelector)`设置一个链接，点击可跳转到`wsTarget.range(targetRangeSelector)`, 该cell的内容为`content`
+```vb
+Sub AddHyperlink(ByRef wsFrom As Worksheet, ByVal fromRangeSelector As String, ByRef wsTarget As Worksheet, ByVal targetRangeSelector As String, ByVal content As String)
+    wsFrom.Hyperlinks.Add Anchor:=wsFrom.Range(fromRangeSelector), Address:="", SubAddress:=wsTarget.Name & "!" & targetRangeSelector, TextToDisplay:=content
 End Sub
 ```
 
