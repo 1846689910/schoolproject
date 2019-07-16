@@ -16,6 +16,8 @@
 
 [**add cssLoaderModules**](#5)
 
+[**saving much more on es6 bundle size**](#6)
+
 <a id="1"></a>
 
 ## App Initialization
@@ -276,6 +278,58 @@ const webpackConfigSpec = {
 const cssQuery = `${cssLoader}${
   archetype.webpack.cssLoaderModules ? cssLoaderOptions : ""
 }!${postcssLoader}`;
+```
+
+[back to top](#top)
+
+<a id="6"></a>
+
+## saving much more on es6 bundle size
+
+use webpack to build and generate es6 bundle:
+
+- create `archetype/config/index.js` and set `envTargets`
+- use `extendLoader` to overwrite `babel-exclude`
+
+```js
+const es6Dependencies = [
+  /* some module */
+];
+module.exports = {
+  babel: {
+    envTargets: {
+      es6: { chrome: 73 }
+    },
+    extendLoader: {
+      exclude: path => {
+        if (process.env.ENV_TARGET !== "default") {
+          for (const package of es6Dependencies) {
+            if (path.includes(package)) return false; // let babel include this module and build it according to env target
+          }
+          return path.includes("node_module");
+        }
+      }
+    }
+  }
+};
+```
+
+- set up alias in `webpack.config.js`. Generally, all packages `lib` are built and ready to use in es5 format. If use these `lib` code in components and some package provides `src` source code, user can setup `alias` to point `lib` to `src`. This could use the code after built with target
+
+```js
+const alias =
+  process.env.ENV_TARGET !== "default"
+    ? es6Dependencies.reduce((prev, dep) => {
+        prev[`${dep}/lib`] = `${dep}/src`;
+        prev[`${dep}`] = `${dep}/src`;
+        return prev;
+      }, {})
+    : {};
+module.exports = {
+  resolve: {
+    alias
+  }
+};
 ```
 
 [back to top](#top)
