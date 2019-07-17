@@ -14,6 +14,8 @@
 
 [**unknown command debug(chrome debugger)**](#5)
 
+[**external resource reference**](#6)
+
 <a id="1"></a>
 
 ## cloned electrode start issue
@@ -79,6 +81,7 @@ visual studio code debuger add configuration:
   "remoteRoot": "${workspaceFolder}"
 }
 ```
+
 then use `clap dev` to run in dev mode. After server fully starts, click the green play button in debug page in VS code then press `d` for dev break.
 
 [back to top](#top)
@@ -134,6 +137,36 @@ node --inspect-brk ${which wml-ignite}
 3. debug with chrome debugger
    open chrome browser, go to `chrome://inspect`. Then, a localhost debug process is waiting there. click the `inspect` link beside the target
 
-** `package.json` to lock the version, you need to install the package with a specific version
+\*\* `package.json` to lock the version, you need to install the package with a specific version
+
+[back to top](#top)
+
+<a id="6"></a>
+
+## external resource reference
+
+External resource is a `link` or `style` or `script` tag that is inserted into the webpage.
+
+- `unbundledJS` option:
+  as for external js files, you could add [unbundledJS](https://github.com/electrode-io/electrode/tree/master/packages/electrode-react-webapp#unbundledjs-details) in your options of `electrode-react-webapp` or `@walmart/electrode-index-page`
+
+- ~~`unbundledStyle` option: documented but deprecated~~
+
+- edit template html page:
+  Electrode App has [default template](https://github.com/electrode-io/electrode/tree/master/packages/electrode-react-webapp#htmlfile-view-details). An external reference can be inserted by adding `htmlFile` property in options of `electrode-react-webapp` or `@walmart/electrode-index-page`
+  1. create `template/index.html`
+  2. add `htmlFile` option in `config/default.js` or `config/default.json`
+
+```js
+plugins: {
+  webapp: {
+    module: "electrode-react-webapp/lib/hapi",
+    options: {
+      //...
+      htmlFile: "template/index.html",
+    }
+  }
+}
+```
 
 [back to top](#top)
