@@ -220,6 +220,8 @@ echo $(grep "hello" ./task.sh)
 
 ps aux # list info lines of running shell in `USER PID %CPU %MEM ... COMMAND`
 # kill -9 PID  # kill the process with PID
-lsof -i :3000 # list of open files whose Internet address matches the address specified in i
+lsof -i:3000 # list of open files whose Internet address matches the address specified in i
+lsof -ti:3000 # exactly return the process ID (PID) of the program that runs and listen on port 3000
+# lsof -ti:3000 | xargs kill -9 # will kill the program listening port 3000
 
 rm -rf ${myDir}
