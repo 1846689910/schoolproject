@@ -985,19 +985,12 @@ map.clear
 Go through all items (for each loop)
 
 ```vb
-Dim key As Variant
-For Each key In map.Keys
-    Debug.Print key, map(key)
-Next key
-```
-
-Go through all items (for loop - early binding only)
-
-```vb
-Dim i As Long
-For i = 0 To map.Count - 1
-   Debug.Print map.Keys(i), map.Values(i)
-Next i
+Set list = CreateObject("System.Collections.ArrayList")
+list.addrange (map.keys())
+Dim k As Variant
+For Each k In list
+    Debug.Print k
+Next k
 ```
 
 Get the number of items
