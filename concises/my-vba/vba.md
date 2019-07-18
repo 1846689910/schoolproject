@@ -945,7 +945,8 @@ Set map = CreateObject("System.Collections.Hashtable")
 ```
 
 Add item (key must not already exist)
-+ if add cell content, the cell must have been written before. One best way is `map.add "" & ws.cells(i, j).value, val`
+
+- if add cell content, the cell must have been written before. One best way is `map.add "" & ws.cells(i, j).value, val`
 
 ```vb
 map.Add Key, Value
@@ -1005,17 +1006,16 @@ map.Count
 
 ## **Define and use Dictionary**
 
-need reference `Microsoft Scripting Runtime`
 
 Declare and create (early binding)
-
+ + **early binding require reference `Microsoft Scripting Runtime`**
 ```vb
 Dim dict As Scripting.Dictionary
 Set dict = New Scripting.Dictionary
 ```
 
 Declare and create (late binding)
-
++ late binding without the reference above will perform as well, but no coding assistance in excel
 ```vb
 Dim dict As Object
 Set dict = CreateObject("Scripting.Dictionary")
