@@ -16,6 +16,8 @@
 
 [**external resource reference**](#6)
 
+[**add user defined xclap tasks**](#7)
+
 <a id="1"></a>
 
 ## cloned electrode start issue
@@ -198,5 +200,38 @@ $ clap critical-css
 ```
 
 the code is in [arch-clap.js](https://github.com/electrode-io/electrode/blob/78908e7343e2b39acb24d0ad321f88ca7aa55273/packages/electrode-archetype-react-app/arch-clap.js#L989)
+
+[back to top](#top)
+
+<a id="7"></a>
+
+## add user defined xclap tasks
+
+create `xclap.js` in app root directory
+
+```js
+const xclap = require("xclap");
+
+const tasks = {
+  hello: "echo hello world",
+  js: () => console.log("JS hello world"),
+  both: {
+    desc: "invoke tasks hello and js in serial order",
+    // only array at top level like this is default to serial, other times
+    // they are default to concurrent.
+    task: ["hello", "js"]
+  },
+  both2: {
+    desc: "invoke tasks hello and js concurrently",
+    task: xclap.concurrent("hello", "js")
+  },
+  shell: {
+    desc: "Run a shell command with TTY control and set an env",
+    task: xclap.exec("echo test", { flags: "tty", execOptions: { env: { foo: "bar" } } })
+  }
+};
+
+xclap.load(tasks);
+```
 
 [back to top](#top)
