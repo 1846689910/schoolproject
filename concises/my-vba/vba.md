@@ -74,6 +74,8 @@
 
 [**Define and use ArrayList**](#35)
 
+[**Define and use Hashtable**](#44)
+
 [**Define and use Dictionary**](#36)
 
 [**VBA Regular Expression**](#37)
@@ -90,29 +92,29 @@
 
 [**常用函数**](#40)
 
-+ [**instr**](#40-1)
+- [**instr**](#40-1)
 
-+ [**Round**](#40-2)
+- [**Round**](#40-2)
 
-+ [**Dir可检查file exists**](#40-3)
+- [**Dir 可检查 file exists**](#40-3)
 
-+ [**Replace**](#40-4)
+- [**Replace**](#40-4)
 
-+ [**Split**](#40-5)
+- [**Split**](#40-5)
 
-+ [**Join**](#40-5-1)
+- [**Join**](#40-5-1)
 
-+ [**Mid**](#40-6)
+- [**Mid**](#40-6)
 
-+ [**Left & Right**](#40-7)
+- [**Left & Right**](#40-7)
 
-+ [**isNumeric & isDate**](#40-8)
+- [**isNumeric & isDate**](#40-8)
 
-+ [**Trim, LTrim, RTrim**](#40-9)
+- [**Trim, LTrim, RTrim**](#40-9)
 
-+ [**类型转换(字符串转数字,遇到空字符串转0)**](#40-10)
+- [**类型转换(字符串转数字,遇到空字符串转 0)**](#40-10)
 
-+ [**isMissing**](#40-11)
+- [**isMissing**](#40-11)
 
 <a id="1"></a>
 
@@ -888,34 +890,120 @@ Next i
 ## **Define and use ArrayList**
 
 Define:
+
 ```vb
     Dim list As Object
     Set list = CreateObject("System.Collections.ArrayList")
 ```
+
 get element in arraylist
+
 ```vb
 list.item(0)
 'or
 list(0)
 ```
+
 add element in arraylist
+
 ```vb
 list.add("123")
 'or
 list.add "123"
 ```
+
 get length of arraylist
+
 ```vb
 list.count   ' the element from [0, list.count - 1]
 ```
+
 store ArrayList in dictionary
+
 ```vb
 dict.Add Key, CreateObject("System.Collections.ArrayList")
 ```
+
 convert to array
+
 ```vb
     Dim arr As Variant
     arr = list.toArray
+```
+
+[back to top](#top)
+
+<a id="44"></a>
+
+## **Define and use Hashtable**
+
+Declare and create
+
+```vb
+Dim map As Object
+Set map = CreateObject("System.Collections.Hashtable")
+```
+
+Add item (key must not already exist)
++ if add cell content, the cell must have been written before. One best way is `map.add "" & ws.cells(i, j).value, val`
+
+```vb
+map.Add Key, Value
+```
+
+Change value at key. Automatically adds if the key does not exist.
+
+```vb
+map(Key) = Value
+```
+
+Get a value from the dictionary using the key
+
+```vb
+map(Key)
+```
+
+Check if key exists
+
+```vb
+map.contains(Key)
+map.containsKey(Key)
+```
+
+Remove item
+
+```vb
+map.Remove(key)
+```
+
+Remove all items
+
+```vb
+map.clear
+```
+
+Go through all items (for each loop)
+
+```vb
+Dim key As Variant
+For Each key In map.Keys
+    Debug.Print key, map(key)
+Next key
+```
+
+Go through all items (for loop - early binding only)
+
+```vb
+Dim i As Long
+For i = 0 To map.Count - 1
+   Debug.Print map.Keys(i), map.Values(i)
+Next i
+```
+
+Get the number of items
+
+```vb
+map.Count
 ```
 
 [back to top](#top)
@@ -927,6 +1015,7 @@ convert to array
 need reference `Microsoft Scripting Runtime`
 
 Declare and create (early binding)
+
 ```vb
 Dim dict As Scripting.Dictionary
 Set dict = New Scripting.Dictionary
@@ -938,45 +1027,63 @@ Declare and create (late binding)
 Dim dict As Object
 Set dict = CreateObject("Scripting.Dictionary")
 ```
+
 Add item (key must not already exist)
+
 ```vb
 dict.Add Key, Value
 ```
+
 Change value at key. Automatically adds if the key does not exist.
+
 ```vb
 dict(Key) = Value
 ```
+
 Get a value from the dictionary using the key
+
 ```vb
 dict(Key)
 ```
+
 Check if key exists
+
 ```vb
 dict.Exists(Key)
 ```
+
 Remove item
+
 ```vb
 dict.Remove Key
 ```
+
 Remove all items
+
 ```vb
 dict.RemoveAll
 ```
+
 Go through all items (for each loop)
+
 ```vb
 Dim key As Variant
 For Each key In dict.Keys
     Debug.Print key, dict(key)
 Next key
 ```
+
 Go through all items (for loop - early binding only)
+
 ```vb
 Dim i As Long
 For i = 0 To dict.Count - 1
    Debug.Print dict.Keys(i), dict.Items(i)
 Next i
 ```
+
 Get the number of items
+
 ```vb
 dict.Count
 ```
@@ -987,7 +1094,8 @@ dict.Count
 
 ## **VBA Regular Express**
 
-引入reference: `Microsoft VBScript Regular Expressions 5.5`
+引入 reference: `Microsoft VBScript Regular Expressions 5.5`
+
 ```vb
 Dim regExp as Object, matches as Object
 Dim match as variant
@@ -1071,21 +1179,22 @@ End Sub
 
 ## **Error Handling**
 
-VBA中的error handling并不具备自身的独立的作用域和try catch很不同，仅仅起到 发现错误并跳转到代码标记的位置继续运行。如果没有发现错误，带标记的部分也会按照相应的上下文情况而被运行。
+VBA 中的 error handling 并不具备自身的独立的作用域和 try catch 很不同，仅仅起到 发现错误并跳转到代码标记的位置继续运行。如果没有发现错误，带标记的部分也会按照相应的上下文情况而被运行。
 
-可以在标记处使用`if Err.Number <> 0 then … `来隔开错误处理和正常运行的代码
+可以在标记处使用`if Err.Number <> 0 then …`来隔开错误处理和正常运行的代码
 
-`on Error Goto 0`: 停在error处，并显示error
+`on Error Goto 0`: 停在 error 处，并显示 error
 
-`on Error Goto -1`: 清除当前的error
+`on Error Goto -1`: 清除当前的 error
 
-`on Error Resume Next`: 忽略error，继续
+`on Error Resume Next`: 忽略 error，继续
 
-`on Error Goto LABEL`: 有error时，跳转到标记有LABEL的位置的代码，sub或function内跳转
+`on Error Goto LABEL`: 有 error 时，跳转到标记有 LABEL 的位置的代码，sub 或 function 内跳转
 
 `Err.Description`: 错误描述
 
-**忽略error的例子:**
+**忽略 error 的例子:**
+
 ```vb
 Sub errorTest()
     On Error Resume Next
@@ -1093,8 +1202,8 @@ Sub errorTest()
 End Sub
 ```
 
-**捕获error的例子:**
-将0到2的格子内容字符串连接起来，如果出错，连接内容变更为”NPE”
+**捕获 error 的例子:**
+将 0 到 2 的格子内容字符串连接起来，如果出错，连接内容变更为”NPE”
 
 ```vb
 Function errorTestFn(ByRef ws As Worksheet) As String
@@ -1131,9 +1240,11 @@ ws.cells(1, "C").Interior.ColorIndex = 37
 
 ## **面向对象**
 
-定义一个`Student`类. 
- + insert `Class Module`, rename as `Student`
- + add the following code snippet
+定义一个`Student`类.
+
+- insert `Class Module`, rename as `Student`
+- add the following code snippet
+
 ```vb
 Option Explicit
 
@@ -1169,6 +1280,7 @@ End Function
 ```
 
 创建对象，调用方法
+
 ```vb
 Option Explicit
 Sub main()
@@ -1187,7 +1299,8 @@ End Sub
 
 ## **Hyperlink**
 
-- 在`wsFrom.range(fromRangeSelector)`设置一个链接，点击可跳转到`wsTarget.range(targetRangeSelector)`, 该cell的内容为`content`
+- 在`wsFrom.range(fromRangeSelector)`设置一个链接，点击可跳转到`wsTarget.range(targetRangeSelector)`, 该 cell 的内容为`content`
+
 ```vb
 Sub AddHyperlink(ByRef wsFrom As Worksheet, ByVal fromRangeSelector As String, ByRef wsTarget As Worksheet, ByVal targetRangeSelector As String, ByVal content As String)
     wsFrom.Hyperlinks.Add Anchor:=wsFrom.Range(fromRangeSelector), Address:="", SubAddress:=wsTarget.Name & "!" & targetRangeSelector, TextToDisplay:=content
@@ -1202,75 +1315,74 @@ End Sub
 
 <a id="40-1"></a>
 
-+ **instr**
+- **instr**
 
-`instr([intStart], strString, strTarget)`,  从intStart开始搜索(可省，默认为1，从首字符开始i), 从`strString`中找`strTarget`。如果找到返回位置，找不到返回0
+`instr([intStart], strString, strTarget)`, 从 intStart 开始搜索(可省，默认为 1，从首字符开始 i), 从`strString`中找`strTarget`。如果找到返回位置，找不到返回 0
 search `strTarget` in `strString` from `intStart` position. if found, return intPosition where the strTarget first show up. if not found, return 0. intStart is default 1
 
 <a id="40-2"></a>
 
-+ **Round**
+- **Round**
 
-`Round(dict(key), 2)`  将一个数保留小数点后2位
+`Round(dict(key), 2)` 将一个数保留小数点后 2 位
 
 <a id="40-3"></a>
 
-+ **Dir**
+- **Dir**
 
-`Dir(“C:\ aaa.docx”)`: 如果路径存在返回字符串aaa.docx, 如果不存在返回空字符串””. 你可以使用*匹配0个或多个未知字符，或者使用?匹配一个未知字符
+`Dir(“C:\ aaa.docx”)`: 如果路径存在返回字符串 aaa.docx, 如果不存在返回空字符串””. 你可以使用\*匹配 0 个或多个未知字符，或者使用?匹配一个未知字符
 `Dir(“C:\aaa”,vbDirectory)`如果是检测路径而不是文件，需要加`vbDirecotry`
 
 <a id="40-4"></a>
 
-+ **Replace**
+- **Replace**
 
 `Replace(Date, “/”, “-”)`: 将字符串中的(/)替换为-
 
 <a id="40-5"></a>
 
-+ **Split**
+- **Split**
 
 `Split(str, “,”)`: 将字符串按, 分割开来，成一个数组，每一部分是数组的一个元素
 
 <a id="40-5-1"></a>
 
-+ **Join**
+- **Join**
 
-`Join(arr, ",")`: 将s数组按,来连接，成一个字符串. 如果不提供splitor, 默认按照**一个空格**来连接
+`Join(arr, ",")`: 将 s 数组按,来连接，成一个字符串. 如果不提供 splitor, 默认按照**一个空格**来连接
 
 <a id="40-6"></a>
 
-+ **Mid**
+- **Mid**
 
-`MID(text, start, K )`: 从字符串text的start位置开始，取K个字符出来, 注意首字符索引是1
+`MID(text, start, K )`: 从字符串 text 的 start 位置开始，取 K 个字符出来, 注意首字符索引是 1
 
 <a id="40-7"></a>
 
-+ **Left & Right**
+- **Left & Right**
 
-`LEFT或RIGHT(text, K )`: 从字符串text的左边或右边开始，取K个字符出来
+`LEFT或RIGHT(text, K )`: 从字符串 text 的左边或右边开始，取 K 个字符出来
 
 <a id="40-8"></a>
 
-+ **isNumeric**
+- **isNumeric**
 
-`IsNumeric`或~~IsEmpty~~或`IsDate(text)`: 检测表达式text
-	IsNumeric是否是数字类型, 比如整数12, 浮点1.2, 百分数12%都对，带了字母就错
+`IsNumeric`或~~IsEmpty~~或`IsDate(text)`: 检测表达式 text
+IsNumeric 是否是数字类型, 比如整数 12, 浮点 1.2, 百分数 12%都对，带了字母就错
 
-~~IsEmpty是否是空~~ 尽量不用，只是部分适用，请使用trim(text) = ""
+~~IsEmpty 是否是空~~ 尽量不用，只是部分适用，请使用 trim(text) = ""
 
-	IsDate 是否是日期格式，常用的日期写法都可以检测到
-
+    IsDate 是否是日期格式，常用的日期写法都可以检测到
 
 <a id="40-9"></a>
 
-+ **Trim, LTrim & RTrim**
+- **Trim, LTrim & RTrim**
 
-`Trim, LTrim, RTrim(text)`: 将字符串text的所有, 左边或右边的空格都去除
+`Trim, LTrim, RTrim(text)`: 将字符串 text 的所有, 左边或右边的空格都去除
 
 <a id="40-10"></a>
 
-+ **类型转换(字符串转数字,遇到空字符串转0)**
+- **类型转换(字符串转数字,遇到空字符串转 0)**
 
 ```vb
     Dim s As String
@@ -1286,8 +1398,8 @@ search `strTarget` in `strString` from `intStart` position. if found, return int
 
 <a id="40-11"></a>
 
-+ **isMissing**
+- **isMissing**
 
-检测函数中optional的value是否有传递, 如果optional X as boolean = False，那么就不算missing了，就会产生false
+检测函数中 optional 的 value 是否有传递, 如果 optional X as boolean = False，那么就不算 missing 了，就会产生 false
 
 [back to top](#top)
