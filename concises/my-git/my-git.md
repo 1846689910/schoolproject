@@ -103,6 +103,11 @@ git remote rename OLD_REMOTE_NAME NEW_NAME
 git remote rm REMOTE_NAME # or use `git remote remove`
 ```
 
+9. set this branch's tracking upstream
+```bash
+git branch --set-upstream-to=ORIGIN/<REMOTE_BRANCH> CURRENT_BRANCH
+```
+
 [back to top](#top)
 
 <a id="4"></a>
