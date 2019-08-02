@@ -252,6 +252,8 @@ if the user does not want the mapped class name then should not enable css modul
 
 - `src/client/.babelrc.js`: does the user set up correct `babelrc`
 
+  - for the loose stylus syntax which allow parentheses and semicolons, should watch the `sugarss` in `packages/electrode-archetype-react-app-dev/config/babel/babelrc-client.js`
+
 - `package.json`: does the user include the process env in command line, like `process.env.CSS_MODULE_SUPPORT=true clap dev`
 
 - `xclap.js`: does the user enable the process env in this file
