@@ -18,6 +18,8 @@
 
 [**add user defined xclap tasks**](#7)
 
+[**css issue common solutions and where to start**](#8)
+
 <a id="1"></a>
 
 ## cloned electrode start issue
@@ -233,5 +235,27 @@ const tasks = {
 
 xclap.load(tasks);
 ```
+
+[back to top](#top)
+
+<a id="8"></a>
+
+## css issue common solutions and where to start
+
+css issues are usually related to css modules
+
+The starting positions could be
+
+- `archetype/config/index.js`: does the user enable css module
+
+if the user does not want the mapped class name then should not enable css module
+
+- `src/client/.babelrc.js`: does the user set up correct `babelrc`
+
+  - for the loose stylus syntax which allow parentheses and semicolons, should watch the `sugarss` in `packages/electrode-archetype-react-app-dev/config/babel/babelrc-client.js`
+
+- `package.json`: does the user include the process env in command line, like `process.env.CSS_MODULE_SUPPORT=true clap dev`
+
+- `xclap.js`: does the user enable the process env in this file
 
 [back to top](#top)
