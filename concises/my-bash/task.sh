@@ -8,6 +8,9 @@ env                 # displays all environment variables
 echo $SHELL         # displays the shell you're using
 echo $BASH_VERSION  # displays bash version
 
+export ABC=123      # run in terminal, will set env variable for this process temporarily
+# create `~/.bash_profile`, put above cmd to set env variable permanantly
+
 #bash                # if you want to use bash (type exit to go back to your previously opened shell)
 whereis bash        # finds out where bash is on your system
 which bash          # finds out which program is executed as 'bash' (default: /bin/bash, can change across environments)
