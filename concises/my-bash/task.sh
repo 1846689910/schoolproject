@@ -8,8 +8,11 @@ env                 # displays all environment variables
 echo $SHELL         # displays the shell you're using
 echo $BASH_VERSION  # displays bash version
 
+echo setup environment variable
 export ABC=123      # run in terminal, will set env variable for this process temporarily
 # create `~/.bash_profile`, put above cmd to set env variable permanantly
+echo expand PATH environment variablt
+# put `export PATH=$PATH:~/opt/gradle/gradle-5.5.1/bin` in `~/.bash_profile` will add a path to $PATH variable
 
 #bash                # if you want to use bash (type exit to go back to your previously opened shell)
 whereis bash        # finds out where bash is on your system
