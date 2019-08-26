@@ -6,6 +6,8 @@
 
 [**Git Basics**](#1)
 
+- [Git Config setting](#1-1)
+
 [**Undoing Changes**](#2)
 
 [**Rewriting Git History**](#3)
@@ -48,6 +50,33 @@
 | `git log`                   | Display the entire commit history using the default format. For customization see additional options.                                       |
 | `git diff`                  | Show unstaged changes between your index and working directory                                                                              |
 
+<a id="1-1"></a>
+
+### Git Config Setting
+
+needs to check your git `name` and `email` before doing any commit, if you work on multiple accounts
+
+show the `name` and `email`
+
+```bash
+git config user.name
+git config user.email
+```
+
+set `name` and `email` for one repository
+
+```bash
+git config user.name "NAME"
+git config user.email "EMAIL"
+```
+
+set `name` and `email` globally
+
+```bash
+git config --global user.name "NAME"
+git config --global user.email "EMAIL"
+```
+
 [back to top](#top)
 
 <a id="2"></a>
@@ -66,10 +95,10 @@
 
 ## **Rewriting Git History**
 
-| command              | description                                                                                                                           |
-| :------------------- | :------------------------------------------------------------------------------------------------------------------------------------ |
+| command              | description                                                                                                                          |
+| :------------------- | :----------------------------------------------------------------------------------------------------------------------------------- |
 | `git commit --amend` | Replace the last commit with the staged changes and last commit combined. Use with nothing staged to edit the last commit’s message. |
-| `git rebase <base>`  | Rebase the current branch onto base. base can be a commit ID, a branch name, a tag, or a relative reference to HEAD.                  |
+| `git rebase <base>`  | Rebase the current branch onto base. base can be a commit ID, a branch name, a tag, or a relative reference to HEAD.                 |
 | `git reflog`         | Show a log of changes to the local repository’s HEAD. Add --relative-date flag to show date info or --all to show all refs.          |
 
 [back to top](#top)
@@ -90,11 +119,11 @@
 
 ## **Remote Repositories**
 
-| command                       | description                                                                                                                        |
-| :---------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
-| `git remote add <name> <url>` | Create a new connection to a remote repo. After adding a remote, you can use name as a shortcut for url in other commands.         |
-| `git fetch <remote> <branch>` | Fetches a specific branch, from the repo. Leave off branch to fetch all remote refs.                                               |
-| `git fetch <remote>`          | Fetches all remote repo branches                                                                                                   |
+| command                       | description                                                                                                                       |
+| :---------------------------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| `git remote add <name> <url>` | Create a new connection to a remote repo. After adding a remote, you can use name as a shortcut for url in other commands.        |
+| `git fetch <remote> <branch>` | Fetches a specific branch, from the repo. Leave off branch to fetch all remote refs.                                              |
+| `git fetch <remote>`          | Fetches all remote repo branches                                                                                                  |
 | `git pull <remote>`           | Fetch the specified remote’s copy of current branch and immediately merge it into the local copy.                                 |
 | `git push <remote> <branch>`  | Push the branch to remote, along with necessary commits and objects. Creates named branch in the remote repo if it doesn’t exist. |
 [back to top](#top)
@@ -126,8 +155,8 @@
 
 ## **Git Pull**
 
-| command                      | description                                                                                                                                |
-| :--------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| command                      | description                                                                                                                               |
+| :--------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
 | `git pull --rebase <remote>` | Fetch the remote’s copy of current branch and rebases it into the local copy. Uses git rebase instead of merge to integrate the branches. |
 
 [back to top](#top)
@@ -136,11 +165,11 @@
 
 ## **Git Push**
 
-| command                     | description                                                                                                                                     |
-| :-------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------------- |
+| command                     | description                                                                                                                                   |
+| :-------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------- |
 | `git push <remote> --force` | Forcesthe git push evenifitresultsinanon-fast-forwardmerge.Donotuse the --force flag unless you’re absolutely sure you know what you’re doing |
-| `git push <remote> --all`   | Push all of your local branches to the specified remote.                                                                                        |
-| `git push <remote> --tags`  | Tags aren’t automatically pushed when you push a branch or use the --all flag.The--tagsflagsendsallofyourlocaltagstotheremoterepo.             |
+| `git push <remote> --all`   | Push all of your local branches to the specified remote.                                                                                      |
+| `git push <remote> --tags`  | Tags aren’t automatically pushed when you push a branch or use the --all flag.The--tagsflagsendsallofyourlocaltagstotheremoterepo.            |
 
 [back to top](#top)
 
@@ -174,16 +203,16 @@
 
 ## **Git Log**
 
-| command                           | description                                                                                                                               |
-| :-------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------------- |
-| `git log -<limit>`                | Limit number of commits by limit. E.g. git log -5 will limit to 5 commits.                                                                |
-| `git log --oneline`               | Condense each commit to a single line.                                                                                                    |
-| `git log -p`                      | Display the full diff of each commit.                                                                                                     |
-| `git log --stat`                  | Include which files were altered and the relative number of lines that were added or deleted from each of them.                           |
+| command                         | description                                                                                                                               |
+| :------------------------------ | :---------------------------------------------------------------------------------------------------------------------------------------- |
+| `git log -<limit>`              | Limit number of commits by limit. E.g. git log -5 will limit to 5 commits.                                                                |
+| `git log --oneline`             | Condense each commit to a single line.                                                                                                    |
+| `git log -p`                    | Display the full diff of each commit.                                                                                                     |
+| `git log --stat`                | Include which files were altered and the relative number of lines that were added or deleted from each of them.                           |
 | `git log --author= ”<pattern>”` | Search for commits by a particular author.                                                                                                |
 | `git log --grep=”<pattern>”`    | Search for commits with a commit message that matches pattern.                                                                            |
-| `git log <since>..<until>`        | Show commits that occur between since and until. Args can be a commit ID, branch name, HEAD, or any other kind of revision reference.     |
-| `git log -- <file>`               | Only display commits that have the specified file.                                                                                        |
-| `git log --graph --decorate`      | --graph flag draws a text based graph of commits on left side of commit msgs. --decorate adds names of branches or tags of commits shown. |
+| `git log <since>..<until>`      | Show commits that occur between since and until. Args can be a commit ID, branch name, HEAD, or any other kind of revision reference.     |
+| `git log -- <file>`             | Only display commits that have the specified file.                                                                                        |
+| `git log --graph --decorate`    | --graph flag draws a text based graph of commits on left side of commit msgs. --decorate adds names of branches or tags of commits shown. |
 
 [back to top](#top)
