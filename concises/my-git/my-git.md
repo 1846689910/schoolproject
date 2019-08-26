@@ -6,6 +6,8 @@
 
 [**创建 git repository**](#1)
 
+- [Git Config setting](#1-1)
+
 [**git clone**](#2)
 
 [**Fork Others' Repo(Remote)**](#3)
@@ -33,6 +35,33 @@ git commit -m 'First commit'
 git remote add origin <remote repository URL> # now your remote is origin/master
 git remote -v
 git push origin master
+```
+
+<a id="1-1"></a>
+
+### Git Config Setting
+
+needs to check your git `name` and `email` before doing any commit, if you work on multiple accounts
+
+show the `name` and `email`
+
+```bash
+git config user.name
+git config user.email
+```
+
+set `name` and `email` for one repository
+
+```bash
+git config user.name "NAME"
+git config user.email "EMAIL"
+```
+
+set `name` and `email` globally
+
+```bash
+git config --global user.name "NAME"
+git config --global user.email "EMAIL"
 ```
 
 [back to top](#top)
@@ -104,6 +133,7 @@ git remote rm REMOTE_NAME # or use `git remote remove`
 ```
 
 9. set this branch's tracking upstream
+
 ```bash
 git branch --set-upstream-to=ORIGIN/<REMOTE_BRANCH> CURRENT_BRANCH
 ```

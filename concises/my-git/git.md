@@ -6,8 +6,6 @@
 
 [**Git Basics**](#1)
 
-- [Git Config setting](#1-1)
-
 [**Undoing Changes**](#2)
 
 [**Rewriting Git History**](#3)
@@ -30,14 +28,9 @@
 
 [**Git Log**](#12)
 
-
-
-
-
 <a id="1"></a>
 
 ## **Git Basics**
-
 
 | command                     | description                                                                                                                                 |
 | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -49,33 +42,6 @@
 | `git status`                | List which files are staged, unstaged, and untracked.                                                                                       |
 | `git log`                   | Display the entire commit history using the default format. For customization see additional options.                                       |
 | `git diff`                  | Show unstaged changes between your index and working directory                                                                              |
-
-<a id="1-1"></a>
-
-### Git Config Setting
-
-needs to check your git `name` and `email` before doing any commit, if you work on multiple accounts
-
-show the `name` and `email`
-
-```bash
-git config user.name
-git config user.email
-```
-
-set `name` and `email` for one repository
-
-```bash
-git config user.name "NAME"
-git config user.email "EMAIL"
-```
-
-set `name` and `email` globally
-
-```bash
-git config --global user.name "NAME"
-git config --global user.email "EMAIL"
-```
 
 [back to top](#top)
 
@@ -126,6 +92,7 @@ git config --global user.email "EMAIL"
 | `git fetch <remote>`          | Fetches all remote repo branches                                                                                                  |
 | `git pull <remote>`           | Fetch the specified remote’s copy of current branch and immediately merge it into the local copy.                                 |
 | `git push <remote> <branch>`  | Push the branch to remote, along with necessary commits and objects. Creates named branch in the remote repo if it doesn’t exist. |
+
 [back to top](#top)
 
 <a id="6"></a>
@@ -183,7 +150,6 @@ git config --global user.email "EMAIL"
 | `git diff --cached` | Show difference between staged changes and last commit     |
 
 [back to top](#top)
-
 
 <a id="11"></a>
 
