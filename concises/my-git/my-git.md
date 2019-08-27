@@ -126,7 +126,7 @@ git remote set-url upstream https://github.com/ORIGINAL-DEV-USERNAME/REPO-YOU-FO
 git remote rename OLD_REMOTE_NAME NEW_NAME
 ```
 
-8. remote a remote repo
+8. remove a remote repo
 
 ```bash
 git remote rm REMOTE_NAME # or use `git remote remove`
