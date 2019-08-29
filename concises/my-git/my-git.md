@@ -200,6 +200,19 @@ git commit -m 'Second commit'
 git push origin eric-debug
 ```
 
+在 commit 前查看改变的内容
+
+```bash
+git diff
+git diff <File> # check a specific file
+```
+
+查看有 conflict 的部分
+
+```bash
+git diff --check
+```
+
 Abort Changes
 
 1. 放弃本地的修改
