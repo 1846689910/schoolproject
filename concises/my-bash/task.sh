@@ -43,8 +43,8 @@ greeting1=welcome
 user=$(whoami) # `whoami` will give the local username,
 # execute bash command or bash function: $(whoami), $(fn),
 # refer to bash variable: $VAR or ${VAR}
-    echo -e ${Green}I am $(whoami), I am ${user}, I am $user
-    echo -e "I am $(whoami), I am ${user}, I am $user $Reset" # equal to above
+echo -e ${Green}I am $(whoami), I am ${user}, I am $user
+echo -e "I am $(whoami), I am ${user}, I am $user $Reset" # equal to above
 day=$(date +%A) # use self defined variable as $var or ${var}
 hello=hello_${day}_123
 myDir=${user}_tmp
@@ -52,12 +52,12 @@ txtFile=${myDir}/tmp.txt
 
 # The function total_files reports a total number of files for a given directory.
 function total_files {
-        find $1 -type f | wc -l
+    find $1 -type f | wc -l
 }
 # The function total_directories reports a total number of directories
 # for a given directory.
 function total_directories {
-        find $1 -type d | wc -l
+    find $1 -type d | wc -l
 }
 
 echo "$greeting back $user! Today is $day, which is the best day of the entire week!"
@@ -106,12 +106,12 @@ function conditions {
         echo "$num_a is less than $num_b!"
         echo "I am also a part of result"
         ls ./
-    elif [ $num_a -gt $num_b ]; then
+        elif [ $num_a -gt $num_b ]; then
         echo "$num_a is greater than $num_b"
     else
         echo "$num_a is equal to $num_b!"
     fi
-
+    
     if [ -e ${txtFile} ]; then
         echo "$txtFile exists"
     else
@@ -229,5 +229,9 @@ ps aux # list info lines of running shell in `USER PID %CPU %MEM ... COMMAND`
 lsof -i:3000 # list of open files whose Internet address matches the address specified in i
 lsof -ti:3000 # exactly return the process ID (PID) of the program that runs and listen on port 3000
 # lsof -ti:3000 | xargs kill -9 # will kill the program listening port 3000
+
+ssh -D <PORT> <USERNAME>@<REMOTE_LINUX> -p # login remote linux
+
+scp <USERNAME>@<REMOTE_LINUX>:/home/a.txt <USERNAME>@<REMOTE_LINUX>:/home/ # copy file between linux machine after login with ssh
 
 rm -rf ${myDir}
