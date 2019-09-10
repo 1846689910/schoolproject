@@ -304,6 +304,26 @@ Then, replace the remote by forcely push
 git push origin BRANCH --force
 ```
 
+### change commit author
+
+```bash
+git rebase -i <earlier_commit>
+```
+
+choose several commits that you need to change author, then change them to `e` or `edit`
+
+```bash
+git commit --amend --author="1846689910 <email@address.com>"
+```
+then
+```bash
+git rebase --continue
+```
+finally
+```bash
+git push origin <branch> --force
+```
+
 **Exit rebase**
 
 ```bash
