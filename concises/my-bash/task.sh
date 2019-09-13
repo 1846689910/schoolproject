@@ -202,6 +202,7 @@ echo $(du -hcs ${myDir}/tar_tmp1) # get dir size
 
 echo -e "$Green get file size: $Reset"
 echo $(wc -c $txtFile) # get file size/Byte
+echo $(wc -l $txtFile) # get file line count
 
 # find dir and file that match the name pattern
 echo -e "$Green ls -d ~/D* $Reset"
@@ -233,5 +234,7 @@ lsof -ti:3000 # exactly return the process ID (PID) of the program that runs and
 ssh -D <PORT> <USERNAME>@<REMOTE_LINUX> -p # login remote linux
 
 scp <USERNAME>@<REMOTE_LINUX>:/home/a.txt <USERNAME>@<REMOTE_LINUX>:/home/ # copy file between linux machine after login with ssh
+
+history # list the past executed commands
 
 rm -rf ${myDir}
