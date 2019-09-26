@@ -18,6 +18,8 @@
 
 [**Pull From a PR**](#6)
 
+- [fetch a remote branch](#6-1)
+
 [**Rebase**](#7)
 
 [**SSH Key**](#8)
@@ -262,6 +264,22 @@ git pull upstream pull/<ID>/head
 
 [back to top](#top)
 
+<a id="6-1"></a>
+
+### fetch a remote branch
+
+```bash
+git fetch origin <BRANCH>
+git checkout <BRANCH>
+```
+
+```bash
+git fetch upstream <BRANCH>
+git checkout <BRANCH>
+```
+
+[back to top](#top)
+
 <a id="7"></a>
 
 ## **Rebase**
@@ -315,11 +333,15 @@ choose several commits that you need to change author, then change them to `e` o
 ```bash
 git commit --amend --author="1846689910 <email@address.com>"
 ```
+
 then
+
 ```bash
 git rebase --continue
 ```
+
 finally
+
 ```bash
 git push origin <branch> --force
 ```
