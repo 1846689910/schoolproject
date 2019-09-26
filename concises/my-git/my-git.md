@@ -240,6 +240,13 @@ git checkout COMMIT_HASH # 返回该commit,并未清除任何commits
 # git checkout CURRENT_BRANCH # 可以再回到该branch的头部
 ```
 
+4. stash untracked changes
+
+```bash
+git stash # stash untracked changes
+git stash pop # pop up the changes to current branch
+```
+
 [back to top](#top)
 
 <a id="6"></a>
