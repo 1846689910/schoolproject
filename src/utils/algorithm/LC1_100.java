@@ -9,8 +9,6 @@ import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.*;
 
 import static utils.algorithm.C2.firstOccur;
@@ -774,6 +772,29 @@ public class LC1_100 {
      [1,2,2],
      [5]
      ]
+     * */
+    public List<List<Integer>> combinationSum2_1(int[] candidates, int target) {
+        Arrays.sort(candidates);
+        List<List<Integer>> result = new ArrayList<>();
+        combinationSum2_1Helper(target, candidates, 0,0, new ArrayList<>(),result);
+        return result;
+    }
+    private void combinationSum2_1Helper(int target, int[] candidates, int index, int sum, List<Integer> cur, List<List<Integer>> result){
+        if(sum==target){
+            result.add(new ArrayList<>(cur));
+            return;
+        }
+        for(int i=index;i<candidates.length;i++){
+            if(i>index && candidates[i]==candidates[i-1]) continue;
+            if(sum+candidates[i]<=target){
+              cur.add(candidates[i]);
+              combinationSum2_1Helper(target, candidates,i+1,sum+candidates[i], cur, result);
+              cur.remove(cur.size()-1);
+            }
+        }
+    }
+    /**
+     * @deprecated combinationSum2
      * */
     public List<List<Integer>> combinationSum2(int[] candidates, int target) {
         List<List<Integer>> result = new ArrayList<>();
