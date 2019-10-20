@@ -724,6 +724,27 @@ public class LC1_100 {
      * LC39 Combination Sum (99 cent变体)
      * 但是返回值中保存的不是索引对应的数量，而是那些实际数字的集合
      * */
+    public List<List<Integer>> combinationSum1(int[] candidates, int target) {
+        List<List<Integer>> result = new ArrayList<>();
+        combinationSum1Helper(target, candidates, 0, 0, new ArrayList<>(), result);
+        return result;
+    }
+
+  private void combinationSum1Helper(int target, int[] coins,int idx, int sum, List<Integer> cur, List<List<Integer>> result ) {
+      if(sum == target) {
+          result.add(new ArrayList<>(cur));
+      }
+      for(int i = idx; i < coins.length; i++) {
+          if(sum + coins[i] <= target) {
+              cur.add(coins[i]);
+              combinationSum1Helper(target, coins, i, sum + coins[i], cur, result);
+              cur.remove(cur.size() - 1);
+          }
+      }
+  }
+/**
+ * @secondary
+ * */
     public List<List<Integer>> combinationSum(int[] candidates, int target) {
         List<List<Integer>> result = new ArrayList<>();
         List<Integer> cur = new ArrayList<>();
