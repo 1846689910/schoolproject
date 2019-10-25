@@ -90,6 +90,8 @@
 
 [**Hyperlink**](#43)
 
+[**Formula**](#44)
+
 [**常用函数**](#40)
 
 - [**instr**](#40-1)
@@ -1006,16 +1008,19 @@ map.Count
 
 ## **Define and use Dictionary**
 
-
 Declare and create (early binding)
- + **early binding require reference `Microsoft Scripting Runtime`**
+
+- **early binding require reference `Microsoft Scripting Runtime`**
+
 ```vb
 Dim dict As Scripting.Dictionary
 Set dict = New Scripting.Dictionary
 ```
 
 Declare and create (late binding)
-+ late binding without the reference above will perform as well, but no coding assistance in excel
+
+- late binding without the reference above will perform as well, but no coding assistance in excel
+
 ```vb
 Dim dict As Object
 Set dict = CreateObject("Scripting.Dictionary")
@@ -1299,6 +1304,32 @@ Sub AddHyperlink(ByRef wsFrom As Worksheet, ByVal fromRangeSelector As String, B
     wsFrom.Hyperlinks.Add Anchor:=wsFrom.Range(fromRangeSelector), Address:="", SubAddress:=wsTarget.Name & "!" & targetRangeSelector, TextToDisplay:=content
 End Sub
 ```
+
+[back to top](#top)
+
+<a id="#44"></a>
+
+## **Formula**
+
+within one worksheet
+
+```vb
+ws.range("A1").formula = "=sum(D1:H1)"
+ws.range("A2").formula = "=E1/G1"
+```
+
+cross worksheets
+
+```vb
+ws.range("A3").formula = "=" & ws1.name & "!C3/"& ws.name&"!E5"
+ws.range("A4").formula = "='Sh eet2'!B2/Sheet1!E1"
+```
+
+Note:
+
+- the formula is like `=SHEET_A!C1/SHEET_B!E1`
+- Don't forget `!` which means `whose`, like `ws!A1` meaning `ws 's A1 cell`
+- if the name has special char or space, then better to use single quote to wrap the sheet name `'sheet hello'!A1/ws1!A3`
 
 [back to top](#top)
 
