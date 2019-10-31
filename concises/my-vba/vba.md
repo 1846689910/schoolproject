@@ -84,7 +84,7 @@
 
 [**Error Handling**](#39)
 
-[**Cells color**](#41)
+[**Cells color/bold/italic/underline/strikethrough**](#41)
 
 [**面向对象**](#42)
 
@@ -1223,13 +1223,20 @@ End Function
 
 <a id="41"></a>
 
-## **Cells color**
+## **Cells color/bold/italic/underline/strikethrough**
 
 More colorIndex at [colorIndex](http://dmcritchie.mvps.org/excel/colors.htm)
 
 ```vb
 ws.Range("A1").Interior.ColorIndex = 37
 ws.cells(1, "C").Interior.ColorIndex = 37
+```
+
+```vb
+Worksheets("Sheet1").Range("A1:A5").Font.Bold = True
+Worksheets("Sheet1").Range("A1:A5").Font.Italic = True
+Worksheets("Sheet1").Range("A1:A5").Font.Underline = xlUnderlineStyleSingle
+Worksheets("Sheet1").Range("A1:A5").Font.Strikethrough = True
 ```
 
 [back to top](#top)
