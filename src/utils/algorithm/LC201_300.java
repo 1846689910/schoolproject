@@ -1340,6 +1340,7 @@ public class LC201_300 {
      Input: "abc"
      Output: []
      * */
+    @Deprecated
     public List<String> generatePalindromes1(String s) {
         int odd = 0;
         String mid = "";
