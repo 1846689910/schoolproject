@@ -1387,51 +1387,53 @@ public class LC201_300 {
     }
 
     public List < String > generatePalindromes(String s) {
-        Set < String > set = new HashSet <>();
-        int[] arr = new int[128];
+        Set < String > set = new HashSet < > ();
+        int[] count = new int[128];
         char[] chars = new char[s.length() / 2];
-        if (!canPermutePalindrome(s, arr)) return new ArrayList <>();
+        if (!canPermutePalindrome(s, count))  // TODO: exactly like canPermutePalindrome 266, except this will accept array and fill it during run
+            return new ArrayList < > ();
         char c = 0;
         int k = 0;
-        for (int i = 0; i < arr.length; i++) {
-            if (arr[i] % 2 == 1) c = (char) i;
-            for (int j = 0; j < arr[i] / 2; j++) {
-                chars[k ++] = (char) i;
+        for (int i = 0; i < count.length; i++) {
+            if (count[i] % 2 == 1)
+                c = (char) i;
+            for (int j = 0; j < count[i] / 2; j++) {
+                chars[k++] = (char) i;
             }
         }
-        permute(set, chars, c, 0);
-        return new ArrayList <> (set);
+        permute(chars, c, set,0);
+        return new ArrayList < String > (set);
     }
-    private boolean canPermutePalindrome(String s, int[] arr) {
-        int count = 0;
-        for(char c : s.toCharArray()){
-            arr[c] ++;
-            if(arr[c] % 2 == 0) {
-                count --;
-            } else {
-                count ++;
-            }
+    private boolean canPermutePalindrome(String s, int[] count) {
+        int ret = 0;
+        for (int i = 0; i < s.length(); i++) {
+            count[s.charAt(i)]++;
+            if (count[s.charAt(i)] % 2 == 0)
+                ret--;
+            else
+                ret++;
         }
-        return count <= 1;
+        return ret <= 1;
     }
-    private void permute(Set<String> set, char[] chars, char c, int idx) {
+    private void permute(char[] chars,  char c, Set<String> set, int idx) { // TODO: like permute string
         if (idx == chars.length) {
             set.add(new String(chars) + (c == 0 ? "" : c) + new StringBuffer(new String(chars)).reverse());
         } else {
             for (int i = idx; i < chars.length; i++) {
                 if (chars[idx] != chars[i] || idx == i) {
                     swap(chars, idx, i);
-                    permute(set, chars, c, idx + 1);
+                    permute(chars, c, set,idx + 1);
                     swap(chars, idx, i);
                 }
             }
         }
     }
-    public void swap(char[] s, int i, int j) {
+    private void swap(char[] s, int i, int j) {
         char temp = s[i];
         s[i] = s[j];
         s[j] = temp;
     }
+
     @Test
     public void test1(){
         char c = 0;
