@@ -1388,11 +1388,11 @@ public class LC201_300 {
     }
 
     public List < String > generatePalindromes(String s) {
-        Set < String > set = new HashSet < > ();
         int[] count = new int[128];
-        char[] chars = new char[s.length() / 2];
         if (!canPermutePalindrome(s, count))  // TODO: exactly like canPermutePalindrome 266, except this will accept array and fill it during run
             return new ArrayList < > ();
+        Set < String > set = new HashSet < > ();
+        char[] chars = new char[s.length() / 2];
         char c = 0;
         int k = 0;
         for (int i = 0; i < count.length; i++) {
