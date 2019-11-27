@@ -118,6 +118,8 @@
 
 - [**isMissing**](#40-11)
 
+- [**WorksheetFunction.Max**](#40-12) 
+
 <a id="1"></a>
 
 ## **Main()函数和应用提速**
@@ -929,8 +931,40 @@ dict.Add Key, CreateObject("System.Collections.ArrayList")
 convert to array
 
 ```vb
-    Dim arr As Variant
-    arr = list.toArray
+Dim arr As Variant
+arr = list.toArray()
+```
+
+clone the current list to a new list
+
+```vb
+set list2 = list.clone()
+```
+
+check if list has element
+
+```vb
+list.contains("Apple")
+```
+
+clear list
+
+```vb
+list.clear()
+```
+
+reverse `list.reverse()`
+
+sort `list.sort()`
+
+insert `list.insert(0, "Apple")` 
+
+remove
+
+```vb
+list.removeAt(0)
+list.remove("Apple")
+list.removeRange 1, 3
 ```
 
 [back to top](#top)
@@ -1434,3 +1468,15 @@ IsNumeric 是否是数字类型, 比如整数 12, 浮点 1.2, 百分数 12%都�
 检测函数中 optional 的 value 是否有传递, 如果 optional X as boolean = False，那么就不算 missing 了，就会产生 false
 
 [back to top](#top)
+
+<a id="40-12"></a>
+
+- **WorksheetFunction.Max**
+
+求最大值
+
+```vb
+WorksheetFunction.Max(arr)
+WorksheetFunction.Max(arrayList.toArray())
+WorksheetFunction.Max(arr, 1, 2)
+```
