@@ -595,6 +595,8 @@ ActiveCell.EntireColumn.Offset(0, 1).Insert
 
 ## **moveRow from `fromRow` to `destRow`**
 
+let the `fromRow` moved to the position of the current `destRow`. The original `destRow` will be pushed to one row down and become `destRow + 1`
+
 ```vb
 Sub moveRow(ByRef ws As Worksheet, ByVal fromRow As Long, ByVal destRow As Long)
     Dim f As Long
