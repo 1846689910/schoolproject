@@ -42,6 +42,10 @@
 
 [**插入行/列**](#19)
 
+[**moveRow from `fromRow` to `destRow`**](#19A)
+
+[**swapRow 交换i行和j行**](#19B)
+
 [**循环查找，找到 worksheet 里第一个内容为...或者内容不空的 cell**](#20)
 
 [**下拉列表框**](#21)
@@ -583,6 +587,50 @@ ActiveCell.EntireColumn.Insert
 
 'Insert column to the right of the active cell
 ActiveCell.EntireColumn.Offset(0, 1).Insert
+```
+
+[back to top](#top)
+
+<a id="19A"></a>
+
+## **moveRow from `fromRow` to `destRow`**
+
+```vb
+Sub moveRow(ByRef ws As Worksheet, ByVal fromRow As Long, ByVal destRow As Long)
+    Dim f As Long
+    If fromRow <= destRow Then
+        f = fromRow
+    Else
+        f = fromRow + 1
+    End If
+    ws.Range("A" & destRow).EntireRow.Insert
+    ws.Range("A" & f).EntireRow.Cut ws.Range("A" & destRow)
+    ws.Range("A" & f).EntireRow.Delete
+End Sub
+```
+
+[back to top](#top)
+
+<a id="19B"></a>
+
+## **swapRow 交换i行和j行**
+
+```vb
+Sub swapRow(ByRef ws As Worksheet, ByVal i As Long, ByVal j As Long)
+    Dim small As Long
+    Dim large As Long
+    If i <= j Then
+        small = i
+        large = j
+    Else
+        small = j
+        large = i
+    End If
+    ws.Range("A" & small).EntireRow.Insert
+    ws.Range("A" & (large + 1)).EntireRow.Cut ws.Range("A" & small)
+    ws.Range("A" & (small + 1)).EntireRow.Cut ws.Range("A" & (large + 1))
+    ws.Range("A" & (small + 1)).EntireRow.Delete
+End Sub
 ```
 
 [back to top](#top)
