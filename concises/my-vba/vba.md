@@ -114,7 +114,7 @@
 
 - [**Left & Right**](#40-7)
 
-- [**isNumeric & isDate**](#40-8)
+- [**isNumeric & isDate & isArray**](#40-8)
 
 - [**Trim, LTrim, RTrim**](#40-9)
 
@@ -920,7 +920,7 @@ array boundary:
 
 ```vb
 Ubound(arr) ' 最大index,
-Lbound(arr) ' 最小index,
+Lbound(arr) ' 最小index, 一般是从0开始
 size = Ubound(arr)-Lbound(arr) +1
 ```
 
@@ -1480,7 +1480,7 @@ search `strTarget` in `strString` from `intStart` position. if found, return int
 
 <a id="40-8"></a>
 
-- **isNumeric**
+- **isNumeric & isDate & isArray**
 
 `IsNumeric`或~~IsEmpty~~或`IsDate(text)`: 检测表达式 text
 IsNumeric 是否是数字类型, 比如整数 12, 浮点 1.2, 百分数 12%都对，带了字母就错
@@ -1488,6 +1488,12 @@ IsNumeric 是否是数字类型, 比如整数 12, 浮点 1.2, 百分数 12%都�
 ~~IsEmpty 是否是空~~ 尽量不用，只是部分适用，请使用 trim(text) = ""
 
     IsDate 是否是日期格式，常用的日期写法都可以检测到
+
+```vb
+dim arr as variant
+arr = Array(1, 2, 3)
+debug.print isArray(arr)
+```
 
 <a id="40-9"></a>
 
