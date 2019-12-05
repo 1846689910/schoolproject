@@ -16,6 +16,8 @@
 
 [**Commits**](#5)
 
+- [remote files in commit before push](#5-1)
+
 [**Pull From a PR**](#6)
 
 - [fetch a remote branch](#6-1)
@@ -245,6 +247,27 @@ git checkout COMMIT_HASH # 返回该commit,并未清除任何commits
 ```bash
 git stash # stash untracked changes
 git stash pop # pop up the changes to current branch
+```
+
+[back to top](#top)
+
+<a id="5-1"></a>
+
+## remote files in commit before push
+
+- list files in commit
+
+```bash
+git diff-tree --no-commit-id --name-only -r <commit-Hash>
+```
+
+- remove files in commit
+
+```bash
+git rm --cached name_of_a_giant_file # full path
+git rm --cached name_of_another_giant_file
+git commit --amend -CHEAD
+git push
 ```
 
 [back to top](#top)
