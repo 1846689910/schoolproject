@@ -325,6 +325,36 @@ public class N3 {
             return findKthSmallestHelper(a, aLeft, b, bMid + 1, k - k / 2);
         }
     }
+    /* a js version pointer way
+function findKth (a, b, k) {
+    if (a.length === 0) return b[k - 1];
+    if (b.length === 0) return a[k - 1];
+    let i = 0, j = 0, ret = 0;
+    while (i < a.length && j < b.length && k > 0) {
+        if (a[i] < b[j]) {
+            
+            ret = a[i ++];
+            
+            k --;
+        } else if (b[j] < a[i]) {
+            
+            ret = b[j ++];
+            k --;
+        } else {
+            ret = a[i];
+            i ++;
+            j ++;
+            k -= 2;
+        }
+    }
+    if (k <= 0) return ret;
+    if (i >= a.length) {
+        return b[j + k - 1];
+    } else {
+        return a[i + k - 1];
+    }
+}
+    */
     @Test
     public void findKthSmallest(){
         int[] a = new int[]{1, 3, 5, 7, 9};
