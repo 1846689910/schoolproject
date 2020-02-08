@@ -1443,9 +1443,19 @@ Sub main()
         Debug.Print objFile.Path            ' D:\vba-work\src\2020-02-07\abc.xlsm
         Debug.Print objFile.parentfolder    ' D:\vba-work\src\2020-02-07
         Debug.Print objFile.Name            ' abc.xlsm
+        If InStr(objFile.Name, "24") > 0 Then
+            newName = Replace(objFile.Name, "24", "abs")
+            Name objFile.Path As objFile.parentfolder & "\" & newName
+        End If
     Next objFile
     
 End Sub
+```
+
+rename file
+
+```vb
+Name OLD_PATH As NEW_PATH
 ```
 
 [back to top](#top)
