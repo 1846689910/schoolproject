@@ -96,6 +96,8 @@
 
 [**Formula**](#45)
 
+[**FileSystem**](#46)
+
 [**常用函数**](#40)
 
 - [**instr**](#40-1)
@@ -1421,6 +1423,30 @@ Note:
 - the formula is like `=SHEET_A!C1/SHEET_B!E1`
 - Don't forget `!` which means `whose`, like `ws!A1` meaning `ws 's A1 cell`
 - if the name has special char or space, then better to use single quote to wrap the sheet name `'sheet hello'!A1/ws1!A3`
+
+[back to top](#top)
+
+<a id="46"></a>
+
+## **FileSystem**
+
+```vb
+Sub main()
+    Dim fs As Object
+    Dim objFolder As Object
+    Dim objFile As Object
+    
+    Set fs = CreateObject("Scripting.FileSystemObject")
+    Set objFolder = fs.GetFolder(ThisWorkbook.Path)
+    
+    For Each objFile In objFolder.Files
+        Debug.Print objFile.Path            ' D:\vba-work\src\2020-02-07\abc.xlsm
+        Debug.Print objFile.parentfolder    ' D:\vba-work\src\2020-02-07
+        Debug.Print objFile.Name            ' abc.xlsm
+    Next objFile
+    
+End Sub
+```
 
 [back to top](#top)
 
