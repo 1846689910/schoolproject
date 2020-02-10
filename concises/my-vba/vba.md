@@ -1428,7 +1428,7 @@ Note:
 
 <a id="46"></a>
 
-## **FileSystem**
+## **FileSystem(rename/move/zip file)**
 
 ```vb
 Sub main()
@@ -1452,10 +1452,60 @@ Sub main()
 End Sub
 ```
 
-rename file
+rename or move file
 
 ```vb
 Name OLD_PATH As NEW_PATH
+```
+
+- zip all files in a folder
+
+```vb
+Sub main()
+
+    zipAllFilesInFolder ThisWorkbook.Path & "\folder\", ThisWorkbook.Path & "\abc.zip"
+End Sub
+
+' @param {String} fromDir D:\abc\
+' @param {String} destZipFilePath like D:\my.zip
+Sub zipAllFilesInFolder(ByVal fromDir As Variant, ByVal destZipFilePath As Variant)
+    Dim oApp As Object
+
+    'Create empty Zip File
+    NewZip (destZipFilePath)
+
+    Set oApp = CreateObject("Shell.Application")
+    'Copy the files to the compressed folder
+    oApp.Namespace(destZipFilePath).CopyHere oApp.Namespace(fromDir).items
+
+    'Keep script waiting until Compressing is done
+    On Error Resume Next
+    Do Until oApp.Namespace(destZipFilePath).items.Count = _
+       oApp.Namespace(fromDir).items.Count
+        Application.Wait (Now + TimeValue("0:00:01"))
+    Loop
+    On Error GoTo 0
+
+    MsgBox "Please find your zipfile at <" & destZipFilePath & ">"
+End Sub
+
+Sub NewZip(sPath)
+'Create empty Zip File
+    If Len(Dir(sPath)) > 0 Then Kill sPath
+    Open sPath For Output As #1
+    Print #1, Chr$(80) & Chr$(75) & Chr$(5) & Chr$(6) & String(18, 0)
+    Close #1
+End Sub
+
+Function bIsBookOpen(ByRef szBookName As String) As Boolean
+    On Error Resume Next
+    bIsBookOpen = Not (Application.Workbooks(szBookName) Is Nothing)
+End Function
+
+Function Split97(sStr As Variant, sdelim As String) As Variant
+    Split97 = Evaluate("{""" & _
+                       Application.Substitute(sStr, sdelim, """,""") & """}")
+End Function
 ```
 
 [back to top](#top)
