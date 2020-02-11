@@ -44,7 +44,7 @@
 
 [**moveRow from `fromRow` to `destRow`**](#19A)
 
-[**swapRow 交换i行和j行**](#19B)
+[**swapRow 交换 i 行和 j 行**](#19B)
 
 [**循环查找，找到 worksheet 里第一个内容为...或者内容不空的 cell**](#20)
 
@@ -96,7 +96,12 @@
 
 [**Formula**](#45)
 
-[**FileSystem(rename/move/zip file)**](#46)
+[**FileSystem(rename/move/zip/read file)**](#46)
+
+- [**file path**](#46-1)
+- [**rename/move file**](#46-2)
+- [**zip all files in a directory**](#46-3)
+- [**read text file as string**](#46-4)
 
 [**常用函数**](#40)
 
@@ -124,7 +129,7 @@
 
 - [**isMissing**](#40-11)
 
-- [**WorksheetFunction.Max**](#40-12) 
+- [**WorksheetFunction.Max**](#40-12)
 
 <a id="1"></a>
 
@@ -617,7 +622,7 @@ End Sub
 
 <a id="19B"></a>
 
-## **swapRow 交换i行和j行**
+## **swapRow 交换 i 行和 j 行**
 
 ```vb
 Sub swapRow(ByRef ws As Worksheet, ByVal i As Long, ByVal j As Long)
@@ -1009,7 +1014,7 @@ reverse `list.reverse()`
 
 sort `list.sort()`
 
-insert `list.insert(0, "Apple")` 
+insert `list.insert(0, "Apple")`
 
 remove
 
@@ -1430,15 +1435,19 @@ Note:
 
 ## **FileSystem(rename/move/zip file)**
 
+<a id="46-1"></a>
+
+- ### file path
+
 ```vb
 Sub main()
     Dim fs As Object
     Dim objFolder As Object
     Dim objFile As Object
-    
+
     Set fs = CreateObject("Scripting.FileSystemObject")
     Set objFolder = fs.GetFolder(ThisWorkbook.Path)
-    
+
     For Each objFile In objFolder.Files
         Debug.Print objFile.Path            ' D:\vba-work\src\2020-02-07\abc.xlsm
         Debug.Print objFile.parentfolder    ' D:\vba-work\src\2020-02-07
@@ -1448,17 +1457,25 @@ Sub main()
             Name objFile.Path As objFile.parentfolder & "\" & newName
         End If
     Next objFile
-    
+
 End Sub
 ```
 
-rename or move file
+[back to top](#top)
+
+<a id="46-2"></a>
+
+- ### rename/move file
 
 ```vb
 Name OLD_PATH As NEW_PATH
 ```
 
-- zip all files in a folder
+[back to top](#top)
+
+<a id="46-3"></a>
+
+- ### zip all files in a directory
 
 ```vb
 Sub main()
@@ -1505,6 +1522,30 @@ End Function
 Function Split97(sStr As Variant, sdelim As String) As Variant
     Split97 = Evaluate("{""" & _
                        Application.Substitute(sStr, sdelim, """,""") & """}")
+End Function
+```
+
+[back to top](#top)
+
+<a id="46-4"></a>
+
+- ### read text file as string
+
+```vb
+Sub main()
+    Debug.Print readShortTextFile(ThisWorkbook.Path & "\folder\abc.html")
+End Sub
+Function readShortTextFile(ByVal filePath As String) As String
+    Dim textLine As String
+    Dim list As Object
+    Set list = CreateObject("System.Collections.ArrayList")
+    Open filePath For Input As #1
+    Do Until EOF(1)
+        Line Input #1, textLine
+        list.Add textLine
+    Loop
+    Close #1
+    readShortTextFile = Strings.Join(list.toArray, "")
 End Function
 ```
 
