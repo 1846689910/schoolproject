@@ -1,5 +1,7 @@
 ##### [back to my-markdown](./markdown.md)
 
+### Acknowledgment: [rxaviers/gist:7360908](https://gist.github.com/rxaviers/7360908#file-gistfile1-md)
+
 People
 
 | :bowtie: `:bowtie:` | :smile: `:smile:` | :laughing: `:laughing:` |
