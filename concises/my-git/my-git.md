@@ -16,7 +16,7 @@
 
 [**Commits**](#5)
 
-- [remote files in commit before push](#5-1)
+- [remove files in commit before push](#5-1)
 
 [**Pull From a PR**](#6)
 
@@ -253,7 +253,7 @@ git stash pop # pop up the changes to current branch
 
 <a id="5-1"></a>
 
-## remote files in commit before push
+## remove files in commit before push
 
 - list files in commit
 
@@ -266,6 +266,7 @@ git diff-tree --no-commit-id --name-only -r <commit-Hash>
 ```bash
 git rm --cached name_of_a_giant_file # full path
 git rm --cached name_of_another_giant_file
+git rm --cached folder_name -r
 git commit --amend -CHEAD
 git push
 ```
