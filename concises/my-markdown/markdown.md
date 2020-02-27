@@ -18,6 +18,8 @@
 
 <input type="checkbox" checked>
 
+<script>console.log("asdf")</script>
+
 ## **Preview:**
 
 <a id="block-code"></a>
