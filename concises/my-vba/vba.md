@@ -360,6 +360,29 @@ Private Sub DoFolder(Folder)
 End Sub
 ```
 
+get the file paths to array
+
+```vb
+Function getAllFilepaths(sDir As String) As Variant
+    Dim FileSystem As Object
+    Dim list As Object
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    Set list = CreateObject("System.Collections.ArrayList")
+    DoFolder FileSystem.GetFolder(sDir), list
+    getAllFilepaths = list.toArray
+End Function
+Private Sub DoFolder(Folder, list As Object)
+    Dim SubFolder
+    For Each SubFolder In Folder.SubFolders
+        DoFolder SubFolder, list
+    Next
+    Dim File
+    For Each File In Folder.Files
+        list.Add File.Path
+    Next
+End Sub
+```
+
 [back to top](#top)
 
 <a id="10"></a>
