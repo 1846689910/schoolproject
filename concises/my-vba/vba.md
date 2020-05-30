@@ -14,7 +14,7 @@
 
 [**Create Folder**](#5)
 
-[**Create directory: create all directory according to the given path**](#6)
+[**mkDirs: create all directory according to the given path**](#6)
 
 [**Open Workbook(优先)**](#7)
 
@@ -59,6 +59,8 @@
 [**Copy with range: copy a range from ws to wsTarget, need range name**](#25)
 
 [**Copy format**](#26)
+
+[**Copy Worksheet**](#26-1)
 
 [**Clear Range**](#27)
 
@@ -245,7 +247,7 @@ End Function
 
 <a id="6"></a>
 
-## **Create directory: create all directory according to the given path**
+## **mkDirs: create all directory according to the given path**
 
 ```vb
 Sub mkDirs(ByVal path As String)
@@ -356,6 +358,29 @@ Private Sub DoFolder(Folder)
     For Each File In Folder.Files
         ' Operate on each file
         Debug.Print File.Name ' also File.path, Folder.Name, Folder.Path
+    Next
+End Sub
+```
+
+get the file paths to array
+
+```vb
+Function getAllFilepaths(sDir As String) As Variant
+    Dim FileSystem As Object
+    Dim list As Object
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    Set list = CreateObject("System.Collections.ArrayList")
+    DoFolder FileSystem.GetFolder(sDir), list
+    getAllFilepaths = list.toArray
+End Function
+Private Sub DoFolder(Folder, list As Object)
+    Dim SubFolder
+    For Each SubFolder In Folder.SubFolders
+        DoFolder SubFolder, list
+    Next
+    Dim File
+    For Each File In Folder.Files
+        list.Add File.Path
     Next
 End Sub
 ```
@@ -794,6 +819,44 @@ wsSrc.Copy After:=wsPrev
 ```vb
 ws.Range("B1").Copy
 ws.Range("C1:D1").PasteSpecial (xlPasteFormats)  ‘ 将B1 copy之后，对C1:D1范围应用format
+```
+
+[back to top](#top)
+
+<a id="26-1"></a>
+
+## **Copy Worksheet**
+
+- copy worksheet and paster before or after
+
+```vb
+ThisWorkbook.Worksheets("Sheet1").Copy After:=ThisWorkbook.Worksheets("Sheet3")
+```
+
+- copy worksheet and will create new workbook to pastes
+
+```vb
+ThisWorkbook.Worksheets("Sheet1").Copy
+ActiveWorksheet.name = "Sheet1-copy"
+' or multiple worksheets together
+ThisWorkbook.WorkSheets(Array("Sheet1", "Sheet2", "Sheet4")).Copy
+ActiveWorkbook.Sheets("Sheet1").name = "Sheet1-copy"
+With ActiveWorkbook 
+     .SaveAs Filename:=ThisWorkbook.path & "\New1.xlsx", FileFormat:=xlOpenXMLWorkbook
+     .Close SaveChanges:=False
+End With
+```
+
+- copy worksheet and paste with specification
+
+```vb
+Sheets("Sheet1").cells.Copy
+Sheets("Sheet2").cells.PasteSpecial xlPasteValues
+```
+or copy to itself
+```vb
+Sheets("Sheet1").cells.Copy
+Sheets("Sheet1").cells.PasteSpecial xlPasteValues
 ```
 
 [back to top](#top)
