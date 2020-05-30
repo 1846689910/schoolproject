@@ -357,6 +357,7 @@ git push origin BRANCH --force
 
 ```bash
 git rebase -i <earlier_commit>
+git rebase -i --root # change from the root/first commit
 ```
 
 choose several commits that you need to change author, then change them to `e` or `edit`
