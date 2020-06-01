@@ -435,4 +435,10 @@ when you see `The authenticity of host 'github.com (192.30.253.112)' can't be es
 
 when you see `You’ve successfully authenticated, but GitHub does not provide shell access`, it means successful connection to github repo.
 
+or try
+
+```bash
+ssh-add ~/.ssh/id_rsa
+```
+
 [back to top](#top)
