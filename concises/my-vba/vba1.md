@@ -23,6 +23,12 @@ Contents
     - [**hasWorksheet 判断该 workbook 有无该 worksheets(可选择创建)**](#hasworksheet-判断该-workbook-有无该-worksheets可选择创建)
     - [**在worksheet的row行查找target返回列号 getColsList / getFirstCol**](#在worksheet的row行查找target返回列号-getcolslist--getfirstcol)
     - [**在worksheet的col列查找target返回行号 getRowList / getFirstRow**](#在worksheet的col列查找target返回行号-getrowlist--getfirstrow)
+    - [**Worksheet copy with range: copy a range from ws to wsTarget, need range name**](#worksheet-copy-with-range-copy-a-range-from-ws-to-wstarget-need-range-name)
+    - [**Worksheet copy format**](#worksheet-copy-format)
+    - [**Copy Worksheet**](#copy-worksheet)
+      - [copy worksheet and paste before or after](#copy-worksheet-and-paste-before-or-after)
+      - [copy worksheet and will create new workbook to pastes](#copy-worksheet-and-will-create-new-workbook-to-pastes)
+      - [copy worksheet and paste with specification](#copy-worksheet-and-paste-with-specification)
   - [Workbook](#workbook)
     - [mkDirs: 创建路径，即使中间路径不存在](#mkdirs-创建路径即使中间路径不存在)
     - [**Open Workbook(or create then open)**](#open-workbookor-create-then-open)
@@ -31,6 +37,7 @@ Contents
     - [**获取directory下所有的file paths as array**](#获取directory下所有的file-paths-as-array)
     - [**保存 workbook, 并给出名字**](#保存-workbook-并给出名字)
     - [**退出 workbook (不)保存**](#退出-workbook-不保存)
+    - [**Copy a file and rename**](#copy-a-file-and-rename)
   - [Utils](#utils)
     - [**Main()函数和应用提速**](#main函数和应用提速)
     - [**OCR Find**](#ocr-find)
@@ -355,6 +362,93 @@ End Function
 
 [back to top](#top)
 
+### **Worksheet copy with range: copy a range from ws to wsTarget, need range name**
+
+```vb
+Sub copy(ws As Worksheet, wsTarget As Worksheet, strOriginCellName As String, strTargetCellName As String, intColorIdx As Integer)
+    ' the helper function for copy and paste value and format
+    ws.Range(strOriginCellName).Copy
+    With ws.Range(strOriginCellName)
+        .Interior.ColorIndex = intColorIdx
+        .Copy
+    End With
+    With wsTarget.Range(strTargetCellName)
+        .Interior.ColorIndex = intColorIdx
+        .PasteSpecial xlPasteFormats
+        .PasteSpecial xlPasteValues
+    End With
+End Sub
+```
+
+or
+
+```vb
+wsSrc.Range("A2:A" & intSrcLastRow).Copy Destination:=wsTarget.Range("A" & intBegRow)
+```
+
+or copy the entire `wsSrc` to `wsTarget`
+
+```vb
+wsSrc.Cells.Copy Destination:=wsTarget.Cells
+```
+
+or copy the `wsSrc` and place it after `wsPrev`
+
+```vb
+wsSrc.Copy After:=wsPrev
+```
+
+[back to top](#top)
+
+### **Worksheet copy format**
+
+```vb
+ws.Range("B1").Copy
+ws.Range("C1:D1").PasteSpecial (xlPasteFormats)  ‘ 将B1 copy之后，对C1:D1范围应用format
+```
+
+[back to top](#top)
+
+### **Copy Worksheet**
+
+#### copy worksheet and paste before or after
+
+```vb
+ThisWorkbook.Worksheets("Sheet1").Copy After:=ThisWorkbook.Worksheets("Sheet3")
+```
+[back to top](#top)
+
+#### copy worksheet and will create new workbook to pastes
+
+```vb
+ThisWorkbook.Worksheets("Sheet1").Copy
+ActiveWorksheet.name = "Sheet1-copy"
+' or multiple worksheets together
+ThisWorkbook.WorkSheets(Array("Sheet1", "Sheet2", "Sheet4")).Copy
+ActiveWorkbook.Sheets("Sheet1").name = "Sheet1-copy"
+With ActiveWorkbook 
+     .SaveAs Filename:=ThisWorkbook.path & "\New1.xlsx", FileFormat:=xlOpenXMLWorkbook
+     .Close SaveChanges:=False
+End With
+```
+[back to top](#top)
+
+#### copy worksheet and paste with specification
+
+```vb
+Sheets("Sheet1").cells.Copy
+Sheets("Sheet2").cells.PasteSpecial xlPasteValues
+```
+or copy to itself
+```vb
+Sheets("Sheet1").cells.Copy
+Sheets("Sheet1").cells.PasteSpecial xlPasteValues
+```
+
+[back to top](#top)
+
+
+
 ## Workbook
 
 ### mkDirs: 创建路径，即使中间路径不存在
@@ -525,6 +619,17 @@ Workbooks("BOOK1.XLS").Close SaveChanges:=False
 ```
 
 [back to top](#top)
+
+
+### **Copy a file and rename**
+
+```vb
+FileCopy(ToolFilePath,DestFilePath)
+FileCopy "C:\local files\tester.xlsx", "C:\local files\__TMP\tester_copy.xlsx"
+```
+
+[back to top](#top)
+
 
 ## Utils
 
