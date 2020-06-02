@@ -10,12 +10,15 @@ Contents
     - [**插入行**](#插入行)
     - [**moveRow from `fromRow` to `destRow`**](#moverow-from-fromrow-to-destrow)
     - [**swapRow 交换 i 行和 j 行**](#swaprow-交换-i-行和-j-行)
+    - [**Delete Rows**](#delete-rows)
+    - [**Delete Rows in Specific Condition**](#delete-rows-in-specific-condition)
   - [Column](#column)
     - [**字母列号转数字 ColLetterToNum**](#字母列号转数字-collettertonum)
     - [**数字列号转字母 ColNumToLetter**](#数字列号转字母-colnumtoletter)
     - [**Find Last Column**](#find-last-column)
     - [**Columns.AutoFit 展开列(使列宽自适应)**](#columnsautofit-展开列使列宽自适应)
     - [**插入列**](#插入列)
+    - [**Delete Columns**](#delete-columns)
   - [Range](#range)
     - [**range remove duplicates 去重**](#range-remove-duplicates-去重)
     - [**循环查找，找到 worksheet 里第一个内容为...或者内容不空的 cell**](#循环查找找到-worksheet-里第一个内容为或者内容不空的-cell)
@@ -142,6 +145,27 @@ End Sub
 
 [back to top](#top)
 
+### **Delete Rows**
+
+```vb
+ws.Rows("1 : 10").EntireRow.Delete
+```
+[back to top](#top)
+
+### **Delete Rows in Specific Condition**
+
+```vb
+ws.Select
+ws.UsedRange.Select
+For i = Selection.Rows.Count To 1 Step -1
+    If IsEmpty(ws.Range("A" & i).Value) Then
+        Selection.Rows(i).EntireRow.Delete
+    End If
+Next i
+```
+
+[back to top](#top)
+
 ## Column
 
 ### **字母列号转数字 ColLetterToNum**
@@ -206,6 +230,30 @@ ActiveCell.EntireColumn.Insert
 
 'Insert column to the right of the active cell
 ActiveCell.EntireColumn.Offset(0, 1).Insert
+```
+
+[back to top](#top)
+
+### **Delete Columns**
+
+```vb
+ws.Columns(j).EntireColumn.Delete
+```
+
+删除这一列之后，后边的列会自动移过来，所以不能用 for 来遍历删除符合条件的列，可以用 while 循环
+
+```vb
+i = 1
+iLast = 100
+while i <= iLast
+      if 条件满足 then
+            ws.Columns(i).EntireColumn.Delete
+            iLast = 更新iLast为iLast - 1  ' 删掉一列，马上更新总列数，明确循环的边界
+            ' 不要在这里前移指针，因为删掉一列后，会有后边的列补到当前指针位置，所以应该接着判断
+      else
+            i = i + 1  ' 如果不符合那么指针前移
+      end if
+wend
 ```
 
 [back to top](#top)
