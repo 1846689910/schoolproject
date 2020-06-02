@@ -19,6 +19,7 @@ Contents
   - [Range](#range)
     - [**range remove duplicates 去重**](#range-remove-duplicates-去重)
     - [**循环查找，找到 worksheet 里第一个内容为...或者内容不空的 cell**](#循环查找找到-worksheet-里第一个内容为或者内容不空的-cell)
+    - [**Clear Range**](#clear-range)
   - [Worksheet](#worksheet)
     - [**hasWorksheet 判断该 workbook 有无该 worksheets(可选择创建)**](#hasworksheet-判断该-workbook-有无该-worksheets可选择创建)
     - [**在worksheet的row行查找target返回列号 getColsList / getFirstCol**](#在worksheet的row行查找target返回列号-getcolslist--getfirstcol)
@@ -44,6 +45,7 @@ Contents
     - [**下拉列表框**](#下拉列表框)
     - [**format Number: format data of worksheet ws**](#format-number-format-data-of-worksheet-ws)
     - [**Get Next Non-Empty Row in Column intCol, start search from intStartRow**](#get-next-non-empty-row-in-column-intcol-start-search-from-intstartrow)
+    - [**Open select file dialog (only see the excel type file) and return the complete path of the file**](#open-select-file-dialog-only-see-the-excel-type-file-and-return-the-complete-path-of-the-file)
   - [Methods](#methods)
     - [**instr**](#instr)
     - [**Round**](#round)
@@ -243,6 +245,15 @@ Public Function getPos(sheet1 As Worksheet, text As String, blurredMatch As Bool
     Next i
     getPos = arr
 End Function
+```
+
+[back to top](#top)
+
+### **Clear Range**
+
+```vb
+ws.cells.clearContents
+ws.cells.clearFormat
 ```
 
 [back to top](#top)
@@ -753,6 +764,21 @@ End Function
 
 [back to top](#top)
 
+### **Open select file dialog (only see the excel type file) and return the complete path of the file**
+
+```vb
+Public Function SelectFile() As String
+    Dim vPath As Variant
+    vPath = Application.GetOpenFilename(FileFilter:="Excel Workbooks (*.xlsx;*.xls;*.xlsm;*.xlsb), *.xlsx;*.xls;*.xlsm;*x.lsb", TITLE:="Please Select EYU Path report")
+    If vPath = False Then
+        SelectFile = ""
+    Else
+        SelectFile = vPath
+    End If
+End Function
+```
+
+[back to top](#top)
 ## Methods
 
 ### **instr**
