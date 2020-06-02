@@ -8,8 +8,12 @@ Contents
   - [Row](#row)
   - [Column](#column)
     - [**Columns.AutoFit 展开列(使列宽自适应)**](#columnsautofit-展开列使列宽自适应)
+  - [Range](#range)
+    - [**range remove duplicates 去重**](#range-remove-duplicates-去重)
   - [Worksheet](#worksheet)
   - [Workbook](#workbook)
+    - [mkDirs: 创建路径，即使中间路径不存在](#mkdirs-创建路径即使中间路径不存在)
+    - [**Open Workbook(or create then open)**](#open-workbookor-create-then-open)
   - [Utils](#utils)
     - [**Main()函数和应用提速**](#main函数和应用提速)
     - [**OCR Find**](#ocr-find)
@@ -41,9 +45,102 @@ wb.Sheets(1).Columns.AutoFit  ‘ 将所有用到的列展开自适应
 
 [back to top](#top)
 
+## Range
+
+### **range remove duplicates 去重**
+
+对前两列去重
+
+```vb
+ActiveSheet.Range("A1:C100").RemoveDuplicates Columns:=Array(1,2), Header:=xlYes
+```
+
+[back to top](#top)
+
 ## Worksheet
 
 ## Workbook
+
+### mkDirs: 创建路径，即使中间路径不存在
+
+```vb
+Sub mkDirs(ByVal path As String)
+    Dim arr() As String
+    Dim midPath As String
+    Dim i As Integer, j As Integer
+    arr = Split(path, "\")
+    For i = LBound(arr) To UBound(arr)
+        midPath = ""
+        For j = LBound(arr) To i
+            midPath = midPath & arr(j) & "\"
+        Next j
+        If Dir(midPath, vbDirectory) = "" Then MkDir midPath
+    Next i
+End Sub
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+### **Open Workbook(or create then open)**
+
+if path
+- exists, then open
+- not exists, create workbook and all intermediate directories, then open
+
+```vb
+' directory \ filename(including extension)
+Function openWb(ByVal directory As String, ByVal filename As String, Optional ByVal TEMPLATE_PATH As String) As Workbook
+    ' open a workbook, if not existing then create and open, if existing then open
+    ' wb.close savechanges:=TRUE
+    Dim wbNewBook As Workbook
+    Dim path As String
+    Dim directoryExists As Boolean, fileExists As Boolean
+    path = directory & "\" & filename
+    If Len(Dir(path)) > 0 Then
+        Set wbNewBook = Workbooks.Open(filename:=path)
+    Else
+        If Len(Dir(directory, vbDirectory)) = 0 Then mkDirs directory
+        If IsMissing(TEMPLATE_PATH) Then
+            Set wbNewBook = Workbooks.Add(xlWBATWorksheet)
+        Else
+            Set wbNewBook = Workbooks.Add(TEMPLATE_PATH)
+        End If
+        With wbNewBook
+            .Title = filename
+            .Subject = filename
+            .SaveAs filename:=path
+        End With
+    End If
+    Set openWb = wbNewBook
+End Function
+Sub mkDirs(ByVal path As String)
+    Dim arr() As String
+    Dim midPath As String
+    Dim i As Integer, j As Integer
+    arr = Split(path, "\")
+    For i = LBound(arr) To UBound(arr)
+        midPath = ""
+        For j = LBound(arr) To i
+            midPath = midPath & arr(j) & "\"
+        Next j
+        If Dir(midPath, vbDirectory) = "" Then MkDir midPath
+    Next i
+End Sub
+```
+
+[back to top](#top)
+
 
 ## Utils
 
