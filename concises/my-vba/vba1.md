@@ -6,8 +6,16 @@ Contents
 
 - [**VBA Concise**](#vba-concise)
   - [Row](#row)
+    - [**Find Last Row**](#find-last-row)
+    - [**插入行**](#插入行)
+    - [**moveRow from `fromRow` to `destRow`**](#moverow-from-fromrow-to-destrow)
+    - [**swapRow 交换 i 行和 j 行**](#swaprow-交换-i-行和-j-行)
   - [Column](#column)
+    - [**字母列号转数字 ColLetterToNum**](#字母列号转数字-collettertonum)
+    - [**数字列号转字母 ColNumToLetter**](#数字列号转字母-colnumtoletter)
+    - [**Find Last Column**](#find-last-column)
     - [**Columns.AutoFit 展开列(使列宽自适应)**](#columnsautofit-展开列使列宽自适应)
+    - [**插入列**](#插入列)
   - [Range](#range)
     - [**range remove duplicates 去重**](#range-remove-duplicates-去重)
   - [Worksheet](#worksheet)
@@ -42,13 +50,149 @@ Contents
 
 ## Row
 
+### **Find Last Row**
+
+```vb
+'Ctrl + Shift + End
+  LastRow = sht.Cells(sht.Rows.Count, "A").End(xlUp).Row
+
+'Using UsedRange
+  sht.UsedRange 'Refresh UsedRange
+  LastRow = sht.UsedRange.Rows(sht.UsedRange.Rows.Count).Row
+
+'Using Table Range
+  LastRow = sht.ListObjects("Table1").Range.Rows.Count
+
+'Using Named Range
+  LastRow = sht.Range("MyNamedRange").Rows.Count
+
+'Ctrl + Shift + Down (Range should be first cell in data set)
+  LastRow = sht.Range("A1").CurrentRegion.Rows.Count
+```
+
+[back to top](#top)
+
+### **插入行**
+
+```vb
+'以下ActiveCell可以是ws.cells(行, 列)形式
+'Insert row above active cell
+ActiveCell.EntireRow.Insert
+
+'Insert row below active cell
+ActiveCell.Offset(1).EntireRow.Insert
+```
+
+[back to top](#top)
+
+
+
+### **moveRow from `fromRow` to `destRow`**
+
+let the `fromRow` moved to the position of the current `destRow`. The original `destRow` will be pushed to one row down and become `destRow + 1`
+
+```vb
+Sub moveRow(ByRef ws As Worksheet, ByVal fromRow As Long, ByVal destRow As Long)
+    Dim f As Long
+    If fromRow <= destRow Then
+        f = fromRow
+    Else
+        f = fromRow + 1
+    End If
+    ws.Range("A" & destRow).EntireRow.Insert
+    ws.Range("A" & f).EntireRow.Cut ws.Range("A" & destRow)
+    ws.Range("A" & f).EntireRow.Delete
+End Sub
+```
+
+[back to top](#top)
+
+### **swapRow 交换 i 行和 j 行**
+
+```vb
+Sub swapRow(ByRef ws As Worksheet, ByVal i As Long, ByVal j As Long)
+    Dim small As Long
+    Dim large As Long
+    If i <= j Then
+        small = i
+        large = j
+    Else
+        small = j
+        large = i
+    End If
+    ws.Range("A" & small).EntireRow.Insert
+    ws.Range("A" & (large + 1)).EntireRow.Cut ws.Range("A" & small)
+    ws.Range("A" & (small + 1)).EntireRow.Cut ws.Range("A" & (large + 1))
+    ws.Range("A" & (small + 1)).EntireRow.Delete
+End Sub
+```
+
+[back to top](#top)
+
 ## Column
+
+### **字母列号转数字 ColLetterToNum**
+
+```vb
+Function ColLetterToNum(ByVal sColLetter As String) As Integer
+' Convert column letter to numeric
+    ColLetterToNum = ActiveWorkbook.Worksheets(1).Columns(sColLetter).column
+End Function
+```
+
+[back to top](#top)
+
+### **数字列号转字母 ColNumToLetter**
+
+```vb
+Function ColNumToLetter(lColNum As Integer) As String
+' Convert numeric to column letter
+    ColNumToLetter = Split(Cells(1, lColNum).Address, "$")(1)
+End Function
+```
+
+[back to top](#top)
+
+### **Find Last Column**
+
+```vb
+'Ctrl + Shift + End
+  LastColumn = sht.Cells(7, sht.Columns.Count).End(xlToLeft).Column
+
+'Using UsedRange
+  sht.UsedRange 'Refresh UsedRange
+  LastColumn = sht.UsedRange.Columns(sht.UsedRange.Columns.Count).Column
+
+'Using Table Range
+  LastColumn = sht.ListObjects("Table1").Range.Columns.Count
+
+'Using Named Range
+  LastColumn = sht.Range("MyNamedRange").Columns.Count
+
+'Ctrl + Shift + Right (Range should be first cell in data set)
+  LastColumn = sht.Range("A1").CurrentRegion.Columns.Count
+```
+
+[back to top](#top)
 
 ### **Columns.AutoFit 展开列(使列宽自适应)**
 
 ```vb
 wb.Sheets(1).Columns("A:D").AutoFit  ‘ 将A和D列之间的所有列都展开自适应
 wb.Sheets(1).Columns.AutoFit  ‘ 将所有用到的列展开自适应
+```
+
+[back to top](#top)
+
+### **插入列**
+
+```vb
+'以下ActiveCell可以是ws.cells(行, 列)形式
+'Insert column to the left of the active cell
+ActiveCell.EntireColumn.Insert
+
+'Insert column to the right of the active cell
+ActiveCell.EntireColumn.Offset(0, 1).Insert
 ```
 
 [back to top](#top)
