@@ -35,6 +35,7 @@ Contents
       - [copy worksheet and paste with specification](#copy-worksheet-and-paste-with-specification)
     - [**scroll to top of the worksheet**](#scroll-to-top-of-the-worksheet)
     - [**number of worksheets**](#number-of-worksheets)
+    - [**Worksheet filter**](#worksheet-filter)
   - [Workbook](#workbook)
     - [mkDirs: 创建路径，即使中间路径不存在](#mkdirs-创建路径即使中间路径不存在)
     - [**Open Workbook(or create then open)**](#open-workbookor-create-then-open)
@@ -537,6 +538,41 @@ ActiveWorkbook.Worksheets.Count
 ```
 
 [back to top](#top)
+
+### **Worksheet filter**
+
+to filter the worksheet rows, we can add an autofilter
+
+```vb
+sheet1.Range("A1").AutoFilter Field:=2, Criteria1:="male" ' 给第2列施加filter，过滤出字符串含有male的
+```
+
+- multiple filter rule
+
+```vb
+sheet1.Range("A1")
+.AutoFilter field:=2, Criteria1:="Printer"
+.AutoFilter field:=3, Criteria1:="Mark"
+```
+
+```vb
+sheet1.Range("A1").AutoFilter Field:=4, Criteria1:="5", Operator:=xlTop10Items
+
+sheet1.Range("A1").AutoFilter Field:=4, Criteria1:="10", Operator:=xlBottom10Items
+
+sheet1.Range("A1").AutoFilter Field:=4, Criteria1:="10", Operator:=xlTop10Percent
+```
+
+turn off the auto filter mode
+
+```vb
+sheet1.AutoFilterMode = False
+
+' or check if it is on then off
+If Worksheets("Sheet1").Range("A1").AutoFilter Then
+    Worksheets("Sheet1").Range("A1").AutoFilter
+End If
+```
 
 ## Workbook
 
