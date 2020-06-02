@@ -59,7 +59,7 @@ Contents
     - [**Error Handling**](#error-handling)
     - [**Cells color/bold/italic/underline/strikethrough**](#cells-colorbolditalicunderlinestrikethrough)
     - [**面向对象**](#面向对象)
-    - [**Hyperlink**](#hyperlink)
+    - [**Hyperlink 在worksheet中插入链接**](#hyperlink-在worksheet中插入链接)
     - [**FileSystem(rename/move/zip file)**](#filesystemrenamemovezip-file)
       - [file path](#file-path)
       - [rename/move file](#renamemove-file)
@@ -1286,7 +1286,7 @@ End Sub
 
 [back to top](#top)
 
-### **Hyperlink**
+### **Hyperlink 在worksheet中插入链接**
 
 - 在`wsFrom.range(fromRangeSelector)`设置一个链接，点击可跳转到`wsTarget.range(targetRangeSelector)`, 该 cell 的内容为`content`
 
