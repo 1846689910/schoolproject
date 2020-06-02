@@ -33,6 +33,8 @@ Contents
       - [copy worksheet and paste before or after](#copy-worksheet-and-paste-before-or-after)
       - [copy worksheet and will create new workbook to pastes](#copy-worksheet-and-will-create-new-workbook-to-pastes)
       - [copy worksheet and paste with specification](#copy-worksheet-and-paste-with-specification)
+    - [**scroll to top of the worksheet**](#scroll-to-top-of-the-worksheet)
+    - [**number of worksheets**](#number-of-worksheets)
   - [Workbook](#workbook)
     - [mkDirs: 创建路径，即使中间路径不存在](#mkdirs-创建路径即使中间路径不存在)
     - [**Open Workbook(or create then open)**](#open-workbookor-create-then-open)
@@ -507,6 +509,21 @@ Sheets("Sheet1").cells.PasteSpecial xlPasteValues
 [back to top](#top)
 
 
+### **scroll to top of the worksheet**
+
+```vb
+Application.Goto Reference:=wsCurrent.Range("a1"), Scroll:=True
+```
+
+[back to top](#top)
+
+### **number of worksheets**
+
+```vb
+ActiveWorkbook.Worksheets.Count
+```
+
+[back to top](#top)
 
 ## Workbook
 
