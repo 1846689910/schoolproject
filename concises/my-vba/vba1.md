@@ -51,6 +51,17 @@ Contents
     - [**format Number: format data of worksheet ws**](#format-number-format-data-of-worksheet-ws)
     - [**Get Next Non-Empty Row in Column intCol, start search from intStartRow**](#get-next-non-empty-row-in-column-intcol-start-search-from-intstartrow)
     - [**Open select file dialog (only see the excel type file) and return the complete path of the file**](#open-select-file-dialog-only-see-the-excel-type-file-and-return-the-complete-path-of-the-file)
+    - [**Define and use ArrayList**](#define-and-use-arraylist)
+    - [**Define and use Hashtable**](#define-and-use-hashtable)
+    - [**Define and use Dictionary**](#define-and-use-dictionary)
+    - [**VBA Regular Express**](#vba-regular-express)
+    - [**Send Email**](#send-email)
+    - [**Error Handling**](#error-handling)
+    - [**Cells color/bold/italic/underline/strikethrough**](#cells-colorbolditalicunderlinestrikethrough)
+    - [**面向对象**](#面向对象)
+    - [**Hyperlink**](#hyperlink)
+    - [**FileSystem(rename/move/zip file)**](#filesystemrenamemovezip-file)
+      - [file path](#file-path)
   - [Methods](#methods)
     - [**instr**](#instr)
     - [**Round**](#round)
@@ -844,6 +855,502 @@ End Function
 ```
 
 [back to top](#top)
+
+### **Define and use ArrayList**
+
+Define:
+
+```vb
+    Dim list As Object
+    Set list = CreateObject("System.Collections.ArrayList")
+```
+
+get element in arraylist
+
+```vb
+list.item(0)
+'or
+list(0)
+```
+
+add element in arraylist
+
+```vb
+list.add("123")
+'or
+list.add "123"
+```
+
+get length of arraylist
+
+```vb
+list.count   ' the element from [0, list.count - 1]
+```
+
+store ArrayList in dictionary
+
+```vb
+dict.Add Key, CreateObject("System.Collections.ArrayList")
+```
+
+convert to array
+
+```vb
+Dim arr As Variant
+arr = list.toArray()
+```
+
+clone the current list to a new list
+
+```vb
+set list2 = list.clone()
+```
+
+check if list has element
+
+```vb
+list.contains("Apple")
+```
+
+clear list
+
+```vb
+list.clear()
+```
+
+reverse `list.reverse()`
+
+sort `list.sort()`
+
+insert `list.insert(0, "Apple")`
+
+remove
+
+```vb
+list.removeAt(0)
+list.remove("Apple")
+list.removeRange 1, 3
+```
+
+[back to top](#top)
+
+### **Define and use Hashtable**
+
+Declare and create
+
+```vb
+Dim map As Object
+Set map = CreateObject("System.Collections.Hashtable")
+```
+
+Add item (key must not already exist)
+
+- if add cell content, the cell must have been written before. One best way is `map.add "" & ws.cells(i, j).value, val`
+
+```vb
+map.Add Key, Value
+```
+
+Change value at key. Automatically adds if the key does not exist.
+
+```vb
+map(Key) = Value
+```
+
+Get a value from the dictionary using the key
+
+```vb
+map(Key)
+```
+
+Check if key exists
+
+```vb
+map.contains(Key)
+map.containsKey(Key)
+```
+
+Remove item
+
+```vb
+map.Remove(key)
+```
+
+Remove all items
+
+```vb
+map.clear
+```
+
+Go through all items (for each loop)
+
+```vb
+Set list = CreateObject("System.Collections.ArrayList")
+list.addrange (map.keys())
+Dim k As Variant
+For Each k In list
+    Debug.Print k
+Next k
+```
+
+Get the number of items
+
+```vb
+map.Count
+```
+
+[back to top](#top)
+
+### **Define and use Dictionary**
+
+Declare and create (early binding)
+
+- **early binding require reference `Microsoft Scripting Runtime`**
+
+```vb
+Dim dict As Scripting.Dictionary
+Set dict = New Scripting.Dictionary
+```
+
+Declare and create (late binding)
+
+- late binding without the reference above will perform as well, but no coding assistance in excel
+
+```vb
+Dim dict As Object
+Set dict = CreateObject("Scripting.Dictionary")
+```
+
+Add item (key must not already exist)
+
+```vb
+dict.Add Key, Value
+```
+
+Change value at key. Automatically adds if the key does not exist.
+
+```vb
+dict(Key) = Value
+```
+
+Get a value from the dictionary using the key
+
+```vb
+dict(Key)
+```
+
+Check if key exists
+
+```vb
+dict.Exists(Key)
+```
+
+Remove item
+
+```vb
+dict.Remove Key
+```
+
+Remove all items
+
+```vb
+dict.RemoveAll
+```
+
+Go through all items (for each loop)
+
+```vb
+Dim key As Variant
+For Each key In dict.Keys
+    Debug.Print key, dict(key)
+Next key
+```
+
+Go through all items (for loop - early binding only)
+
+```vb
+Dim i As Long
+For i = 0 To dict.Count - 1
+   Debug.Print dict.Keys(i), dict.Items(i)
+Next i
+```
+
+Get the number of items
+
+```vb
+dict.Count
+```
+
+[back to top](#top)
+
+### **VBA Regular Express**
+
+引入 reference: `Microsoft VBScript Regular Expressions 5.5`
+
+```vb
+Dim regExp as Object, matches as Object
+Dim match as variant
+Set regExp = new RegExp
+with regExp
+    .global = true
+    .IgnoreCase = true
+    .Pattern = "(\(LE_.*?)\s*(\[.*?\])?)+"
+end with
+set matches = regExp.Execute("STRING")
+debug.print regExp.test("STRING1")
+debug.print matches.count
+for each match in matches
+    debug.print Cstr(match)
+next match
+```
+
+[back to top](#top)
+
+### **Send Email**
+
+```vb
+Sub sEmail()
+   'Setting up the Excel variables.
+   Dim olApp As Object
+   Dim oMail As Outlook.MailItem 'Microsoft outlook object library
+   Dim iCounter As Integer
+   Dim Dest As Variant
+   Dim SDest As String
+   Dim Excel As Object
+   Dim Name As String
+   Dim Word As Object
+   Dim oAccount As Outlook.Account
+   Dim doc As Word.Document 'Microsoft word object library
+   Dim itm As Object
+   Dim MsgTxt As String
+   Dim template As String
+   Dim sBody As String
+   Dim wd As Object
+   'Create excel object.
+   Set ws = ThisWorkbook.Sheets("Sheet1")
+   'Create a word object.
+    Set wd = CreateObject("Word.Application")
+	wd.DisplayAlerts = False
+	Set doc = wd.Documents.Open("")
+    doc.Content.Copy
+	doc.Close
+ 	Set wd = Nothing
+   'Loop through the excel worksheet.
+   	For iCounter = 2 To 50
+       	Set OutApp = CreateObject("Outlook.Application")
+       	Set oMail = OutApp.CreateItem(0)
+       	'Create an email for each entry in the worksheet.
+        	strto = ws.Cells(iCounter, 2)
+        	strFirst = ws.Cells(iCounter, 1)
+       	With oMail
+         	.To = strto
+         	.Subject = "Symantec FY18 R&D Credit Study Survey" & " - " & strFirst
+         	.BodyFormat = olFormatRichText
+         	Set Editor = .GetInspector.WordEditor
+         	Editor.Content.Paste
+        	.Display
+        	.CC = ""
+         	sBody = .HTMLBody
+         	.HTMLBody = Replace(sBody, "[Name]", ws.Range("C" & iCounter).Value)
+         	.Send
+       	End With
+   	Next iCounter
+       MsgBox "done"
+   'Clean up the Outlook application.
+   Set olMailItm = Nothing
+   Set olApp = Nothing
+End Sub
+```
+
+[back to top](#top)
+
+### **Error Handling**
+
+VBA 中的 error handling 并不具备自身的独立的作用域和 try catch 很不同，仅仅起到 发现错误并跳转到代码标记的位置继续运行。如果没有发现错误，带标记的部分也会按照相应的上下文情况而被运行。
+
+可以在标记处使用`if Err.Number <> 0 then …`来隔开错误处理和正常运行的代码
+
+`on Error Goto 0`: 停在 error 处，并显示 error
+
+`on Error Goto -1`: 清除当前的 error
+
+`on Error Resume Next`: 忽略 error，继续
+
+`on Error Goto LABEL`: 有 error 时，跳转到标记有 LABEL 的位置的代码，sub 或 function 内跳转
+
+`Err.Description`: 错误描述
+
+**忽略 error 的例子:**
+
+```vb
+Sub errorTest()
+    On Error Resume Next
+    Debug.Print 1 / 0
+End Sub
+```
+
+**捕获 error 的例子:**
+将 0 到 2 的格子内容字符串连接起来，如果出错，连接内容变更为”NPE”
+
+```vb
+Function errorTestFn(ByRef ws As Worksheet) As String
+    Dim i As Integer
+    Dim s As String
+    For i = 0 To 2
+        On Error GoTo myCatch
+        s = s & ws.Range("A" & i).Value
+myCatch: ' 这个标记仅仅表示了一个跳转目的地, 并不影响正常的代码运行。即如果代码不出错，也会被执行，只不过出错后会跳转到此处向下执行. 通过if Err.Number <> 0 then … 来隔开错误处理与正常的代码
+    If Err.Number <> 0 Then
+        s = s & "NPE"
+    End If
+    Next i
+    errorTestFn = s
+End Function
+```
+
+[back to top](#top)
+
+### **Cells color/bold/italic/underline/strikethrough**
+
+More colorIndex at [colorIndex](http://dmcritchie.mvps.org/excel/colors.htm)
+
+```vb
+ws.Range("A1").Interior.ColorIndex = 37
+ws.cells(1, "C").Interior.ColorIndex = 37
+```
+
+```vb
+Worksheets("Sheet1").Range("A1:A5").Font.Bold = True
+Worksheets("Sheet1").Range("A1:A5").Font.Italic = True
+Worksheets("Sheet1").Range("A1:A5").Font.Underline = xlUnderlineStyleSingle
+Worksheets("Sheet1").Range("A1:A5").Font.Strikethrough = True
+```
+
+[back to top](#top)
+
+### **面向对象**
+
+定义一个`Student`类.
+
+- insert `Class Module`, rename as `Student`
+- add the following code snippet
+
+```vb
+Option Explicit
+
+Private prName$
+Private prAge$
+Private prLevel$
+Public Function getName() As String ' use function as getter
+    getName = prName
+End Function
+Public Property Get name() As String ' use getter function
+  name = prName
+End Property
+Public Property Let name(ByVal name As String) ' variable `prName` setter
+  prName = name
+End Property
+Public Function getAge() As Integer
+    getAge = prAge
+End Function
+Public Function getLevel() As String
+    getLevel = prLevel
+End Function
+Public Sub init(ByVal name As String, ByVal age As Integer, ByVal level As String)
+    prName = name
+    prAge = age
+    prLevel = level
+End Sub
+Public Sub run()
+    Debug.Print prName & " is running"
+End Sub
+Public Function study(ByVal course As String) As String
+    study = prName & " is studying " & course
+End Function
+```
+
+创建对象，调用方法
+
+```vb
+Option Explicit
+Sub main()
+    Dim s As New Student
+    s.init "george", 12, "elementary"
+    Debug.Print s.getAge() ' 12
+    Debug.Print s.name ' george
+    s.name = "alex"
+    Debug.Print s.getName() ' alex
+End Sub
+```
+
+[back to top](#top)
+
+### **Hyperlink**
+
+- 在`wsFrom.range(fromRangeSelector)`设置一个链接，点击可跳转到`wsTarget.range(targetRangeSelector)`, 该 cell 的内容为`content`
+
+```vb
+Sub AddHyperlink(ByRef wsFrom As Worksheet, ByVal fromRangeSelector As String, ByRef wsTarget As Worksheet, ByVal targetRangeSelector As String, ByVal content As String)
+    wsFrom.Hyperlinks.Add Anchor:=wsFrom.Range(fromRangeSelector), Address:="", SubAddress:=wsTarget.Name & "!" & targetRangeSelector, TextToDisplay:=content
+End Sub
+```
+
+[back to top](#top)
+
+**Formula**
+
+within one worksheet
+
+```vb
+ws.range("A1").formula = "=sum(D1:H1)"
+ws.range("A2").formula = "=E1/G1"
+```
+
+cross worksheets
+
+```vb
+ws.range("A3").formula = "=" & ws1.name & "!C3/"& ws.name&"!E5"
+ws.range("A4").formula = "='Sh eet2'!B2/Sheet1!E1"
+```
+
+Note:
+
+- the formula is like `=SHEET_A!C1/SHEET_B!E1`
+- Don't forget `!` which means `whose`, like `ws!A1` meaning `ws 's A1 cell`
+- if the name has special char or space, then better to use single quote to wrap the sheet name `'sheet hello'!A1/ws1!A3`
+
+[back to top](#top)
+
+### **FileSystem(rename/move/zip file)**
+
+<a id="46-1"></a>
+
+#### file path
+
+```vb
+Sub main()
+    Dim fs As Object
+    Dim objFolder As Object
+    Dim objFile As Object
+
+    Set fs = CreateObject("Scripting.FileSystemObject")
+    Set objFolder = fs.GetFolder(ThisWorkbook.Path)
+
+    For Each objFile In objFolder.Files
+        Debug.Print objFile.Path            ' D:\vba-work\src\2020-02-07\abc.xlsm
+        Debug.Print objFile.parentfolder    ' D:\vba-work\src\2020-02-07
+        Debug.Print objFile.Name            ' abc.xlsm
+        If InStr(objFile.Name, "24") > 0 Then
+            newName = Replace(objFile.Name, "24", "abs")
+            Name objFile.Path As objFile.parentfolder & "\" & newName
+        End If
+    Next objFile
+
+End Sub
+```
+
+[back to top](#top)
+
 ## Methods
 
 ### **instr**
