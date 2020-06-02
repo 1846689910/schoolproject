@@ -14,6 +14,11 @@ Contents
   - [Workbook](#workbook)
     - [mkDirs: 创建路径，即使中间路径不存在](#mkdirs-创建路径即使中间路径不存在)
     - [**Open Workbook(or create then open)**](#open-workbookor-create-then-open)
+    - [**遍历 directory 下的所有直属workbook**](#遍历-directory-下的所有直属workbook)
+    - [**遍历 directory 下的所有 subDirectory and file**](#遍历-directory-下的所有-subdirectory-and-file)
+    - [**获取directory下所有的file paths as array**](#获取directory下所有的file-paths-as-array)
+    - [**保存 workbook, 并给出名字**](#保存-workbook-并给出名字)
+    - [**退出 workbook 不保存**](#退出-workbook-不保存)
   - [Utils](#utils)
     - [**Main()函数和应用提速**](#main函数和应用提速)
     - [**OCR Find**](#ocr-find)
@@ -141,6 +146,94 @@ End Sub
 
 [back to top](#top)
 
+### **遍历 directory 下的所有直属workbook**
+
+```vb
+Sub LoopThroughFiles(directory As String)
+    Dim fileName As String
+    Dim fileDir As String
+    Dim wb As Workbook
+    Dim ws As Worksheet
+    fileName = dir(directory & "\*.xlsx") ' loop through all the .xlsx files
+    Do While Len(fileName) > 0
+        Set wb = Workbooks.Open(fileName:=directory & "\" & fileName)
+        Set ws = wb.Sheets(1)
+        Debug.Print ws.Name
+        wb.Close savechanges:=False
+        fileName = dir
+    Loop
+End Sub
+```
+
+[back to top](#top)
+
+### **遍历 directory 下的所有 subDirectory and file**
+
+```vb
+Sub loopDir(sDir As String)
+    Dim FileSystem As Object
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    DoFolder FileSystem.GetFolder(sDir)
+End Sub
+Private Sub DoFolder(Folder)
+    Dim SubFolder
+    For Each SubFolder In Folder.SubFolders
+        DoFolder SubFolder
+    Next
+    Dim File
+    For Each File In Folder.Files
+        ' Operate on each file
+        Debug.Print File.Name ' also File.path, Folder.Name, Folder.Path
+    Next
+End Sub
+```
+
+[back to top](#top)
+
+### **获取directory下所有的file paths as array**
+
+```vb
+Function getAllFilepaths(sDir As String) As Variant
+    Dim FileSystem As Object
+    Dim list As Object
+    Set FileSystem = CreateObject("Scripting.FileSystemObject")
+    Set list = CreateObject("System.Collections.ArrayList")
+    DoFolder FileSystem.GetFolder(sDir), list
+    getAllFilepaths = list.toArray
+End Function
+Private Sub DoFolder(Folder, list As Object)
+    Dim SubFolder
+    For Each SubFolder In Folder.SubFolders
+        DoFolder SubFolder, list
+    Next
+    Dim File
+    For Each File In Folder.Files
+        list.Add File.Path
+    Next
+End Sub
+```
+
+[back to top](#top)
+
+### **保存 workbook, 并给出名字**
+
+```vb
+wb.SaveAs 路径&文件名
+wb.SaveAs strPath & "\TB_Upload " & Replace(Date, "/", "_")
+
+'也可以直接保存成.csv文件
+wb.SaveAs 路径 & 文件名 & ”.csv”
+```
+
+[back to top](#top)
+
+### **退出 workbook 不保存**
+
+```vb
+Workbooks("BOOK1.XLS").Close SaveChanges:=False
+```
+
+[back to top](#top)
 
 ## Utils
 
