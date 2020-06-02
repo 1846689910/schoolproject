@@ -18,6 +18,7 @@ Contents
     - [**插入列**](#插入列)
   - [Range](#range)
     - [**range remove duplicates 去重**](#range-remove-duplicates-去重)
+    - [**循环查找，找到 worksheet 里第一个内容为...或者内容不空的 cell**](#循环查找找到-worksheet-里第一个内容为或者内容不空的-cell)
   - [Worksheet](#worksheet)
     - [**hasWorksheet 判断该 workbook 有无该 worksheets(可选择创建)**](#hasworksheet-判断该-workbook-有无该-worksheets可选择创建)
     - [**在worksheet的row行查找target返回列号 getColsList / getFirstCol**](#在worksheet的row行查找target返回列号-getcolslist--getfirstcol)
@@ -33,6 +34,9 @@ Contents
   - [Utils](#utils)
     - [**Main()函数和应用提速**](#main函数和应用提速)
     - [**OCR Find**](#ocr-find)
+    - [**下拉列表框**](#下拉列表框)
+    - [**format Number: format data of worksheet ws**](#format-number-format-data-of-worksheet-ws)
+    - [**Get Next Non-Empty Row in Column intCol, start search from intStartRow**](#get-next-non-empty-row-in-column-intcol-start-search-from-intstartrow)
   - [Methods](#methods)
     - [**instr**](#instr)
     - [**Round**](#round)
@@ -205,6 +209,33 @@ ActiveCell.EntireColumn.Offset(0, 1).Insert
 
 ```vb
 ActiveSheet.Range("A1:C100").RemoveDuplicates Columns:=Array(1,2), Header:=xlYes
+```
+
+[back to top](#top)
+
+### **循环查找，找到 worksheet 里第一个内容为...或者内容不空的 cell**
+
+sheet1 为要查找的 worksheet，text 为查找内容，blurredMatch 模糊匹配：True 表示内容含有 text 就算找到，False 表示内容完全相等才算找到
+
+```vb
+Public Function getPos(sheet1 As Worksheet, text As String, blurredMatch As Boolean) As Variant
+    Dim i As Integer
+    Dim j As Integer
+    Dim found As Boolean
+    Dim arr As Variant
+    arr = Array(-1, -1)
+    For i = 1 To sheet1.UsedRange.Rows(sheet1.UsedRange.Rows.Count).Row
+        For j = 1 To sheet1.UsedRange.Columns(sheet1.UsedRange.Columns.Count).Column
+            If (blurredMatch And InStr(sheet1.Cells(i, j).Value, text) <> 0) Or ((Not blurredMatch) And sheet1.Cells(i, j).Value = text) Then
+                found = True
+                arr = Array(i, j)
+                Exit For
+            End If
+        Next j
+        If found Then Exit For
+    Next i
+    getPos = arr
+End Function
 ```
 
 [back to top](#top)
@@ -555,6 +586,63 @@ Function ocrFind(ByRef ws As Worksheet, ByVal col As String, ByVal fr As Integer
         End If
     Next i
     ocrFind = row
+End Function
+```
+
+[back to top](#top)
+
+### **下拉列表框**
+
+Set the drop down list: strCellName represents the position you need to put a drop down list. formula1 := “=sht!A1:A6” represents that the content in drop down list are in A1 : A6
+
+```vb
+Sub setList(strCellName As String, val As String)
+    ' set the drop down list for the blanks in wsUserInput
+    With Range(strCellName).Validation
+        .Delete
+        .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, _
+            Operator:=xlEqual, Formula1:=val
+        .IgnoreBlank = True
+        .InCellDropdown = True
+        .InputTitle = ""
+        .ErrorTitle = ""
+        .InputMessage = ""
+        .ErrorMessage = ""
+        .ShowInput = True
+        .ShowError = True
+    End With
+End Sub
+```
+
+[back to top](#top)
+
+### **format Number: format data of worksheet ws**
+
+```vb
+Private Sub formatNumber(wsTar As Worksheet, i As Integer)
+    ' format digits of some number and date in wsTarget(tax pipeline report)
+    wsTar.Range("AU" & i).NumberFormat = "00000"  ‘ 精确数字到5位
+    wsTar.Range("AV" & i).NumberFormat = "00000"
+    wsTar.Range("AW" & i).NumberFormat = "0000000"
+    wsTar.Range("BO" & i).NumberFormat = "dd-mmm-yyyy"  ‘ 格式化日期
+    wsTar.Range("AW" & i).NumberFormat = "$#,###"
+    ws.Range("B" & i).NumberFormat = "_(* #,##0_);_(* (#,##0);_(* "" - ""_);_(@_)"转换成字符形式
+End Sub
+```
+
+[back to top](#top)
+
+### **Get Next Non-Empty Row in Column intCol, start search from intStartRow**
+
+```vb
+Private Function getNENextRow(ws As Worksheet, intCol As Integer, intStartRow As Integer, intFileLastRow As Integer) As Integer
+    ' get the next non empty row number. starting from the current cell and find the next cell whose value is nonempty
+    Dim idx As Integer
+    idx = intStartRow
+    While idx < intFileLastRow And IsEmpty(ws.Cells(idx, intCol).Value) = True
+        idx = idx + 1
+    Wend
+    getNENextRow = idx
 End Function
 ```
 
