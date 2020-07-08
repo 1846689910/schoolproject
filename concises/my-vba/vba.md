@@ -44,6 +44,15 @@
   - [**保存 workbook, 并给出名字**](#保存-workbook-并给出名字)
   - [**退出 workbook (不)保存**](#退出-workbook-不保存)
   - [**Copy a file and rename**](#copy-a-file-and-rename)
+- [DataStructure, other Class/Object](#datastructure-other-classobject)
+  - [**Define and use Array**](#define-and-use-array)
+  - [**Define and use ArrayList**](#define-and-use-arraylist)
+  - [**Define and use Hashtable**](#define-and-use-hashtable)
+  - [**Define and use Dictionary**](#define-and-use-dictionary)
+  - [**FileSystem(rename/move/zip file)**](#filesystemrenamemovezip-file)
+    - [file path](#file-path)
+    - [rename/move file](#renamemove-file)
+    - [zip all files in a directory](#zip-all-files-in-a-directory)
 - [Utils](#utils)
   - [**Main()函数和应用提速**](#main函数和应用提速)
   - [**OCR Find**](#ocr-find)
@@ -51,20 +60,12 @@
   - [**format Number: format data of worksheet ws**](#format-number-format-data-of-worksheet-ws)
   - [**Get Next Non-Empty Row in Column intCol, start search from intStartRow**](#get-next-non-empty-row-in-column-intcol-start-search-from-intstartrow)
   - [**Open select file dialog (only see the excel type file) and return the complete path of the file**](#open-select-file-dialog-only-see-the-excel-type-file-and-return-the-complete-path-of-the-file)
-  - [**Define and use Array**](#define-and-use-array)
-  - [**Define and use ArrayList**](#define-and-use-arraylist)
-  - [**Define and use Hashtable**](#define-and-use-hashtable)
-  - [**Define and use Dictionary**](#define-and-use-dictionary)
   - [**VBA Regular Express**](#vba-regular-express)
   - [**Send Email**](#send-email)
   - [**Error Handling**](#error-handling)
   - [**Cells color/bold/italic/underline/strikethrough**](#cells-colorbolditalicunderlinestrikethrough)
   - [**面向对象**](#面向对象)
   - [**Hyperlink 在worksheet中插入链接**](#hyperlink-在worksheet中插入链接)
-  - [**FileSystem(rename/move/zip file)**](#filesystemrenamemovezip-file)
-    - [file path](#file-path)
-    - [rename/move file](#renamemove-file)
-    - [zip all files in a directory](#zip-all-files-in-a-directory)
 - [Methods](#methods)
   - [**instr**](#instr)
   - [**Round**](#round)
@@ -755,143 +756,7 @@ FileCopy "C:\local files\tester.xlsx", "C:\local files\__TMP\tester_copy.xlsx"
 
 [back to top](#top)
 
-## Utils
-
-### **Main()函数和应用提速**
-
-1. Option Explicit: ensure all the variable are defined and used later
-2. Use explicit type: avoid using many Variant type, using explicit type, like Integer, String
-3. Speed up vba code by add following code lines:
-
-```vb
-'    Application.Calculation = xlCalculationManual  ' Take Caution本条谨慎
-Option Explicit
-Sub main()
-Application.ScreenUpdating = False
-Application.DisplayStatusBar = False
-Application.EnableEvents = False
-Application.DisplayAlerts = False
-Application.AskToUpdateLinks = False
-
-	' Write your VBA code here ......
-
-'get LastRow Ctrl + Shift + End
-'  LastRow = sht.Cells(sht.Rows.Count, "A").End(xlUp).Row
-'  LastRow = sht.UsedRange.Rows(sht.UsedRange.Rows.Count).Row
-'get Last Column Ctrl + Shift + End
-'  LastColumn = sht.Cells(7, sht.Columns.Count).End(xlToLeft).Column
-'  LastColumn = sht.UsedRange.Columns(sht.UsedRange.Columns.Count).Column
-'WORKSHEET.columns.AutoFit
-Application.ScreenUpdating = True
-Application.DisplayStatusBar = True
-Application.EnableEvents = True
-Application.DisplayAlerts = True
-Application.AskToUpdateLinks = True
-End Sub
-```
-
-[back to top](#top)
-
-### **OCR Find**
-
-```vb
-' ocrFind:
-' 在ws的col列，从fr行到tr行查找target内容是否存在，如存在返回行号，否则返回-1
-' 如果在查找过程中在breakCol列发现了breakTarget存在则停止查找返回-1
-' in ws worksheet, column col, from fr row to tr row searching for target. if found, return the row number
-' if in column breakCol found breakTarget, then stop search early, return -1
-Function ocrFind(ByRef ws As Worksheet, ByVal col As String, ByVal fr As Integer, ByVal tr As Integer, ByVal target As String, ByVal breakCol As String, ByVal breakTarget As String) As Integer
-    Dim i As Integer
-    Dim row As Integer
-    row = -1
-    For i = fr To tr
-        If InStr(ws.Range(col & i).Value, target) <> 0 Then
-            row = i
-            Exit For
-        End If
-        If InStr(ws.Range(breakCol & i).Value, breakTarget) <> 0 Then
-            row = -1
-            Exit For
-        End If
-    Next i
-    ocrFind = row
-End Function
-```
-
-[back to top](#top)
-
-### **下拉列表框**
-
-Set the drop down list: strCellName represents the position you need to put a drop down list. formula1 := “=sht!A1:A6” represents that the content in drop down list are in A1 : A6
-
-```vb
-Sub setList(strCellName As String, val As String)
-    ' set the drop down list for the blanks in wsUserInput
-    With Range(strCellName).Validation
-        .Delete
-        .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, _
-            Operator:=xlEqual, Formula1:=val
-        .IgnoreBlank = True
-        .InCellDropdown = True
-        .InputTitle = ""
-        .ErrorTitle = ""
-        .InputMessage = ""
-        .ErrorMessage = ""
-        .ShowInput = True
-        .ShowError = True
-    End With
-End Sub
-```
-
-[back to top](#top)
-
-### **format Number: format data of worksheet ws**
-
-```vb
-Private Sub formatNumber(wsTar As Worksheet, i As Integer)
-    ' format digits of some number and date in wsTarget(tax pipeline report)
-    wsTar.Range("AU" & i).NumberFormat = "00000"  ‘ 精确数字到5位
-    wsTar.Range("AV" & i).NumberFormat = "00000"
-    wsTar.Range("AW" & i).NumberFormat = "0000000"
-    wsTar.Range("BO" & i).NumberFormat = "dd-mmm-yyyy"  ‘ 格式化日期
-    wsTar.Range("AW" & i).NumberFormat = "$#,###"
-    ws.Range("B" & i).NumberFormat = "_(* #,##0_);_(* (#,##0);_(* "" - ""_);_(@_)"转换成字符形式
-End Sub
-```
-
-[back to top](#top)
-
-### **Get Next Non-Empty Row in Column intCol, start search from intStartRow**
-
-```vb
-Private Function getNENextRow(ws As Worksheet, intCol As Integer, intStartRow As Integer, intFileLastRow As Integer) As Integer
-    ' get the next non empty row number. starting from the current cell and find the next cell whose value is nonempty
-    Dim idx As Integer
-    idx = intStartRow
-    While idx < intFileLastRow And IsEmpty(ws.Cells(idx, intCol).Value) = True
-        idx = idx + 1
-    Wend
-    getNENextRow = idx
-End Function
-```
-
-[back to top](#top)
-
-### **Open select file dialog (only see the excel type file) and return the complete path of the file**
-
-```vb
-Public Function SelectFile() As String
-    Dim vPath As Variant
-    vPath = Application.GetOpenFilename(FileFilter:="Excel Workbooks (*.xlsx;*.xls;*.xlsm;*.xlsb), *.xlsx;*.xls;*.xlsm;*x.lsb", TITLE:="Please Select EYU Path report")
-    If vPath = False Then
-        SelectFile = ""
-    Else
-        SelectFile = vPath
-    End If
-End Function
-```
-
-[back to top](#top)
+## DataStructure, other Class/Object
 
 ### **Define and use Array**
 
@@ -1165,6 +1030,234 @@ dict.Count
 
 [back to top](#top)
 
+### **FileSystem(rename/move/zip file)**
+
+<a id="46-1"></a>
+
+#### file path
+
+```vb
+Sub main()
+    Dim fs As Object
+    Dim objFolder As Object
+    Dim objFile As Object
+
+    Set fs = CreateObject("Scripting.FileSystemObject")
+    Set objFolder = fs.GetFolder(ThisWorkbook.Path)
+
+    For Each objFile In objFolder.Files
+        Debug.Print objFile.Path            ' D:\vba-work\src\2020-02-07\abc.xlsm
+        Debug.Print objFile.parentfolder    ' D:\vba-work\src\2020-02-07
+        Debug.Print objFile.Name            ' abc.xlsm
+        If InStr(objFile.Name, "24") > 0 Then
+            newName = Replace(objFile.Name, "24", "abs")
+            Name objFile.Path As objFile.parentfolder & "\" & newName
+        End If
+    Next objFile
+
+End Sub
+```
+
+[back to top](#top)
+
+#### rename/move file
+
+```vb
+Name OLD_PATH As NEW_PATH
+```
+
+[back to top](#top)
+
+#### zip all files in a directory
+
+```vb
+Sub main()
+
+    zipAllFilesInFolder ThisWorkbook.Path & "\folder\", ThisWorkbook.Path & "\abc.zip"
+End Sub
+
+' @param {String} fromDir D:\abc\
+' @param {String} destZipFilePath like D:\my.zip
+Sub zipAllFilesInFolder(ByVal fromDir As Variant, ByVal destZipFilePath As Variant)
+    Dim oApp As Object
+
+    'Create empty Zip File
+    NewZip (destZipFilePath)
+
+    Set oApp = CreateObject("Shell.Application")
+    'Copy the files to the compressed folder
+    oApp.Namespace(destZipFilePath).CopyHere oApp.Namespace(fromDir).items
+
+    'Keep script waiting until Compressing is done
+    On Error Resume Next
+    Do Until oApp.Namespace(destZipFilePath).items.Count = _
+       oApp.Namespace(fromDir).items.Count
+        Application.Wait (Now + TimeValue("0:00:01"))
+    Loop
+    On Error GoTo 0
+
+    MsgBox "Please find your zipfile at <" & destZipFilePath & ">"
+End Sub
+
+Sub NewZip(sPath)
+'Create empty Zip File
+    If Len(Dir(sPath)) > 0 Then Kill sPath
+    Open sPath For Output As #1
+    Print #1, Chr$(80) & Chr$(75) & Chr$(5) & Chr$(6) & String(18, 0)
+    Close #1
+End Sub
+
+Function bIsBookOpen(ByRef szBookName As String) As Boolean
+    On Error Resume Next
+    bIsBookOpen = Not (Application.Workbooks(szBookName) Is Nothing)
+End Function
+
+Function Split97(sStr As Variant, sdelim As String) As Variant
+    Split97 = Evaluate("{""" & _
+                       Application.Substitute(sStr, sdelim, """,""") & """}")
+End Function
+```
+
+[back to top](#top)
+
+## Utils
+
+### **Main()函数和应用提速**
+
+1. Option Explicit: ensure all the variable are defined and used later
+2. Use explicit type: avoid using many Variant type, using explicit type, like Integer, String
+3. Speed up vba code by add following code lines:
+
+```vb
+'    Application.Calculation = xlCalculationManual  ' Take Caution本条谨慎
+Option Explicit
+Sub main()
+Application.ScreenUpdating = False
+Application.DisplayStatusBar = False
+Application.EnableEvents = False
+Application.DisplayAlerts = False
+Application.AskToUpdateLinks = False
+
+	' Write your VBA code here ......
+
+'get LastRow Ctrl + Shift + End
+'  LastRow = sht.Cells(sht.Rows.Count, "A").End(xlUp).Row
+'  LastRow = sht.UsedRange.Rows(sht.UsedRange.Rows.Count).Row
+'get Last Column Ctrl + Shift + End
+'  LastColumn = sht.Cells(7, sht.Columns.Count).End(xlToLeft).Column
+'  LastColumn = sht.UsedRange.Columns(sht.UsedRange.Columns.Count).Column
+'WORKSHEET.columns.AutoFit
+Application.ScreenUpdating = True
+Application.DisplayStatusBar = True
+Application.EnableEvents = True
+Application.DisplayAlerts = True
+Application.AskToUpdateLinks = True
+End Sub
+```
+
+[back to top](#top)
+
+### **OCR Find**
+
+```vb
+' ocrFind:
+' 在ws的col列，从fr行到tr行查找target内容是否存在，如存在返回行号，否则返回-1
+' 如果在查找过程中在breakCol列发现了breakTarget存在则停止查找返回-1
+' in ws worksheet, column col, from fr row to tr row searching for target. if found, return the row number
+' if in column breakCol found breakTarget, then stop search early, return -1
+Function ocrFind(ByRef ws As Worksheet, ByVal col As String, ByVal fr As Integer, ByVal tr As Integer, ByVal target As String, ByVal breakCol As String, ByVal breakTarget As String) As Integer
+    Dim i As Integer
+    Dim row As Integer
+    row = -1
+    For i = fr To tr
+        If InStr(ws.Range(col & i).Value, target) <> 0 Then
+            row = i
+            Exit For
+        End If
+        If InStr(ws.Range(breakCol & i).Value, breakTarget) <> 0 Then
+            row = -1
+            Exit For
+        End If
+    Next i
+    ocrFind = row
+End Function
+```
+
+[back to top](#top)
+
+### **下拉列表框**
+
+Set the drop down list: strCellName represents the position you need to put a drop down list. formula1 := “=sht!A1:A6” represents that the content in drop down list are in A1 : A6
+
+```vb
+Sub setList(strCellName As String, val As String)
+    ' set the drop down list for the blanks in wsUserInput
+    With Range(strCellName).Validation
+        .Delete
+        .Add Type:=xlValidateList, AlertStyle:=xlValidAlertStop, _
+            Operator:=xlEqual, Formula1:=val
+        .IgnoreBlank = True
+        .InCellDropdown = True
+        .InputTitle = ""
+        .ErrorTitle = ""
+        .InputMessage = ""
+        .ErrorMessage = ""
+        .ShowInput = True
+        .ShowError = True
+    End With
+End Sub
+```
+
+[back to top](#top)
+
+### **format Number: format data of worksheet ws**
+
+```vb
+Private Sub formatNumber(wsTar As Worksheet, i As Integer)
+    ' format digits of some number and date in wsTarget(tax pipeline report)
+    wsTar.Range("AU" & i).NumberFormat = "00000"  ‘ 精确数字到5位
+    wsTar.Range("AV" & i).NumberFormat = "00000"
+    wsTar.Range("AW" & i).NumberFormat = "0000000"
+    wsTar.Range("BO" & i).NumberFormat = "dd-mmm-yyyy"  ‘ 格式化日期
+    wsTar.Range("AW" & i).NumberFormat = "$#,###"
+    ws.Range("B" & i).NumberFormat = "_(* #,##0_);_(* (#,##0);_(* "" - ""_);_(@_)"转换成字符形式
+End Sub
+```
+
+[back to top](#top)
+
+### **Get Next Non-Empty Row in Column intCol, start search from intStartRow**
+
+```vb
+Private Function getNENextRow(ws As Worksheet, intCol As Integer, intStartRow As Integer, intFileLastRow As Integer) As Integer
+    ' get the next non empty row number. starting from the current cell and find the next cell whose value is nonempty
+    Dim idx As Integer
+    idx = intStartRow
+    While idx < intFileLastRow And IsEmpty(ws.Cells(idx, intCol).Value) = True
+        idx = idx + 1
+    Wend
+    getNENextRow = idx
+End Function
+```
+
+[back to top](#top)
+
+### **Open select file dialog (only see the excel type file) and return the complete path of the file**
+
+```vb
+Public Function SelectFile() As String
+    Dim vPath As Variant
+    vPath = Application.GetOpenFilename(FileFilter:="Excel Workbooks (*.xlsx;*.xls;*.xlsm;*.xlsb), *.xlsx;*.xls;*.xlsm;*x.lsb", TITLE:="Please Select EYU Path report")
+    If vPath = False Then
+        SelectFile = ""
+    Else
+        SelectFile = vPath
+    End If
+End Function
+```
+
+[back to top](#top)
+
 ### **VBA Regular Express**
 
 引入 reference: `Microsoft VBScript Regular Expressions 5.5`
@@ -1400,96 +1493,6 @@ Note:
 - the formula is like `=SHEET_A!C1/SHEET_B!E1`
 - Don't forget `!` which means `whose`, like `ws!A1` meaning `ws 's A1 cell`
 - if the name has special char or space, then better to use single quote to wrap the sheet name `'sheet hello'!A1/ws1!A3`
-
-[back to top](#top)
-
-### **FileSystem(rename/move/zip file)**
-
-<a id="46-1"></a>
-
-#### file path
-
-```vb
-Sub main()
-    Dim fs As Object
-    Dim objFolder As Object
-    Dim objFile As Object
-
-    Set fs = CreateObject("Scripting.FileSystemObject")
-    Set objFolder = fs.GetFolder(ThisWorkbook.Path)
-
-    For Each objFile In objFolder.Files
-        Debug.Print objFile.Path            ' D:\vba-work\src\2020-02-07\abc.xlsm
-        Debug.Print objFile.parentfolder    ' D:\vba-work\src\2020-02-07
-        Debug.Print objFile.Name            ' abc.xlsm
-        If InStr(objFile.Name, "24") > 0 Then
-            newName = Replace(objFile.Name, "24", "abs")
-            Name objFile.Path As objFile.parentfolder & "\" & newName
-        End If
-    Next objFile
-
-End Sub
-```
-
-[back to top](#top)
-
-#### rename/move file
-
-```vb
-Name OLD_PATH As NEW_PATH
-```
-
-[back to top](#top)
-
-#### zip all files in a directory
-
-```vb
-Sub main()
-
-    zipAllFilesInFolder ThisWorkbook.Path & "\folder\", ThisWorkbook.Path & "\abc.zip"
-End Sub
-
-' @param {String} fromDir D:\abc\
-' @param {String} destZipFilePath like D:\my.zip
-Sub zipAllFilesInFolder(ByVal fromDir As Variant, ByVal destZipFilePath As Variant)
-    Dim oApp As Object
-
-    'Create empty Zip File
-    NewZip (destZipFilePath)
-
-    Set oApp = CreateObject("Shell.Application")
-    'Copy the files to the compressed folder
-    oApp.Namespace(destZipFilePath).CopyHere oApp.Namespace(fromDir).items
-
-    'Keep script waiting until Compressing is done
-    On Error Resume Next
-    Do Until oApp.Namespace(destZipFilePath).items.Count = _
-       oApp.Namespace(fromDir).items.Count
-        Application.Wait (Now + TimeValue("0:00:01"))
-    Loop
-    On Error GoTo 0
-
-    MsgBox "Please find your zipfile at <" & destZipFilePath & ">"
-End Sub
-
-Sub NewZip(sPath)
-'Create empty Zip File
-    If Len(Dir(sPath)) > 0 Then Kill sPath
-    Open sPath For Output As #1
-    Print #1, Chr$(80) & Chr$(75) & Chr$(5) & Chr$(6) & String(18, 0)
-    Close #1
-End Sub
-
-Function bIsBookOpen(ByRef szBookName As String) As Boolean
-    On Error Resume Next
-    bIsBookOpen = Not (Application.Workbooks(szBookName) Is Nothing)
-End Function
-
-Function Split97(sStr As Variant, sdelim As String) As Variant
-    Split97 = Evaluate("{""" & _
-                       Application.Substitute(sStr, sdelim, """,""") & """}")
-End Function
-```
 
 [back to top](#top)
 
