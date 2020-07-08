@@ -51,6 +51,7 @@
   - [**format Number: format data of worksheet ws**](#format-number-format-data-of-worksheet-ws)
   - [**Get Next Non-Empty Row in Column intCol, start search from intStartRow**](#get-next-non-empty-row-in-column-intcol-start-search-from-intstartrow)
   - [**Open select file dialog (only see the excel type file) and return the complete path of the file**](#open-select-file-dialog-only-see-the-excel-type-file-and-return-the-complete-path-of-the-file)
+  - [**Define and use Array**](#define-and-use-array)
   - [**Define and use ArrayList**](#define-and-use-arraylist)
   - [**Define and use Hashtable**](#define-and-use-hashtable)
   - [**Define and use Dictionary**](#define-and-use-dictionary)
@@ -888,6 +889,51 @@ Public Function SelectFile() As String
         SelectFile = vPath
     End If
 End Function
+```
+
+[back to top](#top)
+
+### **Define and use Array**
+
+Define array:
+
+```vb
+Dim arr(3) as String   ‘define an array with length as 4, then you could use from arr(0) to arr(3)
+
+Dim arr(1 To 5) as String    ‘then you could begin to use the arr from arr(1) to arr(5)
+Dim matrix(1 To 5, 1 To 3) as String    ‘define a 2D matrix with size (5 X 3)
+
+Dim arr as Variant
+arr = Array(“123”, “abc”)   ' start from arr(0), 记得使用的时候要类型转换一下，如果是字符串，那么取元素的时候要用”” & arr(0)转为字符串，其他像CInt(), Clng(), CDbl()等等
+
+Dim arr() as String
+arr = Split (“123,abc”, “,”)  ' the arr has two elements, 123 and abc, use comma to split them. 可以在字典中保存(key, value)value是字符串有特定的分隔符，拿到字符串后用split()产生数组然后获取每一项具体的值：
+
+
+Dim arr() as String
+Redim arr(3)  ' clear array elements, redefine the length of arr of length 3
+Redim Preserve arr(3)  ' preserve old data, redefine the length of arr
+```
+
+array boundary:
+
+```vb
+Ubound(arr) ' 最大index,
+Lbound(arr) ' 最小index, 一般是从0开始
+size = Ubound(arr)-Lbound(arr) +1
+```
+
+Traverse Array:
+
+```vb
+dim element as Variant
+For Each element In arr
+        Debug.Print element
+Next element
+dim i as Integer
+For i = 0 to Ubound(arr)-Lbound(arr)+1
+    Debug.print arr(i)
+Next i
 ```
 
 [back to top](#top)
