@@ -1,30 +1,27 @@
-# **Git Concise**
+<h1>Git Concise</h1>
 
 <a id="top"></a>
 
-## **Contents**
+<h2>Contents</h2>
 
-[**创建 git repository**](#1)
-
-- [Git Config setting](#1-1)
-
-[**git clone**](#2)
-
-[**Fork Others' Repo(Remote)**](#3)
-
-[**Branches**](#4)
-
-[**Commits**](#5)
-
-- [remove files in commit before push](#5-1)
-
-[**Pull From a PR**](#6)
-
-- [fetch a remote branch](#6-1)
-
-[**Rebase**](#7)
-
-[**SSH Key**](#8)
+- [**创建 git repository**](#创建-git-repository)
+  - [Git Config Setting](#git-config-setting)
+- [**git clone**](#git-clone)
+- [**Fork Others' Repo**](#fork-others-repo)
+- [**Branches**](#branches)
+- [**Commits**](#commits)
+  - [remove files in commit before push](#remove-files-in-commit-before-push)
+  - [clean untracked files](#clean-untracked-files)
+- [**Pull From a PR**](#pull-from-a-pr)
+  - [fetch a remote branch](#fetch-a-remote-branch)
+- [**Rebase**](#rebase)
+  - [**merge serveral history commits**](#merge-serveral-history-commits)
+  - [change commit author](#change-commit-author)
+  - [**Failure fix:**](#failure-fix)
+- [SSH Key](#ssh-key)
+  - [generate ssh key](#generate-ssh-key)
+  - [add ssh key](#add-ssh-key)
+  - [try connect](#try-connect)
 
 <a id="1"></a>
 
@@ -253,7 +250,7 @@ git stash pop # pop up the changes to current branch
 
 <a id="5-1"></a>
 
-## remove files in commit before push
+### remove files in commit before push
 
 - list files in commit
 
@@ -269,6 +266,14 @@ git rm --cached name_of_another_giant_file
 git rm --cached folder_name -r
 git commit --amend -CHEAD
 git push
+```
+
+[back to top](#top)
+
+### clean untracked files
+
+```bash
+git clean -f
 ```
 
 [back to top](#top)
