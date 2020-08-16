@@ -37,3 +37,13 @@ var foo = function(bar) {
 
 console.log(foo(5));
 ```
+
+### markdown diff
+
+```diff
+- text in red
++ text in green
+! text in orange
+# text in gray
+@@ text in purple (and bold)@@
+```
