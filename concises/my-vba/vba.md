@@ -64,6 +64,9 @@
     - [file path](#file-path)
     - [rename/move file](#renamemove-file)
     - [zip all files in a directory](#zip-all-files-in-a-directory)
+- [PDF](#pdf)
+  - [worksheet save as PDF](#worksheet-save-as-pdf)
+  - [combine PDF](#combine-pdf)
 - [Methods](#methods)
   - [**instr**](#instr)
   - [**Round**](#round)
@@ -1443,6 +1446,64 @@ Function Split97(sStr As Variant, sdelim As String) As Variant
     Split97 = Evaluate("{""" & _
                        Application.Substitute(sStr, sdelim, """,""") & """}")
 End Function
+```
+
+[back to top](#top)
+
+## PDF
+
+### worksheet save as PDF
+
+```vb
+ActiveSheet.ExportAsFixedFormat Type:=xlTypePDF, _
+    FileName:=strsavelocation2, _
+    OpenAfterPublish:=False, _
+    IncludeDocProperties:=True, _
+    IgnorePrintAreas:=False, _
+    Quality:=xlQualityStandard
+```
+
+[back to top](#top)
+
+### combine PDF
+
+```vb
+Sub combinePDF(ByVal srcPdfPath As String, ByVal tempPdfPath As String, ByVal destPdfPath As String)
+
+    Dim objCAcroPDDocDestination As Acrobat.CAcroPDDoc
+    Dim objCAcroPDDocSource As Acrobat.CAcroPDDoc
+    Dim mergepdfs As Boolean
+    Dim iFailed As Integer
+    
+    If Right(srcPdfPath, 4) <> ".pdf" Then srcPdfPath = srcPdfPath & ".pdf"
+    If Right(tempPdfPath, 4) <> ".pdf" Then tempPdfPath = tempPdfPath & ".pdf"
+    If Right(destPdfPath, 4) <> ".pdf" Then destPdfPath = destPdfPath & ".pdf"
+    
+        
+    On Error GoTo NoAcrobat:
+    'Initialize the Acrobat objects
+    Set objCAcroPDDocDestination = CreateObject("AcroExch.PDDoc")
+    Set objCAcroPDDocSource = CreateObject("AcroExch.PDDoc")
+    
+    objCAcroPDDocDestination.Open (tempPdfPath)
+    objCAcroPDDocSource.Open (srcPdfPath)
+    If objCAcroPDDocDestination.InsertPages(objCAcroPDDocDestination.GetNumPages - 1, objCAcroPDDocSource, 0, objCAcroPDDocSource.GetNumPages, 0) Then
+         mergepdfs = True
+     Else
+         'failed to merge one of the PDFs
+         iFailed = iFailed + 1
+     End If
+     objCAcroPDDocSource.Close
+        
+     objCAcroPDDocDestination.Save 1, destPdfPath 'Save it as a new name
+     objCAcroPDDocDestination.Close
+    
+NoAcrobat:
+    If iFailed <> 0 Then
+        mergepdfs = False
+    End If
+    On Error GoTo 0
+End Sub
 ```
 
 [back to top](#top)
