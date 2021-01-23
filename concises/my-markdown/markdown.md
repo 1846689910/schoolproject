@@ -1,4 +1,4 @@
-# **Markdown Concise**
+<h1>Markdown Concise</h1>
 
 ##### [Markdown Emojo](./emojo.md)
 
@@ -46,4 +46,16 @@ console.log(foo(5));
 ! text in orange
 # text in gray
 @@ text in purple (and bold)@@
+```
+
+### markdown collapsible
+
+```md
+<details>
+
+<summary>concise</summary>
+
+... ...
+
+</details>
 ```
