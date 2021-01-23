@@ -66,6 +66,13 @@
   - [**Cells color/bold/italic/underline/strikethrough**](#cells-colorbolditalicunderlinestrikethrough)
   - [**面向对象**](#面向对象)
   - [**Hyperlink 在worksheet中插入链接**](#hyperlink-在worksheet中插入链接)
+  - [**FileSystem(rename/move/zip file)**](#filesystemrenamemovezip-file-1)
+    - [file path](#file-path-1)
+    - [rename/move file](#renamemove-file-1)
+    - [zip all files in a directory](#zip-all-files-in-a-directory-1)
+- [PDF](#pdf)
+  - [worksheet save as PDF](#worksheet-save-as-pdf)
+  - [combine PDF](#combine-pdf)
 - [Methods](#methods)
   - [**instr**](#instr)
   - [**Round**](#round)
@@ -1493,6 +1500,154 @@ Note:
 - the formula is like `=SHEET_A!C1/SHEET_B!E1`
 - Don't forget `!` which means `whose`, like `ws!A1` meaning `ws 's A1 cell`
 - if the name has special char or space, then better to use single quote to wrap the sheet name `'sheet hello'!A1/ws1!A3`
+
+[back to top](#top)
+
+### **FileSystem(rename/move/zip file)**
+
+<a id="46-1"></a>
+
+#### file path
+
+```vb
+Sub main()
+    Dim fs As Object
+    Dim objFolder As Object
+    Dim objFile As Object
+
+    Set fs = CreateObject("Scripting.FileSystemObject")
+    Set objFolder = fs.GetFolder(ThisWorkbook.Path)
+
+    For Each objFile In objFolder.Files
+        Debug.Print objFile.Path            ' D:\vba-work\src\2020-02-07\abc.xlsm
+        Debug.Print objFile.parentfolder    ' D:\vba-work\src\2020-02-07
+        Debug.Print objFile.Name            ' abc.xlsm
+        If InStr(objFile.Name, "24") > 0 Then
+            newName = Replace(objFile.Name, "24", "abs")
+            Name objFile.Path As objFile.parentfolder & "\" & newName
+        End If
+    Next objFile
+
+End Sub
+```
+
+[back to top](#top)
+
+#### rename/move file
+
+```vb
+Name OLD_PATH As NEW_PATH
+```
+
+[back to top](#top)
+
+#### zip all files in a directory
+
+```vb
+Sub main()
+
+    zipAllFilesInFolder ThisWorkbook.Path & "\folder\", ThisWorkbook.Path & "\abc.zip"
+End Sub
+
+' @param {String} fromDir D:\abc\
+' @param {String} destZipFilePath like D:\my.zip
+Sub zipAllFilesInFolder(ByVal fromDir As Variant, ByVal destZipFilePath As Variant)
+    Dim oApp As Object
+
+    'Create empty Zip File
+    NewZip (destZipFilePath)
+
+    Set oApp = CreateObject("Shell.Application")
+    'Copy the files to the compressed folder
+    oApp.Namespace(destZipFilePath).CopyHere oApp.Namespace(fromDir).items
+
+    'Keep script waiting until Compressing is done
+    On Error Resume Next
+    Do Until oApp.Namespace(destZipFilePath).items.Count = _
+       oApp.Namespace(fromDir).items.Count
+        Application.Wait (Now + TimeValue("0:00:01"))
+    Loop
+    On Error GoTo 0
+
+    MsgBox "Please find your zipfile at <" & destZipFilePath & ">"
+End Sub
+
+Sub NewZip(sPath)
+'Create empty Zip File
+    If Len(Dir(sPath)) > 0 Then Kill sPath
+    Open sPath For Output As #1
+    Print #1, Chr$(80) & Chr$(75) & Chr$(5) & Chr$(6) & String(18, 0)
+    Close #1
+End Sub
+
+Function bIsBookOpen(ByRef szBookName As String) As Boolean
+    On Error Resume Next
+    bIsBookOpen = Not (Application.Workbooks(szBookName) Is Nothing)
+End Function
+
+Function Split97(sStr As Variant, sdelim As String) As Variant
+    Split97 = Evaluate("{""" & _
+                       Application.Substitute(sStr, sdelim, """,""") & """}")
+End Function
+```
+
+[back to top](#top)
+
+## PDF
+
+### worksheet save as PDF
+
+```vb
+ActiveSheet.ExportAsFixedFormat Type:=xlTypePDF, _
+    FileName:=strsavelocation2, _
+    OpenAfterPublish:=False, _
+    IncludeDocProperties:=True, _
+    IgnorePrintAreas:=False, _
+    Quality:=xlQualityStandard
+```
+
+[back to top](#top)
+
+### combine PDF
+
+```vb
+Sub combinePDF(ByVal srcPdfPath As String, ByVal tempPdfPath As String, ByVal destPdfPath As String)
+
+    Dim objCAcroPDDocDestination As Acrobat.CAcroPDDoc
+    Dim objCAcroPDDocSource As Acrobat.CAcroPDDoc
+    Dim mergepdfs As Boolean
+    Dim iFailed As Integer
+    
+    If Right(srcPdfPath, 4) <> ".pdf" Then srcPdfPath = srcPdfPath & ".pdf"
+    If Right(tempPdfPath, 4) <> ".pdf" Then tempPdfPath = tempPdfPath & ".pdf"
+    If Right(destPdfPath, 4) <> ".pdf" Then destPdfPath = destPdfPath & ".pdf"
+    
+        
+    On Error GoTo NoAcrobat:
+    'Initialize the Acrobat objects
+    Set objCAcroPDDocDestination = CreateObject("AcroExch.PDDoc")
+    Set objCAcroPDDocSource = CreateObject("AcroExch.PDDoc")
+    
+    objCAcroPDDocDestination.Open (tempPdfPath)
+    objCAcroPDDocSource.Open (srcPdfPath)
+    If objCAcroPDDocDestination.InsertPages(objCAcroPDDocDestination.GetNumPages - 1, objCAcroPDDocSource, 0, objCAcroPDDocSource.GetNumPages, 0) Then
+         mergepdfs = True
+     Else
+         'failed to merge one of the PDFs
+         iFailed = iFailed + 1
+     End If
+     objCAcroPDDocSource.Close
+        
+     objCAcroPDDocDestination.Save 1, destPdfPath 'Save it as a new name
+     objCAcroPDDocDestination.Close
+    
+NoAcrobat:
+    If iFailed <> 0 Then
+        mergepdfs = False
+    End If
+    On Error GoTo 0
+End Sub
+```
 
 [back to top](#top)
 
