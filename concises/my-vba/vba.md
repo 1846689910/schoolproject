@@ -886,6 +886,15 @@ list.remove("Apple")
 list.removeRange 1, 3
 ```
 
+Go through all items (for each loop)
+
+```vb
+Dim k As Variant
+For Each k In list
+    Debug.Print k
+Next k
+```
+
 [back to top](#top)
 
 ### **Define and use Hashtable**
