@@ -23,7 +23,8 @@
   - [**循环查找，找到 worksheet 里第一个内容为...或者内容不空的 cell**](#循环查找找到-worksheet-里第一个内容为或者内容不空的-cell)
   - [**Clear Range**](#clear-range)
 - [Worksheet](#worksheet)
-  - [**hasWorksheet 判断该 workbook 有无该 worksheets(可选择创建)**](#hasworksheet-判断该-workbook-有无该-worksheets可选择创建)
+  - [**hasWorksheet 判断该 workbook 有无该 worksheets**](#hasworksheet-判断该-workbook-有无该-worksheets)
+  - [**创建worksheet**](#创建worksheet)
   - [**在worksheet的row行查找target返回列号 getColsList / getFirstCol**](#在worksheet的row行查找target返回列号-getcolslist--getfirstcol)
   - [**在worksheet的col列查找target返回行号 getRowList / getFirstRow**](#在worksheet的col列查找target返回行号-getrowlist--getfirstrow)
   - [**Worksheet copy with range: copy a range from ws to wsTarget, need range name**](#worksheet-copy-with-range-copy-a-range-from-ws-to-wstarget-need-range-name)
@@ -332,12 +333,12 @@ ws.cells.clearFormat
 
 ## Worksheet
 
-### **hasWorksheet 判断该 workbook 有无该 worksheets(可选择创建)**
+### **hasWorksheet 判断该 workbook 有无该 worksheets**
 
 `toBuild`: default `False` not to create if non-exists
 
 ```vb
-Function hasWorksheet(ByRef wb As Workbook, ByVal name As String, Optional ByVal toBuild As Boolean = False) As Boolean
+Function hasWorksheet(ByRef wb As Workbook, ByVal name As String) As Boolean
     Dim found As Boolean
     found = False
     Dim i As Integer
@@ -346,11 +347,19 @@ Function hasWorksheet(ByRef wb As Workbook, ByVal name As String, Optional ByVal
             found = True
         End If
     Next i
-    If (Not found) And toBuild Then
-        wb.Sheets.Add(After:=wb.Sheets(wb.Sheets.count)).name = name
-    End If
     hasWorksheet = found
 End Function
+```
+
+[back to top](#top)
+
+### **创建worksheet**
+
+```vb
+' 使用如上方法检查是否存在worksheetName, 若无则创建
+if not hasWorksheet(wb, "worksheetName") then
+    wb.Sheets.Add(After:=wb.Sheets(wb.Sheets.count)).name = "worksheetName"
+end if
 ```
 
 [back to top](#top)
@@ -884,6 +893,15 @@ remove
 list.removeAt(0)
 list.remove("Apple")
 list.removeRange 1, 3
+```
+
+Go through all items (for each loop)
+
+```vb
+Dim k As Variant
+For Each k In list
+    Debug.Print k
+Next k
 ```
 
 [back to top](#top)
