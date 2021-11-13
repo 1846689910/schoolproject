@@ -1,4 +1,4 @@
-<h1>powershell-concise</h1>
+l<h1>powershell-concise</h1>
 
 <a id="top"></a>
 
@@ -110,22 +110,21 @@ echo $a, $b
 
 ### String split to array
 
-```bash
-str="java,javascript,python,bash"
-IFS="," read -r -a arr <<< $str # arr 就是分割后的数组, IFS = Internal Field Separator
-
-echo ${arr[0]} # print arr[0]
-
-for i in "${arr[@]}"; do # print all elements in arr
-  echo $i
-done
+- to char array
+```ps1
+$var = "Hello,World,Welcome"
+$chars = $var.toCharArray()
+foreach ($char in $chars) {
+  echo $char
+}
 ```
-
-用特殊字符分割，比如 tab
-
-```bash
-str="java	javascript	python	bash" # words splitted by tab
-IFS=$'\t' read -r -a arr <<< $str
+- split by char
+```ps1
+$var = "Hello,World,Welcome"
+$strs = $var.split(",")
+foreach ($s in $strs) {
+  echo $s
+}
 ```
 
 [back to top](#top)
