@@ -196,58 +196,23 @@ for ($i = 0; $i -le $arr.length - 1; $i ++) {
 
 Basic
 
-```bash
-myfunc() {
-  echo "hello $1"
+```ps1
+function getColName($line){
+    $foundColName = $line -match '\[(.+?)\]'
+    if ($foundColName -And ...) {
+        return $matches[1]
+    } else {
+        return ""
+    }
 }
-# Same as above (alternate syntax)
-function myfunc() {
-  echo "hello $1"
+function getInsertedContent($colName, $lineContent, $tableName, $simplifiedTableName){
+    return "IF NOT EXISTS (SELECT Column_Name FROM DB1 WHERE Column_Name = '$colName' AND Table_Name = '$simplifiedTableName' ) `n`tBEGIN `n`t`tALTER TABLE $tableName ADD $lineContent `n`tEND"
 }
-myfunc "John"
+
+
+$colName = getColName $line
 ```
 
-with return values(all the `echo` in the function combined together)
-
-```bash
-myfunc() {
-  local myresult="some"
-  echo $myresult $1
-}
-result="$(myfunc hello)"
-echo $result
-```
-
-within the function, there are some arguments:
-
-- `$#`: number of arguments passed in function
-- `$*`: all arguments
-- `$@`: all arguments, starting from first
-- `$1`: the first argument
-
-  for example, to print all arguments or use `$*`
-
-```bash
-myfunc() {
-  for i in $@; do
-    echo $i
-  done
-}
-myfunc 1 2 3
-```
-
-raise errors
-
-```bash
-myfunc() {
-  return 0
-}
-if myfunc; then
-  echo "success" # 0 -> true/success, 1 -> false/failure
-else
-  echo "failure"
-fi
-```
 
 [back to top](#top)
 
