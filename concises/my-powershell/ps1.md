@@ -216,82 +216,83 @@ $colName = getColName $line
 
 [back to top](#top)
 
-<a id="4"></a>
 
 ## Conditional
 
-`[[ is actually a command/program]]` that returns either 0 (true) or 1 (false). Any program that obeys the same logic (like all base utils, such as grep(1) or ping(1)) can be used as condition, see examples.
-
-| Command               |       Description        |
-| --------------------- | :----------------------: |
-| `[[ -z str ]]`        |       empty string       |
-| `[[ -n str ]]`        |     non-empty string     |
-| `[[ str1 == str2 ]]`  |          equal           |
-| `[[ str1 != str2 ]]`  |        not equal         |
-| `[[ num1 -eq num2 ]]` |          equal           |
-| `[[ num1 -ne num2 ]]` |        not equal         |
-| `[[ str1 -lt str2 ]]` |        less than         |
-| `[[ str1 -le str2 ]]` |    less than or equal    |
-| `[[ str1 -gt str2 ]]` |       greater than       |
-| `[[ str1 -ge str2 ]]` |  greater than or equal   |
-| `[[ str1 =~ str2 ]]`  |          regexp          |
-| `(( num1 < num2 ))`   |    numeric conditions    |
-| `[[ ! EXPR ]]`        |           Not            |
-| `[[ X ]] && [[Y]]`    |           And            |
-| `[[ X ]] || [[Y]]`    |            Or            |
-| `[[ -o noclobber ]]`  | If OPTIONNAME is enabled |
-
-File Conditions
-
-| Command                 |      Description       |
-| ----------------------- | :--------------------: |
-| `[[ -e FILE ]]`         |         exists         |
-| `[[ -s FILE ]]`         |    size is > 0 byte    |
-| `[[ -r FILE ]]`         |        readable        |
-| `[[ -w FILE ]]`         |        writable        |
-| `[[ -x FILE ]]`         |       executable       |
-| `[[ -h FILE ]]`         |        symlink         |
-| `[[ -d FILE ]]`         |       directory        |
-| `[[ -f FILE ]]`         |          file          |
-| `[[ file1 -nt file2 ]]` | file1 newer than file2 |
-| `[[ file1 -ot file2 ]]` | file1 older than file2 |
-| `[[ file1 -ef file2 ]]` |       same files       |
-
-examples
-
-```bash
-if ((1 < 0)); then
-  echo false
-fi
-
-if (grep -q -re "hello" ./); then
-  echo found
-fi
-
-str="hello"
-if [[ -z str ]]; then
-  echo "str is empty"
-elif [[ -n str ]]; then
-  echo "str is not empty"
-fi
-
-# file existence
-if [[ -e "README.md" ]]; then
-  echo "file exists"
-fi
+```ps1
+$value = Get-MysteryValue
+if ( 5 -eq $value )
+{
+    # do something
+}
 ```
 
-Regex
+```
+-eq case-insensitive equality
+-ieq case-insensitive equality
+-ceq case-sensitive equality
 
-bash does not support regex like `\w`, `\d` ... those we familiar in other languages
+-ne case-insensitive not equal
+-ine case-insensitive not equal
+-cne case-sensitive not equal
 
-```bash
-str="abc"
-if [[ str =~ .+ ]]; then
-  echo "yep"
-else
-  echo "no"
-fi
+-gt greater than
+-igt greater than, case-insensitive
+-cgt greater than, case-sensitive
+-ge greater than or equal
+-ige greater than or equal, case-insensitive
+-cge greater than or equal, case-sensitive
+-lt less than
+-ilt less than, case-insensitive
+-clt less than, case-sensitive
+-le less than or equal
+-ile less than or equal, case-insensitive
+-cle less than or equal, case-sensitive
+
+-like case-insensitive wildcard
+-ilike case-insensitive wildcard
+-clike case-sensitive wildcard
+-notlike case-insensitive wildcard not matched
+-inotlike case-insensitive wildcard not matched
+-cnotlike case-sensitive wildcard not matched
+
+-match case-insensitive regex
+-imatch case-insensitive regex
+-cmatch case-sensitive regex
+-notmatch case-insensitive regex not matched
+-inotmatch case-insensitive regex not matched
+-cnotmatch case-sensitive regex not matched
+
+-is of type
+-isnot not of type
+
+-contains case-insensitive match
+-icontains case-insensitive match
+-ccontains case-sensitive match
+-notcontains case-insensitive not matched
+-inotcontains case-insensitive not matched
+-cnotcontains case-sensitive not matched
+
+-in case-insensitive match
+-iin case-insensitive match
+-cin case-sensitive match
+-notin case-insensitive not matched
+-inotin case-insensitive not matched
+-cnotin case-sensitive not matched
+```
+
+```ps1
+$value = 'S-ATX-SQL01'
+if ( $value -like 'S-*-SQL??') # *表示匹配多个字符, ?表示匹配一个字符
+{
+    # do something
+}
+
+$array = 1..6
+if ( 3 -in $array )
+{
+    # do something
+}
 ```
 
 [back to top](#top)
