@@ -23,16 +23,15 @@ l<h1>powershell-concise</h1>
   - [define array](#define-array)
   - [push/concatenation](#pushconcatenation)
   - [get element and len](#get-element-and-len)
-  - [read file as array(each line as a element)](#read-file-as-arrayeach-line-as-a-element)
 - [Dictionary](#dictionary)
 - [Miscellaneous](#miscellaneous)
   - [random number](#random-number)
   - [calculation precision](#calculation-precision)
   - [Read user input as a variable](#read-user-input-as-a-variable)
 - [File](#file)
-  - [read a file first 5 lines](#read-a-file-first-5-lines)
-  - [read a file last 5 lines](#read-a-file-last-5-lines)
-  - [read file](#read-file)
+  - [file content exists](#file-content-exists)
+  - [list all the files or dirs in current directory](#list-all-the-files-or-dirs-in-current-directory)
+  - [read file as array(each line as a element)](#read-file-as-arrayeach-line-as-a-element)
   - [read file line by line](#read-file-line-by-line)
   - [read file by lines, split each line to array](#read-file-by-lines-split-each-line-to-array)
   - [write content to a file](#write-content-to-a-file)
@@ -328,15 +327,6 @@ get element `$arr[0]`
 get length of array `$arr.length`
 
 
-### read file as array(each line as a element)
-
-```ps1
-$lines = Get-Content -LiteralPath "D:\schoolproject\temp\ps\AddNCIToScript.ps1"
-foreach($line in $lines) {
-  echo $line
-}
-```
-
 [back to top](#top)
 
 <a id="6"></a>
@@ -418,30 +408,33 @@ Write-Host "You input server '$Server' and '$User' on '$Date'"
 
 ## File
 
-### read a file first 5 lines
+### file content exists
 
-```bash
-head -5 FILE
-
-contents=$(head -5 README.md)
-echo $contents
+```ps1
+$ImportIdExists =  Select-String -Quiet -Pattern "\[ImportId\]" -LiteralPath $fileName
+$TableNameExists =  Select-String -Quiet -SimpleMatch "$tableName" -LiteralPath $fileName
 ```
 
-### read a file last 5 lines
+### list all the files or dirs in current directory
 
-```bash
-tail -5 FILE
+```ps1
+$files = Get-ChildItem -Recurse -Path "C:\Users\eric\123\sub" -Include *.txt
 
-contents=$(tail -5 README.md)
-echo $contents
+foreach($file in $files) {
+  echo $file.FullName
+}
+for($i = 0; $i -lt $files.Count; $i++) {
+  echo $files[$i].FullName
+}
 ```
 
-### read file
+### read file as array(each line as a element)
 
-```bash
-contents=$(cat README.md)
-# or
-contents=$(< README.md)
+```ps1
+$lines = Get-Content -LiteralPath "D:\schoolproject\temp\ps\AddNCIToScript.ps1"
+foreach($line in $lines) {
+  echo $line
+}
 ```
 
 ### read file line by line
