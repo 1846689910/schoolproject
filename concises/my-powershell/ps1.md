@@ -1,4 +1,4 @@
-l<h1>powershell-concise</h1>
+<h1>powershell-concise</h1>
 
 <a id="top"></a>
 
@@ -17,6 +17,9 @@ l<h1>powershell-concise</h1>
   - [字符串替换](#字符串替换)
   - [String split to array](#string-split-to-array)
 - [Loop](#loop)
+  - [list all the files or dirs in current directory](#list-all-the-files-or-dirs-in-current-directory)
+  - [from 0 to 5](#from-0-to-5)
+  - [loop array](#loop-array)
 - [Function](#function)
 - [Conditional](#conditional)
 - [Array](#array)
@@ -30,7 +33,7 @@ l<h1>powershell-concise</h1>
   - [Read user input as a variable](#read-user-input-as-a-variable)
 - [File](#file)
   - [file content exists](#file-content-exists)
-  - [list all the files or dirs in current directory](#list-all-the-files-or-dirs-in-current-directory)
+  - [list all the files or dirs in current directory](#list-all-the-files-or-dirs-in-current-directory-1)
   - [read file as array(each line as a element)](#read-file-as-arrayeach-line-as-a-element)
   - [read file line by line](#read-file-line-by-line)
   - [read file by lines, split each line to array](#read-file-by-lines-split-each-line-to-array)
@@ -44,8 +47,8 @@ l<h1>powershell-concise</h1>
 ./a/b/c.ps1
 
 ./a/b/c.ps1 "hello" 1 2
-echo $args.Length
-echo $args[0]
+echo $args.Length # print the length of arguments
+echo $args[0] # get the first argument
 ```
 
 ### 定义变量
@@ -74,7 +77,6 @@ echo ((1+1))
 git commit && git push # 当前一个命令成功后再执行后一个命令
 git commit || echo "commit failed" # 如果前一个不成功就执行后一个命令
 sleep 5; echo hi # 依次执行命令, 休眠5秒后执行echo
-sleep 5& echo hi # &相当于新开一个进程, 瞬间执行了echo
 ```
 
 单行注释 `# this is comment`
@@ -158,7 +160,7 @@ foreach ($s in $strs) {
 
 basic
 
-list all the files or dirs in current directory
+### list all the files or dirs in current directory
 
 ```ps1
 $files = Get-ChildItem -Recurse -Path "C:\Users\eric\123\sub" -Include *.txt
@@ -171,7 +173,7 @@ for($i = 0; $i -lt $files.Count; $i++) {
 }
 ```
 
-from 0 to 5
+### from 0 to 5
 
 ```ps1
 for ($i = 0; $i -lt 5; $i ++) {
@@ -182,7 +184,7 @@ for ($i = 0; $i -lt 5; $i +=2) {
 }
 ```
 
-loop array
+### loop array
 
 ```ps1
 $arr = @("hello", "world")
