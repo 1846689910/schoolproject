@@ -5,3 +5,4 @@ out
 src/tests
 src/tests/*
 src/.DS_Store
+temp
