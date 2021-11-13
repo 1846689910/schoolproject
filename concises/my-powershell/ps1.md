@@ -12,6 +12,8 @@ l<h1>powershell-concise</h1>
   - [字符串长度](#字符串长度)
   - [字符串片段`.substring(beg,len)`](#字符串片段substringbeglen)
   - [大小写转换](#大小写转换)
+  - [字符串匹配](#字符串匹配)
+  - [字符串替换](#字符串替换)
   - [String split to array](#string-split-to-array)
 - [Loop](#loop)
 - [Function](#function)
@@ -108,6 +110,24 @@ $b = $var.ToLower()
 echo $a, $b
 ```
 
+### 字符串匹配
+
+```ps1
+$line = "a,b,c"
+$foundContent = $line -match '([^,]+),?'
+if ($foundContent) {
+  echo "founded"
+}
+```
+
+### 字符串替换
+
+```ps1
+$line = "a, b,  c"
+$newLine = $line -replace "a","s"
+echo $newLine
+```
+
 ### String split to array
 
 - to char array
@@ -129,42 +149,48 @@ foreach ($s in $strs) {
 
 [back to top](#top)
 
-<a id="2"></a>
-
 ## Loop
 
 basic
 
 list all the files or dirs in current directory
 
-```bash
-for i in $(ls); do
-  echo $i
-done
+```ps1
+$files = Get-ChildItem -Recurse -Path "C:\Users\eric\123\sub" -Include *.txt
+
+foreach($file in $files) {
+  echo $file.FullName
+}
+for($i = 0; $i -lt $files.Count; $i++) {
+  echo $files[$i].FullName
+}
 ```
 
 from 0 to 5
 
-```bash
-for ((i = 0; i < 5; i ++)); do
+```ps1
+for ($i = 0; $i -lt 5; $i ++) {
   echo $i
-done
+}
+for ($i = 0; $i -lt 5; $i +=2) {
+  echo $i
+}
 ```
 
-loop range
+loop array
 
-```bash
-for i in {1..5}; do
-  echo $i
-done
-for i in {5..50..5}; do # with step size 5
-  echo $i
-done
+```ps1
+$arr = @("hello", "world")
+
+for ($i = 0; $i -lt $arr.length; $i ++) {
+  echo $arr[$i]
+}
+for ($i = 0; $i -le $arr.length - 1; $i ++) {
+  echo $arr[$i]
+}
 ```
 
 [back to top](#top)
-
-<a id="3"></a>
 
 ## Function
 
