@@ -439,41 +439,28 @@ foreach($line in $lines) {
 
 ### read file line by line
 
-```bash
-while read -r line; do
+```ps1
+foreach($line in Get-Content -LiteralPath $fileName){
   echo $line
-done < README.md
-```
-
-or prevent trimming of leading or trailing white spaces
-
-```bash
-readFile(){
-  while IFS= read -r line; do
-    echo $line
-  done < $1
 }
-
-readFile README.md
 ```
 
 ### read file by lines, split each line to array
 
-```bash
-readLines(){
-  while IFS= read -r line; do # read each line
-    IFS=" " read -r -a arr <<< $line # each line splitted by space to an array
-    echo ${arr[0]} ${#arr} # print first element and the length of arr
-  done < $1
+```ps1
+foreach($line in Get-Content -LiteralPath $fileName){
+  $strs = $line.split(",")
+  foreach ($s in $strs) {
+    echo $s
+  }
 }
 
-readLines README.md
 ```
 
 ### write content to a file
 
-```bash
-printf "Hello World" > a.txt
+```ps1
+Set-Content -LiteralPath $fileName -Value $fileContent
 ```
 
 [back to top](#top)
