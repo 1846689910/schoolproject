@@ -71,12 +71,14 @@
     - [file path](#file-path-1)
     - [rename/move file](#renamemove-file-1)
     - [zip all files in a directory](#zip-all-files-in-a-directory-1)
+  - [Equals check数值相等](#equals-check数值相等)
 - [PDF](#pdf)
   - [worksheet save as PDF](#worksheet-save-as-pdf)
   - [combine PDF](#combine-pdf)
 - [Methods](#methods)
   - [**instr**](#instr)
   - [**Round**](#round)
+  - [**Format**](#format)
   - [**Dir**](#dir)
   - [**Replace**](#replace)
   - [**Split**](#split)
@@ -1611,6 +1613,28 @@ End Function
 
 [back to top](#top)
 
+### Equals check数值相等
+
+```vb
+Function equals(ByVal a As String, ByVal b As String) As Boolean
+    If a = b Then
+        equals = True
+    ElseIf (a = "0" And b = "") Or (a = "" And b = "0") Then
+        equals = True
+    ElseIf (a = "0" And b = "NULL") Or (a = "NULL" And b = "0") Then
+        equals = True
+    ElseIf (a = "" And b = "NULL") Or (a = "NULL" And b = "") Then
+        equals = True
+    ElseIf IsNumeric(a) And IsNumeric(b) And Format(a, "0") = Format(b, "0") Then
+        equals = True
+    Else
+        equals = False
+    End If
+End Function
+```
+
+[back to top](#top)
+
 ## PDF
 
 ### worksheet save as PDF
@@ -1678,6 +1702,12 @@ search `strTarget` in `strString` from `intStart` position. if found, return int
 ### **Round**
 
 `Round(dict(key), 2)` 将一个数保留小数点后 2 位
+
+### **Format**
+
+`Format(s, "0.00")` 将一个字符串表示的数字保留小数点后2位
+
+`Format(s, "0")` 将一个字符串表示的数字转到整数
 
 ### **Dir**
 

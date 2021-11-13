@@ -445,5 +445,6 @@ or try
 ```bash
 ssh-add ~/.ssh/id_rsa
 ```
+- if you rename the `is_ras` file, you need to add that file by this command
 
 [back to top](#top)
