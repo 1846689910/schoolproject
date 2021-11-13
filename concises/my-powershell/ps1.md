@@ -5,6 +5,7 @@ l<h1>powershell-concise</h1>
 <h2>contents</h2>
 
 - [Basic](#basic)
+  - [运行`*.ps1`文件](#运行ps1文件)
   - [定义变量](#定义变量)
   - [算术计算](#算术计算)
   - [Conditional Execution](#conditional-execution)
@@ -21,10 +22,7 @@ l<h1>powershell-concise</h1>
 - [Array](#array)
   - [define array](#define-array)
   - [push/concatenation](#pushconcatenation)
-  - [remove an element](#remove-an-element)
   - [get element and len](#get-element-and-len)
-  - [get slice of arr](#get-slice-of-arr)
-  - [array joined as a string](#array-joined-as-a-string)
   - [read file as array(each line as a element)](#read-file-as-arrayeach-line-as-a-element)
 - [Dictionary](#dictionary)
 - [Miscellaneous](#miscellaneous)
@@ -42,6 +40,16 @@ l<h1>powershell-concise</h1>
   - [write content to a file](#write-content-to-a-file)
 
 ## Basic
+
+### 运行`*.ps1`文件
+
+```ps1
+./a/b/c.ps1
+
+./a/b/c.ps1 "hello" 1 2
+echo $args.Length
+echo $args[0]
+```
 
 ### 定义变量
 
@@ -297,80 +305,38 @@ if ( 3 -in $array )
 
 [back to top](#top)
 
-<a id="5"></a>
-
 ## Array
 
 ### define array
 
-```bash
-Fruits=('Apple' 'Banana' 'Orange')
-Fruits[0]="Apple"
-Fruits[1]="Banana"
-Fruits[2]="Orange"
+```ps1
+$fruits=@('Apple', 'Banana', 'Orange')
+$fruits[0] = "hello"
+echo $fruits[0]
 ```
 
 ### push/concatenation
 
-```bash
-arr+=("kiwi")
-# or
-arr=("${arr[@]}" "Watermelon")
+```ps1
+$fruits=@('Apple', 'Banana', 'Orange')
+$fruits += "kiwi"
+echo $fruits[3]
 ```
 
-### remove an element
-
-```bash
-unset arr[1] # then arr[1] will be empty, other elements are still in their position
-```
-
-remove by regex match
-
-```bash
-arr=(${arr[@]/Ap*/})
-```
 ### get element and len
 
-get element `${arr[0]}`
+get element `$arr[0]`
 
-get length of array `${#arr[@]}`
+get length of array `$arr.length`
 
-get the string length of ith element `${#arr[0]}`
-
-### get slice of arr
-
-```bash
-arr=("a" "b" "c" "d" "e")
-arr1=${arr[@]:1:2} # from 1th element, take length of 2
-
-if [[ arr == arr1 ]]; then
-  echo equal
-else
-  echo not equal
-fi
-```
-
-### array joined as a string
-
-```bash
-arr=("apple" "banana")
-bar=$(IFS=, ; echo "${arr[*]}")
-echo $bar
-```
-
-```bash
-join(){ # write as a function
-  arr=$1
-  echo $(IFS=$2;echo "${arr[*]}")
-}
-arr=("apple" "orange")
-join $arr "|"
-```
 
 ### read file as array(each line as a element)
 
-```bash
-arr=(`cat ".gitignore"`)
+```ps1
+$lines = Get-Content -LiteralPath "D:\schoolproject\temp\ps\AddNCIToScript.ps1"
+foreach($line in $lines) {
+  echo $line
+}
 ```
 
 [back to top](#top)
