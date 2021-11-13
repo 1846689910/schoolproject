@@ -28,9 +28,7 @@ l<h1>powershell-concise</h1>
 - [Miscellaneous](#miscellaneous)
   - [random number](#random-number)
   - [calculation precision](#calculation-precision)
-  - [save to 5 digits after dot](#save-to-5-digits-after-dot)
   - [Read user input as a variable](#read-user-input-as-a-variable)
-  - [User select from a menu](#user-select-from-a-menu)
 - [File](#file)
   - [read a file first 5 lines](#read-a-file-first-5-lines)
   - [read a file last 5 lines](#read-a-file-last-5-lines)
@@ -387,56 +385,36 @@ foreach ($k in $keys) {
 
 ### random number
 
-```bash
-echo $((RANDOM%=200))
+```ps1
+$rand1 = Get-Random -Minimum -100 -Maximum 100
+$rand2 = Get-Random -Minimum 10.7 -Maximum 29.3
+echo $rand1
+echo $rand2
 ```
 
 ### calculation precision
 
-```bash
-num=$(bc -l <<< "100/3")
-echo $num # 33.3333333333333333333
-```
+```ps1
+$a = 111.5226
 
-### save to 5 digits after dot
+$a1 = [math]::Round($a)
+echo $a1 # 112
 
-```bash
-num=$(bc -l <<< "100/3")
-s=$(printf "%.5f" $num)
-echo $s # 33.33333
+$a2 = [math]::Round($a,2)
+echo $a2 # 111.52
+
 ```
 
 ### Read user input as a variable
 
-```bash
-echo "What is your name?"
-read name
-echo the user name is $name
-```
-
-### User select from a menu
-
-```bash
-OPTIONS="option1 option2 Quit" # each option is separated by a space
-# when running, user input 1 or 2 or 3
-select opt in $OPTIONS; do
-  if [[ $opt == "option1" ]]; then
-    echo you choose option1
-  elif [[ $opt == "option2" ]]; then
-    echo you choose option2
-  elif [[ $opt == "Quit" ]]; then
-    echo "done"
-    exit
-  else
-    clear
-    echo bad option
-  fi
-done
+```ps1
+$Server = Read-Host -Prompt 'Input your server  name'
+$User = Read-Host -Prompt 'Input the user name'
+$Date = Get-Date
+Write-Host "You input server '$Server' and '$User' on '$Date'" 
 ```
 
 [back to top](#top)
-
-<a id="8"></a>
 
 ## File
 
