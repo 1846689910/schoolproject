@@ -348,51 +348,40 @@ foreach($line in $lines) {
 define a dictionary
 
 ```bash
-declare -A dict # 定义一个dictionary为dict
+$map = @{ Number = 1; Shape = "Square"; Color = "Blue"}
+echo $map["Number"]
+echo $map["Shape"]
+$map["aaa"] = "bbb"
+echo $map["aaa"]
+echo $hash.Number
 
-dict[a]="b"
-dict[c]="d"
+$hash = [ordered]@{ Number = 1; Shape = "Square"; Color = "Blue"}
 ```
 
-get value by key `s=${dict[a]}`
+get value by key `s=$dict[a]` or `$dict.aaa`
 
-get size of dictionary `len=${#dict[@]}`
+get size of dictionary `$dict.count`
 
 get all values arr
 
-```bash
-values=${dict[@]}
-
-for i in ${values[@]}; do
-  echo $i
-done
+```ps1
+$vals = $hash.values
+foreach ($v in $vals) {
+  echo $v
+}
 ```
 
 get all keys arr
 
-```bash
-keys=${!dict[@]}
-
-for i in ${keys[@]}; do
-  echo "$i -> ${dict[$i]}"
-done
-```
-
-Iterate by keys or by values
-
-```bash
-for val in ${dict[@]} do
-  echo $val
-done
-
-for key in ${!dict[@]} do
-  echo $key
-done
+```ps1
+$keys = $hash.keys
+foreach ($k in $keys) {
+  echo $k
+}
 ```
 
 [back to top](#top)
 
-<a id="7"></a>
 
 ## Miscellaneous
 
