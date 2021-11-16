@@ -33,6 +33,7 @@
   - [random number](#random-number)
   - [calculation precision](#calculation-precision)
   - [Read user input as a variable](#read-user-input-as-a-variable)
+  - [Formated date](#formated-date)
 - [File](#file)
   - [file content exists](#file-content-exists)
   - [list all the files or dirs in current directory](#list-all-the-files-or-dirs-in-current-directory-1)
@@ -419,6 +420,13 @@ $Server = Read-Host -Prompt 'Input your server  name'
 $User = Read-Host -Prompt 'Input the user name'
 $Date = Get-Date
 Write-Host "You input server '$Server' and '$User' on '$Date'" 
+```
+
+### Formated date
+
+```ps1
+$time = (Get-Date).ToString("yyyy-MM-dd HH:mm:ss")
+echo $time
 ```
 
 [back to top](#top)
