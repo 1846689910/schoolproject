@@ -25,6 +25,8 @@
 - [Array](#array)
   - [define array](#define-array)
   - [push/concatenation](#pushconcatenation)
+  - [slice array](#slice-array)
+  - [array join as string](#array-join-as-string)
   - [get element and len](#get-element-and-len)
 - [Dictionary](#dictionary)
 - [Miscellaneous](#miscellaneous)
@@ -319,7 +321,20 @@ echo $fruits[0]
 ```ps1
 $fruits=@('Apple', 'Banana', 'Orange')
 $fruits += "kiwi"
+$fruits += ("watermelon", "peach")
 echo $fruits[3]
+```
+
+### slice array
+
+```ps1
+$arr = $fruits[2..4] # subarray begIndex=2, endIndex=4
+```
+
+### array join as string
+
+```ps1
+$s = $fruits -join ","
 ```
 
 ### get element and len
