@@ -563,7 +563,9 @@ ActiveWorkbook.Worksheets.Count
 to filter the worksheet rows, we can add an autofilter
 
 ```vb
-sheet1.Range("A1").AutoFilter Field:=2, Criteria1:="male" ' 给第2列施加filter，过滤出字符串含有male的
+sheet1.usedRange.AutoFilter ' 给usedRange的所有column的第一行加上Filter
+sheet1.usedRange.AutoFilter Field:=3, Criteria1:="eric" ' 给第C列filter by eric
+' 暂时未找到获取filter dropdown list的方法，可以通过遍历C列加入到dictonary中来获取dropdown list中的全集
 ```
 
 - multiple filter rule
