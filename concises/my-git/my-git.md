@@ -198,7 +198,8 @@ git merge master # 与master尝试合并，如果不能自行合并可能会有c
 ```bash
 git add .
 git commit -m 'Second commit'
-git push origin eric-debug
+git push
+' git push --set-upstream origin eric-debug
 ```
 
 在 commit 前查看改变的内容
