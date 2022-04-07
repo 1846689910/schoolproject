@@ -408,7 +408,7 @@ git rebase --continue
 
 ## SSH Key
 
-After install git, generate a ssh key on your personal machine, keep in touch with remote repo. [detailed guide](https://help.github.com/en/enterprise/2.15/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+After install git, generate a ssh key on your personal machine, keep in touch with remote repo. [detailed guide](https://help.github.com/en/enterprise/2.15/user/articles/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent) or [new doc](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
 
 ### generate ssh key
 
@@ -446,6 +446,7 @@ or try
 ```bash
 ssh-add ~/.ssh/id_rsa
 ```
-- if you rename the `is_ras` file, you need to add that file by this command
+- if you rename the `id_ras` file, you need to add that file by this command
+- if `Error connecting to agent: No such file or directory`, maybe need to run `eval "$(ssh-agent)"` first
 
 [back to top](#top)
