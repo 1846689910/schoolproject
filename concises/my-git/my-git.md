@@ -22,6 +22,7 @@
   - [generate ssh key](#generate-ssh-key)
   - [add ssh key](#add-ssh-key)
   - [try connect](#try-connect)
+- [large file system](#large-file-system)
 
 <a id="1"></a>
 
@@ -448,5 +449,26 @@ ssh-add ~/.ssh/id_rsa
 ```
 - if you rename the `id_ras` file, you need to add that file by this command
 - if `Error connecting to agent: No such file or directory`, maybe need to run `eval "$(ssh-agent)"` first
+
+[back to top](#top)
+
+## large file system
+
+to store large files, need to use [git lfs(large file system)](https://git-lfs.github.com/)
+- install
+  ```bash
+  git lfs install
+  ```
+- add to track file
+  ```bash
+  git lfs track *.gz
+  git add .gitattributes
+  ```
+- add and commit file
+  ```bash
+  git add large.tar.gz
+  git commit -m "Add large file"
+  git push origin main
+  ```
 
 [back to top](#top)
