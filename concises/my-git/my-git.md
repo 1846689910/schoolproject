@@ -15,8 +15,9 @@
 - [**Pull From a PR**](#pull-from-a-pr)
   - [fetch a remote branch](#fetch-a-remote-branch)
 - [**Rebase**](#rebase)
-  - [**merge serveral history commits**](#merge-serveral-history-commits)
+  - [**squash serveral history commits**](#squash-serveral-history-commits)
   - [change commit author](#change-commit-author)
+  - [change commit message](#change-commit-message)
   - [**Failure fix:**](#failure-fix)
 - [SSH Key](#ssh-key)
   - [generate ssh key](#generate-ssh-key)
@@ -322,7 +323,7 @@ git checkout <BRANCH>
 
 ## **Rebase**
 
-### **merge serveral history commits**
+### **squash serveral history commits**
 
 ```bash
 git log
@@ -360,6 +361,8 @@ Then, replace the remote by forcely push
 git push origin BRANCH --force
 ```
 
+[back to top](#top)
+
 ### change commit author
 
 ```bash
@@ -384,6 +387,20 @@ finally
 ```bash
 git push origin <branch> --force
 ```
+
+[back to top](#top)
+
+### change commit message
+
+- 修改最近的commit的message: `git commit --amend` 或 `git commit --amend -m "new message"`
+- 修改之前的某些commit的message
+  - `git rebase -i <earlier_hash>`
+  - 对于要修改的commit改成`e` for `edit`
+  - `git commit --amend` 来修改, 之后保存
+  - `git rebase --continue`
+  - `git push -f`
+
+[back to top](#top)
 
 **Exit rebase**
 
